@@ -1,0 +1,59 @@
+{
+  "app": {
+    "name": "BarberPro"
+  },
+  "seo": {
+    "home": {
+      "description": "Professional barber shop management — appointments, clients, and services"
+    },
+    "login": {
+      "title": "Log In — BarberPro",
+      "description": "Log in to your BarberPro account"
+    },
+    "register": {
+      "title": "Create Account — BarberPro",
+      "description": "Create your BarberPro account to manage your barber shop"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Log In",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Log In",
+      "noAccount": "Don't have an account?",
+      "registerLink": "Register"
+    },
+    "register": {
+      "title": "Create Account",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Create Account",
+      "hasAccount": "Already have an account?",
+      "loginLink": "Log In"
+    },
+    "facebook": {
+      "button": "Continue with Facebook"
+    },
+    "divider": "or",
+    "logout": "Log Out",
+    "error": {
+      "invalidCredentials": "Invalid email or password",
+      "emailExists": "This email is already registered",
+      "facebookFailed": "Facebook login failed. Please try again.",
+      "sessionExpired": "Your session has expired. Please log in again."
+    },
+  },
+  "validation": {
+    "required": "This field is required",
+    "emailInvalid": "Please enter a valid email",
+    "minLength": "Must be at least {min} characters",
+    "invalid": "Invalid value"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "toggleMenu": "Toggle menu"
+  }
+}

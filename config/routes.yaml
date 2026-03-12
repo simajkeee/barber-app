@@ -1,0 +1,6 @@
+auth:
+    resource:
+        path: ../src/Auth/Controller/
+        namespace: App\Auth\Controller
+    type: attribute
+    prefix: /api/v1/auth

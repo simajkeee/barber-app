@@ -1,0 +1,28 @@
+framework:
+    secret: '%env(APP_SECRET)%'
+    http_method_override: false
+    handle_all_throwables: true
+
+    php_errors:
+        log: true
+
+    serializer:
+        enabled: true
+
+    validation:
+        enabled: true
+        enable_attributes: true
+
+    rate_limiter:
+        login:
+            policy: sliding_window
+            limit: 10
+            interval: '1 minute'
+        registration:
+            policy: sliding_window
+            limit: 5
+            interval: '1 hour'
+        api:
+            policy: sliding_window
+            limit: 60
+            interval: '1 minute'

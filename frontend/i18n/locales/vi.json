@@ -1,0 +1,59 @@
+{
+  "app": {
+    "name": "BarberPro"
+  },
+  "seo": {
+    "home": {
+      "description": "Phần mềm quản lý tiệm tóc chuyên nghiệp — đặt lịch, quản lý khách hàng và dịch vụ"
+    },
+    "login": {
+      "title": "Đăng nhập — BarberPro",
+      "description": "Đăng nhập vào tài khoản BarberPro"
+    },
+    "register": {
+      "title": "Tạo tài khoản — BarberPro",
+      "description": "Tạo tài khoản BarberPro để quản lý tiệm tóc"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Đăng nhập",
+      "email": "Email",
+      "password": "Mật khẩu",
+      "submit": "Đăng nhập",
+      "noAccount": "Chưa có tài khoản?",
+      "registerLink": "Đăng ký"
+    },
+    "register": {
+      "title": "Tạo tài khoản",
+      "firstName": "Tên",
+      "lastName": "Họ",
+      "email": "Email",
+      "password": "Mật khẩu",
+      "submit": "Tạo tài khoản",
+      "hasAccount": "Đã có tài khoản?",
+      "loginLink": "Đăng nhập"
+    },
+    "facebook": {
+      "button": "Tiếp tục với Facebook"
+    },
+    "divider": "hoặc",
+    "logout": "Đăng xuất",
+    "error": {
+      "invalidCredentials": "Email hoặc mật khẩu không đúng",
+      "emailExists": "Email này đã được đăng ký",
+      "facebookFailed": "Đăng nhập Facebook thất bại. Vui lòng thử lại.",
+      "sessionExpired": "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại."
+    },
+  },
+  "validation": {
+    "required": "Trường này là bắt buộc",
+    "emailInvalid": "Email không hợp lệ",
+    "minLength": "Phải có ít nhất {min} ký tự",
+    "invalid": "Giá trị không hợp lệ"
+  },
+  "dashboard": {
+    "title": "Bảng điều khiển",
+    "toggleMenu": "Mở menu"
+  }
+}
