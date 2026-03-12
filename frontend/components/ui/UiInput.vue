@@ -2,7 +2,7 @@
 const props = withDefaults(
   defineProps<{
     type?: 'text' | 'email' | 'password'
-    label: string
+    label?: string
     placeholder?: string
     error?: string
     required?: boolean
@@ -33,7 +33,7 @@ const inputType = computed(() =>
 
 <template>
   <div>
-    <label :for="inputId" class="mb-1 block text-sm font-medium text-gray-700">
+    <label v-if="props.label" :for="inputId" class="mb-1 block text-sm font-medium text-gray-700">
       {{ props.label }}
       <span v-if="props.required" class="text-error" aria-hidden="true">*</span>
     </label>
@@ -46,6 +46,7 @@ const inputType = computed(() =>
         :required="props.required"
         :autocomplete="props.autocomplete"
         :disabled="props.disabled"
+        :aria-label="props.label ? undefined : props.placeholder"
         :aria-invalid="!!props.error"
         :aria-describedby="props.error ? errorId : undefined"
         class="block w-full rounded-lg border px-3 py-2.5 text-sm text-gray-900 transition-colors focus:outline-none focus:ring-2 hover:border-gray-400"

@@ -81,6 +81,7 @@
   "nav": {
     "dashboard": "Dashboard",
     "shop": "My Shop",
+    "clients": "Clients",
     "services": "Services"
   },
   "dashboard": {
@@ -159,6 +160,70 @@
       "slugAlreadyExists": "This slug is already taken",
       "serviceNotFound": "Service not found",
       "scheduleOpenBeforeClose": "Open time must be before close time"
+    }
+  },
+  "clients": {
+    "title": "Clients",
+    "create": {
+      "title": "New Client"
+    },
+    "edit": {
+      "title": "Edit Client"
+    },
+    "form": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "phone": "Phone",
+      "email": "Email",
+      "notes": "Notes",
+      "phonePlaceholder": "+84 901 234 567",
+      "emailPlaceholder": "client{'@'}example.com",
+      "notesPlaceholder": "Any notes about this client..."
+    },
+    "list": {
+      "searchPlaceholder": "Search by name or phone...",
+      "empty": "No clients yet",
+      "emptyDescription": "Add your first client to get started.",
+      "noResults": "No clients found",
+      "noResultsDescription": "Try a different search term.",
+      "loadMore": "Load More",
+      "clearSearch": "Clear search",
+      "clientCount": "{count} visits"
+    },
+    "sort": {
+      "createdAt": "Date Added",
+      "lastVisitAt": "Last Visit",
+      "lastName": "Last Name",
+      "descending": "Sort descending",
+      "ascending": "Sort ascending"
+    },
+    "detail": {
+      "phone": "Phone",
+      "email": "Email",
+      "notes": "Notes",
+      "visitCount": "Total Visits",
+      "lastVisitAt": "Last Visit",
+      "createdAt": "Added",
+      "updatedAt": "Last Updated",
+      "noEmail": "No email",
+      "noVisits": "No visits yet"
+    },
+    "confirm": {
+      "deleteTitle": "Delete Client",
+      "deleteDescription": "Are you sure you want to delete this client? This action cannot be undone."
+    },
+    "toast": {
+      "created": "Client created",
+      "updated": "Client updated",
+      "deleted": "Client deleted",
+      "createError": "Failed to create client",
+      "updateError": "Failed to update client",
+      "deleteError": "Failed to delete client",
+      "loadError": "Failed to load clients"
+    },
+    "error": {
+      "phoneExists": "A client with this phone number already exists.",
+      "notFound": "Client not found."
     }
   },
   "common": {

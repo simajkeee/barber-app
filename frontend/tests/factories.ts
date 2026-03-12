@@ -1,5 +1,6 @@
 import type { User, AuthResponse } from '~/types/auth'
 import type { Shop, ShopService, ScheduleEntry } from '~/types/shop'
+import type { Client, ClientListResponse, ClientPagination } from '~/types/client'
 
 export function createUser(overrides: Partial<User> = {}): User {
   return {
@@ -59,6 +60,36 @@ export function createScheduleEntry(overrides: Partial<ScheduleEntry> = {}): Sch
     closeTime: '18:00',
     isOpen: true,
     ...overrides,
+  }
+}
+
+export function createClient(overrides: Partial<Client> = {}): Client {
+  return {
+    id: 'client-1',
+    firstName: 'Nguyen',
+    lastName: 'Van A',
+    phone: '+84901234567',
+    email: 'nguyen@example.com',
+    notes: null,
+    lastVisitAt: null,
+    visitCount: 0,
+    createdAt: '2026-03-01T10:00:00Z',
+    updatedAt: '2026-03-01T10:00:00Z',
+    ...overrides,
+  }
+}
+
+export function createClientListResponse(
+  clients: Client[] = [createClient()],
+  pagination: Partial<ClientPagination> = {},
+): ClientListResponse {
+  return {
+    data: clients,
+    pagination: {
+      nextCursor: null,
+      hasMore: false,
+      ...pagination,
+    },
   }
 }
 

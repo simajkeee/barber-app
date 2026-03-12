@@ -81,6 +81,7 @@
   "nav": {
     "dashboard": "Trang chủ",
     "shop": "Cửa hàng",
+    "clients": "Khách hàng",
     "services": "Dịch vụ"
   },
   "dashboard": {
@@ -159,6 +160,70 @@
       "slugAlreadyExists": "Slug này đã được sử dụng",
       "serviceNotFound": "Không tìm thấy dịch vụ",
       "scheduleOpenBeforeClose": "Giờ mở cửa phải trước giờ đóng cửa"
+    }
+  },
+  "clients": {
+    "title": "Khách hàng",
+    "create": {
+      "title": "Thêm khách hàng"
+    },
+    "edit": {
+      "title": "Sửa khách hàng"
+    },
+    "form": {
+      "firstName": "Tên",
+      "lastName": "Họ",
+      "phone": "Số điện thoại",
+      "email": "Email",
+      "notes": "Ghi chú",
+      "phonePlaceholder": "+84 901 234 567",
+      "emailPlaceholder": "khach{'@'}example.com",
+      "notesPlaceholder": "Ghi chú về khách hàng..."
+    },
+    "list": {
+      "searchPlaceholder": "Tìm theo tên hoặc số điện thoại...",
+      "empty": "Chưa có khách hàng",
+      "emptyDescription": "Thêm khách hàng đầu tiên để bắt đầu.",
+      "noResults": "Không tìm thấy khách hàng",
+      "noResultsDescription": "Thử từ khóa khác.",
+      "loadMore": "Tải thêm",
+      "clearSearch": "Xóa tìm kiếm",
+      "clientCount": "{count} lượt ghé"
+    },
+    "sort": {
+      "createdAt": "Ngày thêm",
+      "lastVisitAt": "Lần ghé cuối",
+      "lastName": "Họ tên",
+      "descending": "Sắp xếp giảm dần",
+      "ascending": "Sắp xếp tăng dần"
+    },
+    "detail": {
+      "phone": "Số điện thoại",
+      "email": "Email",
+      "notes": "Ghi chú",
+      "visitCount": "Tổng lượt ghé",
+      "lastVisitAt": "Lần ghé cuối",
+      "createdAt": "Ngày thêm",
+      "updatedAt": "Cập nhật lần cuối",
+      "noEmail": "Chưa có email",
+      "noVisits": "Chưa ghé lần nào"
+    },
+    "confirm": {
+      "deleteTitle": "Xóa khách hàng",
+      "deleteDescription": "Bạn có chắc muốn xóa khách hàng này? Hành động này không thể hoàn tác."
+    },
+    "toast": {
+      "created": "Đã thêm khách hàng",
+      "updated": "Đã cập nhật khách hàng",
+      "deleted": "Đã xóa khách hàng",
+      "createError": "Thêm khách hàng thất bại",
+      "updateError": "Cập nhật khách hàng thất bại",
+      "deleteError": "Xóa khách hàng thất bại",
+      "loadError": "Tải danh sách khách hàng thất bại"
+    },
+    "error": {
+      "phoneExists": "Số điện thoại này đã được sử dụng cho khách hàng khác.",
+      "notFound": "Không tìm thấy khách hàng."
     }
   },
   "common": {

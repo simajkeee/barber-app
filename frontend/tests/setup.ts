@@ -52,10 +52,12 @@ vi.stubGlobal('useApiError', () => ({
   },
 }))
 vi.stubGlobal('useShopApi', vi.fn())
+vi.stubGlobal('useClientApi', vi.fn())
 vi.stubGlobal('useToast', () => ({ success: vi.fn(), error: vi.fn() }))
 vi.stubGlobal('useFormatters', () => ({
   formatPrice: (price: number) => `${price} ₫`,
   formatDuration: (min: number) => `${min} min`,
+  formatDate: (iso: string) => new Date(iso).toLocaleDateString(),
 }))
 
 // Mock Nuxt auto-imports globally

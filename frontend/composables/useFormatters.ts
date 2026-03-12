@@ -13,5 +13,13 @@ export function useFormatters() {
     return t('shop.services.minutes', { n: minutes })
   }
 
-  return { formatPrice, formatDuration }
+  function formatDate(isoString: string): string {
+    return new Intl.DateTimeFormat(locale.value === 'vi' ? 'vi-VN' : 'en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    }).format(new Date(isoString))
+  }
+
+  return { formatPrice, formatDuration, formatDate }
 }
