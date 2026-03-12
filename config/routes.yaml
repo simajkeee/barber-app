@@ -11,3 +11,10 @@ shop:
         namespace: App\Shop\Controller
     type: attribute
     prefix: /api/v1/shops
+
+client:
+    resource:
+        path: ../src/Client/Controller/
+        namespace: App\Client\Controller
+    type: attribute
+    prefix: /api/v1/clients
