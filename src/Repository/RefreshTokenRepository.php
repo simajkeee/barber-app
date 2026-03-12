@@ -31,4 +31,13 @@ final class RefreshTokenRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
+    public function deleteByUser(\App\Entity\User $user): void
+    {
+        $this->createQueryBuilder('rt')
+            ->delete()
+            ->where('rt.user = :user')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->execute();
+    }
 }

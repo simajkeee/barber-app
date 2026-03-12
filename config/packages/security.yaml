@@ -23,5 +23,7 @@ security:
         - { path: ^/api/v1/auth/login$, roles: PUBLIC_ACCESS }
         - { path: ^/api/v1/auth/facebook$, roles: PUBLIC_ACCESS }
         - { path: ^/api/v1/auth/refresh$, roles: PUBLIC_ACCESS }
+        - { path: ^/api/v1/auth/forgot-password$, roles: PUBLIC_ACCESS }
+        - { path: ^/api/v1/auth/reset-password$, roles: PUBLIC_ACCESS }
         - { path: ^/api/v1/public, roles: PUBLIC_ACCESS }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
