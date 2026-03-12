@@ -104,12 +104,23 @@ describe('FacebookLoginButton', () => {
   it('loads Facebook SDK if not already present', async () => {
     mockFacebookLogin.mockResolvedValueOnce({ success: true })
 
+    // Intercept appendChild to prevent happy-dom from loading the external script
+    let appendedScript: HTMLScriptElement | null = null
+    const originalAppendChild = document.head.appendChild.bind(document.head)
+    vi.spyOn(document.head, 'appendChild').mockImplementation((node: any) => {
+      if (node.tagName === 'SCRIPT' && node.src?.includes('facebook')) {
+        appendedScript = node
+        return node
+      }
+      return originalAppendChild(node)
+    })
+
     const wrapper = mountButton()
     await wrapper.find('button').trigger('click')
 
-    // SDK script should be appended to head
-    const scripts = document.head.querySelectorAll('script[src*="facebook"]')
-    expect(scripts.length).toBeGreaterThan(0)
+    // SDK script should have been intercepted
+    expect(appendedScript).not.toBeNull()
+    expect(appendedScript!.src).toContain('facebook')
 
     // Simulate SDK load by calling fbAsyncInit
     ;(window as any).FB = createMockFB()
@@ -120,6 +131,8 @@ describe('FacebookLoginButton', () => {
       expect.objectContaining({ appId: 'test-app-id' }),
     )
     expect(mockFacebookLogin).toHaveBeenCalledWith('fb-token-123')
+
+    vi.restoreAllMocks()
   })
 
   it('does not show error initially', () => {

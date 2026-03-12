@@ -88,6 +88,30 @@ export function useAuth() {
     }
   }
 
+  async function forgotPassword(email: string): Promise<AuthResult> {
+    try {
+      await api('/auth/forgot-password', {
+        method: 'POST',
+        body: { email },
+      })
+      return { success: true }
+    } catch (err) {
+      return parseError(err)
+    }
+  }
+
+  async function resetPassword(token: string, password: string): Promise<AuthResult> {
+    try {
+      await api('/auth/reset-password', {
+        method: 'POST',
+        body: { token, password },
+      })
+      return { success: true }
+    } catch (err) {
+      return parseError(err)
+    }
+  }
+
   async function logout() {
     clearTokens()
     store.clear()
@@ -109,6 +133,8 @@ export function useAuth() {
     login,
     register,
     facebookLogin,
+    forgotPassword,
+    resetPassword,
     logout,
     updateProfile,
   }

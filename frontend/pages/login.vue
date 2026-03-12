@@ -6,6 +6,9 @@ definePageMeta({
 
 const { t } = useI18n()
 const localePath = useLocalePath()
+const route = useRoute()
+
+const resetSuccess = route.query.resetSuccess === 'true'
 
 useSeoMeta({
   title: () => t('seo.login.title'),
@@ -24,6 +27,7 @@ function onSuccess() {
     <AuthPageHeader :title="t('auth.login.title')" />
 
     <div class="rounded-xl bg-white p-6 shadow-card">
+      <UiAlert v-if="resetSuccess" type="success" :message="t('auth.resetPassword.success')" class="mb-4" />
       <AuthLoginForm @success="onSuccess" />
       <AuthDivider />
       <AuthFacebookLoginButton @success="onSuccess" />

@@ -200,6 +200,116 @@ describe('useAuth', () => {
     })
   })
 
+  describe('forgotPassword', () => {
+    it('calls forgot-password endpoint and returns success', async () => {
+      mockApiFetch.mockResolvedValueOnce({})
+
+      const { forgotPassword } = useAuth()
+      const result = await forgotPassword('test@example.com')
+
+      expect(result).toEqual({ success: true })
+      expect(mockApiFetch).toHaveBeenCalledWith('/auth/forgot-password', {
+        method: 'POST',
+        body: { email: 'test@example.com' },
+      })
+    })
+
+    it('returns error code on RATE_LIMIT_EXCEEDED', async () => {
+      const apiError: ApiValidationError = { code: 'RATE_LIMIT_EXCEEDED', message: 'Too many requests' }
+      mockApiFetch.mockRejectedValueOnce(createFetchError(429, apiError))
+
+      const { forgotPassword } = useAuth()
+      const result = await forgotPassword('test@example.com')
+
+      expect(result).toEqual({ success: false, error: 'RATE_LIMIT_EXCEEDED', fieldErrors: undefined })
+    })
+
+    it('returns unexpected error for non-FetchError', async () => {
+      mockApiFetch.mockRejectedValueOnce(new Error('Network error'))
+
+      const { forgotPassword } = useAuth()
+      const result = await forgotPassword('test@example.com')
+
+      expect(result).toEqual({ success: false, error: 'unexpected' })
+    })
+
+    it('does not store tokens or set user', async () => {
+      mockApiFetch.mockResolvedValueOnce({})
+
+      const { forgotPassword } = useAuth()
+      await forgotPassword('test@example.com')
+
+      expect(cookieStore.access_token.value).toBeNull()
+      expect(cookieStore.refresh_token.value).toBeNull()
+      const store = realUseAuthStore()
+      expect(store.user).toBeNull()
+    })
+  })
+
+  describe('resetPassword', () => {
+    it('calls reset-password endpoint and returns success', async () => {
+      mockApiFetch.mockResolvedValueOnce({})
+
+      const { resetPassword } = useAuth()
+      const result = await resetPassword('token-abc', 'newPassword123')
+
+      expect(result).toEqual({ success: true })
+      expect(mockApiFetch).toHaveBeenCalledWith('/auth/reset-password', {
+        method: 'POST',
+        body: { token: 'token-abc', password: 'newPassword123' },
+      })
+    })
+
+    it('returns error code on INVALID_RESET_TOKEN', async () => {
+      const apiError: ApiValidationError = { code: 'INVALID_RESET_TOKEN', message: 'Invalid token' }
+      mockApiFetch.mockRejectedValueOnce(createFetchError(401, apiError))
+
+      const { resetPassword } = useAuth()
+      const result = await resetPassword('bad-token', 'newPassword123')
+
+      expect(result).toEqual({ success: false, error: 'INVALID_RESET_TOKEN', fieldErrors: undefined })
+    })
+
+    it('returns field errors from validation response', async () => {
+      const apiError: ApiValidationError = {
+        code: 'VALIDATION_ERROR',
+        message: 'Validation failed',
+        details: [{ field: 'password', message: 'Password too common' }],
+      }
+      mockApiFetch.mockRejectedValueOnce(createFetchError(400, apiError))
+
+      const { resetPassword } = useAuth()
+      const result = await resetPassword('token-abc', 'weak')
+
+      expect(result).toEqual({
+        success: false,
+        error: 'VALIDATION_ERROR',
+        fieldErrors: { password: 'Password too common' },
+      })
+    })
+
+    it('returns unexpected error for non-FetchError', async () => {
+      mockApiFetch.mockRejectedValueOnce(new Error('Network error'))
+
+      const { resetPassword } = useAuth()
+      const result = await resetPassword('token-abc', 'newPassword123')
+
+      expect(result).toEqual({ success: false, error: 'unexpected' })
+    })
+
+    it('does not store tokens or set user', async () => {
+      mockApiFetch.mockResolvedValueOnce({})
+
+      const { resetPassword } = useAuth()
+      await resetPassword('token-abc', 'newPassword123')
+
+      expect(cookieStore.access_token.value).toBeNull()
+      expect(cookieStore.refresh_token.value).toBeNull()
+      const store = realUseAuthStore()
+      expect(store.user).toBeNull()
+    })
+  })
+
   describe('computed properties', () => {
     it('user reflects store state', () => {
       const store = realUseAuthStore()

@@ -13,6 +13,14 @@
     "register": {
       "title": "Create Account — BarberPro",
       "description": "Create your BarberPro account to manage your barber shop"
+    },
+    "forgotPassword": {
+      "title": "Forgot Password — BarberPro",
+      "description": "Reset your BarberPro account password"
+    },
+    "resetPassword": {
+      "title": "Reset Password — BarberPro",
+      "description": "Set a new password for your BarberPro account"
     }
   },
   "auth": {
@@ -21,6 +29,7 @@
       "email": "Email",
       "password": "Password",
       "submit": "Log In",
+      "forgotPassword": "Forgot password?",
       "noAccount": "Don't have an account?",
       "registerLink": "Register"
     },
@@ -43,7 +52,24 @@
       "invalidCredentials": "Invalid email or password",
       "emailExists": "This email is already registered",
       "facebookFailed": "Facebook login failed. Please try again.",
-      "sessionExpired": "Your session has expired. Please log in again."
+      "sessionExpired": "Your session has expired. Please log in again.",
+      "invalidResetToken": "This reset link is invalid or has expired. Please request a new one.",
+      "rateLimitExceeded": "Too many requests. Please try again later."
+    },
+    "forgotPassword": {
+      "title": "Forgot Password",
+      "description": "Enter your email address and we'll send you a link to reset your password.",
+      "email": "Email",
+      "submit": "Send Reset Link",
+      "success": "If an account with this email exists, a password reset link has been sent. Check your inbox.",
+      "backToLogin": "Back to login"
+    },
+    "resetPassword": {
+      "title": "Set New Password",
+      "password": "New Password",
+      "submit": "Reset Password",
+      "success": "Your password has been reset successfully. You can now log in.",
+      "backToLogin": "Back to login"
     },
   },
   "validation": {

@@ -8,6 +8,7 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
+const localePath = useLocalePath()
 const { login } = useAuth()
 
 const { handleSubmit, setFieldError, isSubmitting } = useForm<LoginFormValues>({
@@ -64,6 +65,12 @@ const onSubmit = handleSubmit(async (values) => {
         required
         :error="passwordError"
       />
+    </div>
+
+    <div class="mt-1 text-right">
+      <NuxtLink :to="localePath('/forgot-password')" class="text-sm font-medium text-primary-600 hover:text-primary-700">
+        {{ t('auth.login.forgotPassword') }}
+      </NuxtLink>
     </div>
 
     <UiButton

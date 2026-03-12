@@ -13,6 +13,14 @@
     "register": {
       "title": "Tạo tài khoản — BarberPro",
       "description": "Tạo tài khoản BarberPro để quản lý tiệm tóc"
+    },
+    "forgotPassword": {
+      "title": "Quên mật khẩu — BarberPro",
+      "description": "Đặt lại mật khẩu tài khoản BarberPro"
+    },
+    "resetPassword": {
+      "title": "Đặt lại mật khẩu — BarberPro",
+      "description": "Đặt mật khẩu mới cho tài khoản BarberPro"
     }
   },
   "auth": {
@@ -21,6 +29,7 @@
       "email": "Email",
       "password": "Mật khẩu",
       "submit": "Đăng nhập",
+      "forgotPassword": "Quên mật khẩu?",
       "noAccount": "Chưa có tài khoản?",
       "registerLink": "Đăng ký"
     },
@@ -43,7 +52,24 @@
       "invalidCredentials": "Email hoặc mật khẩu không đúng",
       "emailExists": "Email này đã được đăng ký",
       "facebookFailed": "Đăng nhập Facebook thất bại. Vui lòng thử lại.",
-      "sessionExpired": "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại."
+      "sessionExpired": "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.",
+      "invalidResetToken": "Liên kết đặt lại không hợp lệ hoặc đã hết hạn. Vui lòng yêu cầu liên kết mới.",
+      "rateLimitExceeded": "Quá nhiều yêu cầu. Vui lòng thử lại sau."
+    },
+    "forgotPassword": {
+      "title": "Quên mật khẩu",
+      "description": "Nhập địa chỉ email và chúng tôi sẽ gửi cho bạn liên kết để đặt lại mật khẩu.",
+      "email": "Email",
+      "submit": "Gửi liên kết đặt lại",
+      "success": "Nếu tài khoản với email này tồn tại, liên kết đặt lại mật khẩu đã được gửi. Kiểm tra hộp thư của bạn.",
+      "backToLogin": "Quay lại đăng nhập"
+    },
+    "resetPassword": {
+      "title": "Đặt mật khẩu mới",
+      "password": "Mật khẩu mới",
+      "submit": "Đặt lại mật khẩu",
+      "success": "Mật khẩu của bạn đã được đặt lại thành công. Bạn có thể đăng nhập ngay.",
+      "backToLogin": "Quay lại đăng nhập"
     },
   },
   "validation": {

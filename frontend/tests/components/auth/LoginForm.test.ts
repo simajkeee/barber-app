@@ -1,8 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { mount, flushPromises } from '@vue/test-utils'
-import { nextTick, ref } from 'vue'
+import { mount } from '@vue/test-utils'
+import { ref } from 'vue'
 import LoginForm from '~/components/auth/LoginForm.vue'
 import { authFormStubs } from '../../stubs'
+import { flush } from '../../utils'
 
 const mockLogin = vi.fn()
 
@@ -14,12 +15,6 @@ vi.stubGlobal('useI18n', () => ({
 vi.stubGlobal('useAuth', () => ({
   login: mockLogin,
 }))
-
-async function flush() {
-  await flushPromises()
-  await nextTick()
-  await flushPromises()
-}
 
 describe('LoginForm', () => {
   beforeEach(() => {
