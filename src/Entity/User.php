@@ -44,6 +44,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 2, enumType: UserLocale::class)]
     private UserLocale $locale = UserLocale::VI;
 
+    #[ORM\OneToOne(mappedBy: 'owner')]
+    private ?Shop $shop = null; // @phpstan-ignore property.unusedType
+
     #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE)]
     private \DateTimeImmutable $createdAt;
 
@@ -141,6 +144,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
+    }
+
+    public function getShop(): ?Shop
+    {
+        return $this->shop;
     }
 
     public function getUpdatedAt(): \DateTimeImmutable

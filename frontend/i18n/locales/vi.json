@@ -70,7 +70,7 @@
       "submit": "Đặt lại mật khẩu",
       "success": "Mật khẩu của bạn đã được đặt lại thành công. Bạn có thể đăng nhập ngay.",
       "backToLogin": "Quay lại đăng nhập"
-    },
+    }
   },
   "validation": {
     "required": "Trường này là bắt buộc",
@@ -78,8 +78,95 @@
     "minLength": "Phải có ít nhất {min} ký tự",
     "invalid": "Giá trị không hợp lệ"
   },
+  "nav": {
+    "dashboard": "Trang chủ",
+    "shop": "Cửa hàng",
+    "services": "Dịch vụ"
+  },
   "dashboard": {
     "title": "Bảng điều khiển",
-    "toggleMenu": "Mở menu"
+    "toggleMenu": "Mở menu",
+    "noShop": "Chưa có cửa hàng",
+    "noShopDescription": "Tạo hồ sơ cửa hàng để bắt đầu"
+  },
+  "shop": {
+    "create": {
+      "title": "Tạo cửa hàng",
+      "subtitle": "Thiết lập hồ sơ cửa hàng để bắt đầu",
+      "success": "Tạo cửa hàng thành công"
+    },
+    "profile": {
+      "title": "Hồ sơ cửa hàng",
+      "edit": "Chỉnh sửa",
+      "save": "Lưu thay đổi",
+      "cancel": "Hủy",
+      "slug": "Đường dẫn công khai",
+      "slugHint": "4-100 ký tự, chữ thường, số, dấu gạch ngang",
+      "coverImageUrl": "URL ảnh bìa",
+      "description": "Mô tả",
+      "noDescription": "Chưa có mô tả",
+      "updated": "Cập nhật cửa hàng thành công"
+    },
+    "form": {
+      "name": "Tên cửa hàng",
+      "address": "Địa chỉ",
+      "phone": "Số điện thoại",
+      "serviceName": "Tên dịch vụ",
+      "duration": "Thời lượng (phút)",
+      "price": "Giá (VND)",
+      "sortOrder": "Thứ tự hiển thị"
+    },
+    "schedule": {
+      "title": "Giờ làm việc",
+      "save": "Lưu lịch",
+      "updated": "Cập nhật lịch thành công",
+      "open": "Mở cửa",
+      "closed": "Đóng cửa",
+      "openTime": "Giờ mở cửa",
+      "closeTime": "Giờ đóng cửa",
+      "days": {
+        "monday": "Thứ Hai",
+        "tuesday": "Thứ Ba",
+        "wednesday": "Thứ Tư",
+        "thursday": "Thứ Năm",
+        "friday": "Thứ Sáu",
+        "saturday": "Thứ Bảy",
+        "sunday": "Chủ Nhật"
+      }
+    },
+    "services": {
+      "title": "Dịch vụ",
+      "add": "Thêm dịch vụ",
+      "edit": "Sửa dịch vụ",
+      "empty": "Chưa có dịch vụ",
+      "emptyDescription": "Thêm dịch vụ đầu tiên để bắt đầu",
+      "showInactive": "Hiện dịch vụ ẩn",
+      "created": "Đã thêm dịch vụ",
+      "updated": "Đã cập nhật dịch vụ",
+      "deleted": "Đã ẩn dịch vụ",
+      "deleteConfirm": "Ẩn dịch vụ này?",
+      "deleteDescription": "Dịch vụ sẽ bị ẩn nhưng không xóa vĩnh viễn",
+      "active": "Hoạt động",
+      "inactive": "Đã ẩn",
+      "deactivate": "Ẩn",
+      "activate": "Kích hoạt",
+      "activated": "Đã kích hoạt dịch vụ",
+      "minutes": "{n} phút"
+    },
+    "error": {
+      "shopAlreadyExists": "Bạn đã có cửa hàng",
+      "shopNotFound": "Không tìm thấy cửa hàng. Hãy tạo cửa hàng trước",
+      "slugAlreadyExists": "Slug này đã được sử dụng",
+      "serviceNotFound": "Không tìm thấy dịch vụ",
+      "scheduleOpenBeforeClose": "Giờ mở cửa phải trước giờ đóng cửa"
+    }
+  },
+  "common": {
+    "confirm": "Xác nhận",
+    "cancel": "Hủy",
+    "save": "Lưu",
+    "back": "Quay lại",
+    "copy": "Sao chép",
+    "copied": "Đã sao chép"
   }
 }

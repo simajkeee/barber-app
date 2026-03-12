@@ -5,9 +5,7 @@ import type {
   RegisterRequest,
   UpdateProfileRequest,
   User,
-  ApiValidationError,
 } from '~/types/auth'
-import { FetchError } from 'ofetch'
 
 export function useAuth() {
   const api = useApi()
@@ -35,16 +33,9 @@ export function useAuth() {
   }
 
   function parseError(err: unknown): AuthResult {
-    if (!(err instanceof FetchError) || !err.data) {
-      return { success: false, error: 'unexpected' }
-    }
-
-    const data = err.data as ApiValidationError
-    const fieldErrors: Record<string, string> | undefined = data.details?.length
-      ? Object.fromEntries(data.details.map((d) => [d.field, d.message]))
-      : undefined
-
-    return { success: false, error: data.code ?? data.message, fieldErrors }
+    const { parseApiError } = useApiError()
+    const parsed = parseApiError(err)
+    return { success: false, error: parsed.error, fieldErrors: parsed.fieldErrors }
   }
 
   async function login(credentials: LoginRequest): Promise<AuthResult> {

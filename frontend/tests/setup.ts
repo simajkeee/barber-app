@@ -2,6 +2,7 @@ import { vi } from 'vitest'
 import { ref, reactive, computed, toRef, toRefs, watch, watchEffect, nextTick, onMounted, onUnmounted } from 'vue'
 import { config } from '@vue/test-utils'
 import { defineStore, storeToRefs } from 'pinia'
+import { FetchError } from 'ofetch'
 import { z } from 'zod'
 
 // Configure Zod to return i18n-style keys (mirrors plugins/zod-i18n.ts)
@@ -35,6 +36,27 @@ vi.stubGlobal('storeToRefs', storeToRefs)
 // Pinia store auto-imports — must be available globally since Nuxt auto-imports them
 // Individual tests that need to mock store behavior should import and override
 vi.stubGlobal('useAuthStore', vi.fn())
+vi.stubGlobal('useShopStore', vi.fn())
+
+// Composable auto-imports
+vi.stubGlobal('useApiError', () => ({
+  parseApiError: (err: unknown) => {
+    if (!(err instanceof FetchError) || !(err as any).data) {
+      return { error: 'unexpected' }
+    }
+    const data = (err as any).data
+    const fieldErrors = data.details?.length
+      ? Object.fromEntries(data.details.map((d: any) => [d.field, d.message]))
+      : undefined
+    return { error: data.code ?? data.message, fieldErrors }
+  },
+}))
+vi.stubGlobal('useShopApi', vi.fn())
+vi.stubGlobal('useToast', () => ({ success: vi.fn(), error: vi.fn() }))
+vi.stubGlobal('useFormatters', () => ({
+  formatPrice: (price: number) => `${price} ₫`,
+  formatDuration: (min: number) => `${min} min`,
+}))
 
 // Mock Nuxt auto-imports globally
 vi.stubGlobal('navigateTo', vi.fn())

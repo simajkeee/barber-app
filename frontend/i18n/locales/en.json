@@ -70,7 +70,7 @@
       "submit": "Reset Password",
       "success": "Your password has been reset successfully. You can now log in.",
       "backToLogin": "Back to login"
-    },
+    }
   },
   "validation": {
     "required": "This field is required",
@@ -78,8 +78,95 @@
     "minLength": "Must be at least {min} characters",
     "invalid": "Invalid value"
   },
+  "nav": {
+    "dashboard": "Dashboard",
+    "shop": "My Shop",
+    "services": "Services"
+  },
   "dashboard": {
     "title": "Dashboard",
-    "toggleMenu": "Toggle menu"
+    "toggleMenu": "Toggle menu",
+    "noShop": "No shop yet",
+    "noShopDescription": "Create your barbershop profile to get started"
+  },
+  "shop": {
+    "create": {
+      "title": "Create Your Shop",
+      "subtitle": "Set up your barbershop profile to get started",
+      "success": "Shop created successfully"
+    },
+    "profile": {
+      "title": "Shop Profile",
+      "edit": "Edit",
+      "save": "Save Changes",
+      "cancel": "Cancel",
+      "slug": "Public URL Slug",
+      "slugHint": "4-100 chars, lowercase letters, numbers, hyphens",
+      "coverImageUrl": "Cover Image URL",
+      "description": "Description",
+      "noDescription": "No description",
+      "updated": "Shop updated successfully"
+    },
+    "form": {
+      "name": "Shop Name",
+      "address": "Address",
+      "phone": "Phone",
+      "serviceName": "Service Name",
+      "duration": "Duration (minutes)",
+      "price": "Price (VND)",
+      "sortOrder": "Sort Order"
+    },
+    "schedule": {
+      "title": "Working Hours",
+      "save": "Save Schedule",
+      "updated": "Schedule updated successfully",
+      "open": "Open",
+      "closed": "Closed",
+      "openTime": "Open Time",
+      "closeTime": "Close Time",
+      "days": {
+        "monday": "Monday",
+        "tuesday": "Tuesday",
+        "wednesday": "Wednesday",
+        "thursday": "Thursday",
+        "friday": "Friday",
+        "saturday": "Saturday",
+        "sunday": "Sunday"
+      }
+    },
+    "services": {
+      "title": "Services",
+      "add": "Add Service",
+      "edit": "Edit Service",
+      "empty": "No services yet",
+      "emptyDescription": "Add your first service to get started",
+      "showInactive": "Show inactive",
+      "created": "Service added",
+      "updated": "Service updated",
+      "deleted": "Service deactivated",
+      "deleteConfirm": "Deactivate this service?",
+      "deleteDescription": "The service will be hidden but not permanently deleted",
+      "active": "Active",
+      "inactive": "Inactive",
+      "deactivate": "Deactivate",
+      "activate": "Activate",
+      "activated": "Service activated",
+      "minutes": "{n} min"
+    },
+    "error": {
+      "shopAlreadyExists": "You already have a shop",
+      "shopNotFound": "Shop not found. Create one first",
+      "slugAlreadyExists": "This slug is already taken",
+      "serviceNotFound": "Service not found",
+      "scheduleOpenBeforeClose": "Open time must be before close time"
+    }
+  },
+  "common": {
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "save": "Save",
+    "back": "Back",
+    "copy": "Copy",
+    "copied": "Copied"
   }
 }
