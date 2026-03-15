@@ -83,7 +83,8 @@
     "shop": "Cửa hàng",
     "clients": "Khách hàng",
     "services": "Dịch vụ",
-    "appointments": "Lịch hẹn"
+    "appointments": "Lịch hẹn",
+    "subscription": "Gói dịch vụ"
   },
   "dashboard": {
     "title": "Bảng điều khiển",
@@ -326,6 +327,39 @@
       "timeInPast": "Không thể đặt lịch trong quá khứ",
       "serviceInactive": "Dịch vụ này không còn hoạt động",
       "slotsLoadFailed": "Tải khung giờ trống thất bại"
+    }
+  },
+  "subscription": {
+    "title": "Gói dịch vụ",
+    "plan": {
+      "title": "Gói hiện tại",
+      "free": "Miễn phí",
+      "pro": "Chuyên nghiệp"
+    },
+    "status": {
+      "label": "Trạng thái",
+      "active": "Hoạt động",
+      "expired": "Hết hạn",
+      "cancelled": "Đã hủy"
+    },
+    "startDate": "Ngày bắt đầu",
+    "endDate": "Ngày hết hạn",
+    "daysRemaining": "Số ngày còn lại",
+    "daysRemainingCount": "{count} ngày",
+    "usage": {
+      "title": "Lượt hẹn tháng này",
+      "count": "lượt",
+      "unlimited": "Không giới hạn",
+      "limitReached": "Bạn đã hết lượt đặt lịch trong tháng. Nâng cấp lên gói Chuyên nghiệp để đặt không giới hạn.",
+      "remaining": "Còn lại {count} lượt"
+    },
+    "upgrade": {
+      "title": "Nâng cấp lên Chuyên nghiệp",
+      "description": "Đặt lịch không giới hạn, quản lý nhiều nhân viên và nhiều tính năng cao cấp khác.",
+      "contact": "Liên hệ: 0901 234 567 hoặc email support{'@'}barberpro.vn để nâng cấp."
+    },
+    "error": {
+      "loadFailed": "Tải thông tin gói dịch vụ thất bại"
     }
   },
   "common": {

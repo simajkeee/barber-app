@@ -27,3 +27,7 @@ services:
     App\Common\EventListener\ApiExceptionListener:
         tags:
             - { name: kernel.event_listener, event: kernel.exception, priority: 10 }
+
+    App\Subscription\EventListener\SubscriptionGuard:
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, priority: -10 }

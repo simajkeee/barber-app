@@ -44,6 +44,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 2, enumType: UserLocale::class)]
     private UserLocale $locale = UserLocale::VI;
 
+    /** @var string[] */
+    #[ORM\Column(type: Types::JSON)]
+    private array $roles = [];
+
     #[ORM\OneToOne(mappedBy: 'owner')]
     private ?Shop $shop = null; // @phpstan-ignore property.unusedType
 
@@ -161,9 +165,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->email;
     }
 
+    /**
+     * @return string[]
+     */
     public function getRoles(): array
     {
-        return ['ROLE_USER'];
+        $roles = $this->roles;
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+    /**
+     * @param string[] $roles
+     */
+    public function setRoles(array $roles): void
+    {
+        $this->roles = $roles;
     }
 
     public function eraseCredentials(): void

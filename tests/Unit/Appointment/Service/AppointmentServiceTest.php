@@ -31,6 +31,8 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
+use App\Subscription\Service\AppointmentLimitChecker;
+use App\Subscription\Service\SubscriptionService;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 #[CoversClass(AppointmentService::class)]
@@ -44,6 +46,8 @@ final class AppointmentServiceTest extends TestCase
     private SlotCalculator&MockObject $slotCalculator;
     private EntityManagerInterface&MockObject $em;
     private EventDispatcherInterface&MockObject $eventDispatcher;
+    private AppointmentLimitChecker&MockObject $appointmentLimitChecker;
+    private SubscriptionService&MockObject $subscriptionService;
     private AppointmentService $sut;
 
     protected function setUp(): void
@@ -56,6 +60,8 @@ final class AppointmentServiceTest extends TestCase
         $this->slotCalculator = $this->createMock(SlotCalculator::class);
         $this->em = $this->createMock(EntityManagerInterface::class);
         $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
+        $this->appointmentLimitChecker = $this->createMock(AppointmentLimitChecker::class);
+        $this->subscriptionService = $this->createMock(SubscriptionService::class);
 
         $this->sut = new AppointmentService(
             $this->appointmentRepository,
@@ -66,6 +72,8 @@ final class AppointmentServiceTest extends TestCase
             $this->slotCalculator,
             $this->em,
             $this->eventDispatcher,
+            $this->appointmentLimitChecker,
+            $this->subscriptionService,
         );
     }
 

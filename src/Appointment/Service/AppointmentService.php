@@ -18,6 +18,8 @@ use App\Repository\ClientRepository;
 use App\Repository\ShopServiceRepository;
 use App\Repository\WorkScheduleRepository;
 use App\Shop\Enum\DayOfWeek;
+use App\Subscription\Service\AppointmentLimitChecker;
+use App\Subscription\Service\SubscriptionService;
 use Doctrine\DBAL\Exception\DriverException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Uid\Uuid;
@@ -36,11 +38,15 @@ final class AppointmentService
         private readonly SlotCalculator $slotCalculator,
         private readonly EntityManagerInterface $em,
         private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly AppointmentLimitChecker $appointmentLimitChecker,
+        private readonly SubscriptionService $subscriptionService,
     ) {
     }
 
     public function create(CreateAppointmentRequest $dto, Shop $shop): Appointment
     {
+        $this->appointmentLimitChecker->check($shop);
+
         $client = $this->clientRepository->findByShopAndId($shop, Uuid::fromString($dto->clientId));
         if ($client === null) {
             throw new ApiException('CLIENT_NOT_FOUND', 'Client not found.', 404);
@@ -79,6 +85,8 @@ final class AppointmentService
             }
             throw $e;
         }
+
+        $this->subscriptionService->incrementAppointmentCount($shop);
 
         return $appointment;
     }
@@ -166,6 +174,10 @@ final class AppointmentService
 
         if ($newStatus === AppointmentStatus::COMPLETED) {
             $this->eventDispatcher->dispatch(new AppointmentCompleted($appointment->getId()));
+        }
+
+        if ($newStatus === AppointmentStatus::CANCELLED) {
+            $this->subscriptionService->decrementAppointmentCount($appointment->getShop());
         }
 
         return $appointment;

@@ -9,6 +9,7 @@ import type {
   DailyScheduleResponse,
   TimeSlot,
 } from '~/types/appointment'
+import type { SubscriptionResponse } from '~/types/subscription'
 
 export function createUser(overrides: Partial<User> = {}): User {
   return {
@@ -168,4 +169,22 @@ export function createDefaultSchedule(): ScheduleEntry[] {
     closeTime: day === 'sunday' ? null : '18:00',
     isOpen: day !== 'sunday',
   }))
+}
+
+export function createSubscriptionResponse(
+  overrides: Partial<SubscriptionResponse> = {},
+): SubscriptionResponse {
+  return {
+    id: 'sub-1',
+    plan: 'free',
+    status: 'active',
+    startDate: '2026-03-01T00:00:00+07:00',
+    endDate: null,
+    usage: {
+      appointmentsThisMonth: 18,
+      appointmentLimit: 50,
+      limitReached: false,
+    },
+    ...overrides,
+  }
 }
