@@ -83,7 +83,8 @@
     "shop": "My Shop",
     "clients": "Clients",
     "services": "Services",
-    "appointments": "Appointments"
+    "appointments": "Appointments",
+    "reminders": "Reminders"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -328,12 +329,45 @@
       "slotsLoadFailed": "Failed to load available slots"
     }
   },
+  "reminders": {
+    "title": "Reminders",
+    "totalCount": "{count} clients to remind",
+    "loadMore": "Load More",
+    "settings": {
+      "title": "Reminder Settings",
+      "daysSinceLastVisit": "Days since last visit",
+      "messageTemplate": "Message template",
+      "templateHelp": "Placeholders: {client_name}, {shop_name}, {days_since_visit}, {client_phone}",
+      "save": "Save Settings",
+      "summary": "Reminding clients who haven't visited in {days} days"
+    },
+    "card": {
+      "daysSince": "{days} days ago",
+      "copyMessage": "Copy message",
+      "callClient": "Call",
+      "zaloLink": "Zalo",
+      "markReminded": "Mark reminded",
+      "reminded": "Client marked as reminded"
+    },
+    "empty": {
+      "title": "No reminders for today",
+      "description": "All your clients are up to date, or none match the reminder criteria."
+    },
+    "toast": {
+      "loadError": "Failed to load reminders",
+      "markError": "Failed to mark client as reminded",
+      "settingsError": "Failed to load settings",
+      "settingsSaved": "Reminder settings saved",
+      "copied": "Message copied to clipboard"
+    }
+  },
   "common": {
     "confirm": "Confirm",
     "cancel": "Cancel",
     "save": "Save",
     "back": "Back",
     "copy": "Copy",
-    "copied": "Copied"
+    "copied": "Copied",
+    "loading": "Loading..."
   }
 }

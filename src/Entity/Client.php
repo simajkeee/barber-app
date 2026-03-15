@@ -15,6 +15,7 @@ use Symfony\Component\Uid\Uuid;
 #[ORM\Index(name: 'idx_clients_shop_name', columns: ['shop_id', 'last_name', 'first_name'])]
 #[ORM\Index(name: 'idx_clients_shop_last_visit', columns: ['shop_id', 'last_visit_at'])]
 #[ORM\Index(name: 'idx_clients_shop_created', columns: ['shop_id', 'created_at'])]
+#[ORM\Index(name: 'idx_clients_last_reminded', columns: ['last_reminded_at'])]
 #[ORM\HasLifecycleCallbacks]
 class Client
 {
@@ -43,6 +44,9 @@ class Client
 
     #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $lastVisitAt = null;
+
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $lastRemindedAt = null;
 
     #[ORM\Column(type: Types::INTEGER, options: ['default' => 0])]
     private int $visitCount = 0;
@@ -139,6 +143,16 @@ class Client
     public function setLastVisitAt(?\DateTimeImmutable $lastVisitAt): void
     {
         $this->lastVisitAt = $lastVisitAt;
+    }
+
+    public function getLastRemindedAt(): ?\DateTimeImmutable
+    {
+        return $this->lastRemindedAt;
+    }
+
+    public function setLastRemindedAt(?\DateTimeImmutable $lastRemindedAt): void
+    {
+        $this->lastRemindedAt = $lastRemindedAt;
     }
 
     public function getVisitCount(): int
