@@ -27,6 +27,11 @@ final class WorkScheduleRepository extends ServiceEntityRepository
         return $this->findBy(['shop' => $shop]);
     }
 
+    public function findByShopAndDay(Shop $shop, \App\Shop\Enum\DayOfWeek $day): ?WorkSchedule
+    {
+        return $this->findOneBy(['shop' => $shop, 'dayOfWeek' => $day]);
+    }
+
     public function deleteByShop(Shop $shop): void
     {
         $this->createQueryBuilder('ws')

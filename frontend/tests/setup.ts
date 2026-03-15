@@ -53,6 +53,7 @@ vi.stubGlobal('useApiError', () => ({
 }))
 vi.stubGlobal('useShopApi', vi.fn())
 vi.stubGlobal('useClientApi', vi.fn())
+vi.stubGlobal('useAppointmentApi', vi.fn())
 vi.stubGlobal('useToast', () => ({ success: vi.fn(), error: vi.fn() }))
 vi.stubGlobal('useFormatters', () => ({
   formatPrice: (price: number) => `${price} ₫`,
@@ -90,4 +91,9 @@ config.global.stubs = {
     template: '<a :href="to"><slot /></a>',
     props: ['to'],
   },
+}
+
+// Provide $t globally so components using it directly in templates work
+config.global.mocks = {
+  $t: (key: string, ...args: any[]) => key,
 }

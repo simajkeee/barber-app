@@ -26,6 +26,24 @@ services:
     networks:
       - barber
 
+  claude:
+    build:
+      context: .
+      dockerfile: docker/claude/Dockerfile
+    volumes:
+      - .:/app
+      - ./.claude:/home/claude/.claude
+      - ~/.claude/skills:/home/claude/.claude/skills
+    environment:
+      DATABASE_URL: postgresql://barber:barber@database:5432/barber_app?serverVersion=16&charset=utf8
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - barber
+    stdin_open: true
+    tty: true
+
   database:
     image: postgres:16-alpine
     environment:

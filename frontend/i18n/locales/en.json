@@ -82,7 +82,8 @@
     "dashboard": "Dashboard",
     "shop": "My Shop",
     "clients": "Clients",
-    "services": "Services"
+    "services": "Services",
+    "appointments": "Appointments"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -224,6 +225,107 @@
     "error": {
       "phoneExists": "A client with this phone number already exists.",
       "notFound": "Client not found."
+    }
+  },
+  "appointments": {
+    "title": "Appointments",
+    "newButton": "New Appointment",
+    "tabs": {
+      "daily": "Daily Schedule",
+      "list": "All Appointments"
+    },
+    "status": {
+      "scheduled": "Scheduled",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "no_show": "No Show"
+    },
+    "workingHours": {
+      "label": "Working hours: {open} – {close}",
+      "closed": "Closed today"
+    },
+    "daily": {
+      "prevDay": "Previous day",
+      "nextDay": "Next day",
+      "jumpToDate": "Jump to date",
+      "empty": "No appointments today",
+      "emptyDescription": "Enjoy your free day!",
+      "closed": "Shop is closed today",
+      "closedDescription": "No working hours configured for this day."
+    },
+    "list": {
+      "empty": "No appointments found",
+      "emptyDescription": "Try changing your filters.",
+      "loadMore": "Load More"
+    },
+    "filters": {
+      "dateFrom": "From",
+      "dateTo": "To",
+      "status": "Status",
+      "clearFilters": "Clear filters"
+    },
+    "create": {
+      "title": "New Appointment"
+    },
+    "edit": {
+      "title": "Edit Appointment"
+    },
+    "form": {
+      "client": "Client",
+      "clientSearch": "Search client by name or phone...",
+      "service": "Service",
+      "servicePlaceholder": "Select a service",
+      "date": "Date",
+      "timeSlot": "Time Slot",
+      "noSlots": "No available slots for this day",
+      "loadingSlots": "Loading available slots...",
+      "notes": "Notes",
+      "notesPlaceholder": "Any notes for this appointment..."
+    },
+    "detail": {
+      "client": "Client",
+      "service": "Service",
+      "date": "Date & Time",
+      "status": "Status",
+      "notes": "Notes",
+      "noNotes": "No notes",
+      "createdAt": "Booked"
+    },
+    "actions": {
+      "complete": "Mark Complete",
+      "noShow": "No Show",
+      "cancel": "Cancel",
+      "edit": "Edit",
+      "view": "View"
+    },
+    "confirm": {
+      "completeTitle": "Mark as Completed?",
+      "completeDescription": "This will update the client's visit count.",
+      "noShowTitle": "Mark as No Show?",
+      "noShowDescription": "The time slot will be freed up.",
+      "cancelTitle": "Cancel Appointment?",
+      "cancelDescription": "The time slot will be freed up for other clients."
+    },
+    "toast": {
+      "created": "Appointment booked",
+      "updated": "Appointment updated",
+      "cancelled": "Appointment cancelled",
+      "completed": "Marked as completed",
+      "noShow": "Marked as no show",
+      "loadError": "Failed to load appointments",
+      "createError": "Failed to create appointment",
+      "updateError": "Failed to update appointment",
+      "statusError": "Failed to update status"
+    },
+    "error": {
+      "notFound": "Appointment not found",
+      "notModifiable": "This appointment cannot be modified",
+      "overlap": "This time slot is already taken",
+      "outsideHours": "This time is outside working hours",
+      "shopClosed": "The shop is closed on this day",
+      "timeInPast": "Cannot book in the past",
+      "serviceInactive": "This service is no longer available",
+      "slotsLoadFailed": "Failed to load available slots"
     }
   },
   "common": {

@@ -1,6 +1,14 @@
 import type { User, AuthResponse } from '~/types/auth'
 import type { Shop, ShopService, ScheduleEntry } from '~/types/shop'
 import type { Client, ClientListResponse, ClientPagination } from '~/types/client'
+import type {
+  Appointment,
+  AppointmentClient,
+  AppointmentService,
+  AppointmentListResponse,
+  DailyScheduleResponse,
+  TimeSlot,
+} from '~/types/appointment'
 
 export function createUser(overrides: Partial<User> = {}): User {
   return {
@@ -91,6 +99,65 @@ export function createClientListResponse(
       ...pagination,
     },
   }
+}
+
+export function createAppointmentClient(overrides: Partial<AppointmentClient> = {}): AppointmentClient {
+  return {
+    id: 'client-1',
+    firstName: 'Nguyen',
+    lastName: 'Van A',
+    phone: '+84901234567',
+    ...overrides,
+  }
+}
+
+export function createAppointmentService(overrides: Partial<AppointmentService> = {}): AppointmentService {
+  return {
+    id: 'service-1',
+    name: 'Haircut',
+    durationMinutes: 30,
+    price: 150000,
+    ...overrides,
+  }
+}
+
+export function createAppointment(overrides: Partial<Appointment> = {}): Appointment {
+  return {
+    id: 'appt-1',
+    client: createAppointmentClient(),
+    service: createAppointmentService(),
+    startTime: '2026-03-15T02:00:00.000Z', // 09:00 Ho Chi Minh (+07:00)
+    endTime: '2026-03-15T02:30:00.000Z',   // 09:30 Ho Chi Minh
+    status: 'scheduled',
+    notes: null,
+    createdAt: '2026-03-01T00:00:00.000Z',
+    updatedAt: '2026-03-01T00:00:00.000Z',
+    ...overrides,
+  }
+}
+
+export function createTimeSlot(overrides: Partial<TimeSlot> = {}): TimeSlot {
+  return {
+    startTime: '2026-03-15T02:00:00.000Z',
+    endTime: '2026-03-15T02:30:00.000Z',
+    ...overrides,
+  }
+}
+
+export function createDailyScheduleResponse(overrides: Partial<DailyScheduleResponse> = {}): DailyScheduleResponse {
+  return {
+    date: '2026-03-15',
+    workingHours: { openTime: '09:00', closeTime: '18:00' },
+    appointments: [createAppointment()],
+    ...overrides,
+  }
+}
+
+export function createAppointmentListResponse(
+  appointments: Appointment[] = [createAppointment()],
+  cursor: string | null = null,
+): AppointmentListResponse {
+  return { data: appointments, cursor }
 }
 
 export function createDefaultSchedule(): ScheduleEntry[] {

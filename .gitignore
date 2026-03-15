@@ -30,6 +30,13 @@
 .DS_Store
 Thumbs.db
 ###< OS ###
+
+###> Git Worktrees ###
+.worktrees/
+###< Git Worktrees ###
+
+###> Internal tooling ###
+###< Internal tooling ###
 ###> friendsofphp/php-cs-fixer ###
 /.php-cs-fixer.php
 /.php-cs-fixer.cache

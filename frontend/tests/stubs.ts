@@ -28,3 +28,22 @@ export const authFormStubs = {
   UiButton: UiButtonStub,
   UiAlert: UiAlertStub,
 }
+
+// Shared stubs for AppointmentDailyCard and AppointmentCard (list view)
+// Both components compose the same five child components identically.
+export const appointmentCardChildStubs = {
+  AppointmentTimeBadge: { template: '<span>time</span>', props: ['startTime', 'endTime', 'showDate'] },
+  AppointmentClientInfo: { template: '<span>{{ client.firstName }}</span>', props: ['client'] },
+  AppointmentServiceInfo: { template: '<span>{{ service.name }}</span>', props: ['service'] },
+  AppointmentStatusBadge: { template: '<span>{{ status }}</span>', props: ['status'] },
+  AppointmentQuickActions: {
+    template: `<div>
+      <button class="btn-view" @click="$emit('view')">view</button>
+      <button class="btn-complete" @click="$emit('complete')">complete</button>
+      <button class="btn-no-show" @click="$emit('noShow')">noShow</button>
+      <button class="btn-cancel" @click="$emit('cancel')">cancel</button>
+    </div>`,
+    props: ['status', 'loading'],
+    emits: ['view', 'complete', 'noShow', 'cancel'],
+  },
+}

@@ -82,7 +82,8 @@
     "dashboard": "Trang chủ",
     "shop": "Cửa hàng",
     "clients": "Khách hàng",
-    "services": "Dịch vụ"
+    "services": "Dịch vụ",
+    "appointments": "Lịch hẹn"
   },
   "dashboard": {
     "title": "Bảng điều khiển",
@@ -224,6 +225,107 @@
     "error": {
       "phoneExists": "Số điện thoại này đã được sử dụng cho khách hàng khác.",
       "notFound": "Không tìm thấy khách hàng."
+    }
+  },
+  "appointments": {
+    "title": "Lịch hẹn",
+    "newButton": "Đặt lịch mới",
+    "tabs": {
+      "daily": "Lịch ngày",
+      "list": "Tất cả lịch hẹn"
+    },
+    "status": {
+      "scheduled": "Đã đặt",
+      "completed": "Hoàn thành",
+      "cancelled": "Đã hủy",
+      "no_show": "Không đến"
+    },
+    "workingHours": {
+      "label": "Giờ làm việc: {open} – {close}",
+      "closed": "Hôm nay đóng cửa"
+    },
+    "daily": {
+      "prevDay": "Ngày trước",
+      "nextDay": "Ngày sau",
+      "jumpToDate": "Chọn ngày",
+      "empty": "Hôm nay không có lịch hẹn",
+      "emptyDescription": "Tận hưởng ngày tự do!",
+      "closed": "Cửa hàng đóng cửa hôm nay",
+      "closedDescription": "Không có giờ làm việc cho ngày này."
+    },
+    "list": {
+      "empty": "Không tìm thấy lịch hẹn",
+      "emptyDescription": "Thử thay đổi bộ lọc.",
+      "loadMore": "Tải thêm"
+    },
+    "filters": {
+      "dateFrom": "Từ ngày",
+      "dateTo": "Đến ngày",
+      "status": "Trạng thái",
+      "clearFilters": "Xóa bộ lọc"
+    },
+    "create": {
+      "title": "Đặt lịch mới"
+    },
+    "edit": {
+      "title": "Sửa lịch hẹn"
+    },
+    "form": {
+      "client": "Khách hàng",
+      "clientSearch": "Tìm khách theo tên hoặc số điện thoại...",
+      "service": "Dịch vụ",
+      "servicePlaceholder": "Chọn dịch vụ",
+      "date": "Ngày",
+      "timeSlot": "Giờ hẹn",
+      "noSlots": "Không có khung giờ trống trong ngày này",
+      "loadingSlots": "Đang tải khung giờ...",
+      "notes": "Ghi chú",
+      "notesPlaceholder": "Ghi chú cho lịch hẹn này..."
+    },
+    "detail": {
+      "client": "Khách hàng",
+      "service": "Dịch vụ",
+      "date": "Ngày & Giờ",
+      "status": "Trạng thái",
+      "notes": "Ghi chú",
+      "noNotes": "Không có ghi chú",
+      "createdAt": "Ngày đặt"
+    },
+    "actions": {
+      "complete": "Hoàn thành",
+      "noShow": "Không đến",
+      "cancel": "Hủy lịch",
+      "edit": "Sửa",
+      "view": "Xem"
+    },
+    "confirm": {
+      "completeTitle": "Đánh dấu hoàn thành?",
+      "completeDescription": "Điều này sẽ cập nhật số lượt ghé của khách hàng.",
+      "noShowTitle": "Đánh dấu không đến?",
+      "noShowDescription": "Khung giờ sẽ được giải phóng.",
+      "cancelTitle": "Hủy lịch hẹn?",
+      "cancelDescription": "Khung giờ sẽ được giải phóng cho khách khác."
+    },
+    "toast": {
+      "created": "Đã đặt lịch",
+      "updated": "Đã cập nhật lịch hẹn",
+      "cancelled": "Đã hủy lịch hẹn",
+      "completed": "Đã đánh dấu hoàn thành",
+      "noShow": "Đã đánh dấu không đến",
+      "loadError": "Tải lịch hẹn thất bại",
+      "createError": "Đặt lịch thất bại",
+      "updateError": "Cập nhật lịch hẹn thất bại",
+      "statusError": "Cập nhật trạng thái thất bại"
+    },
+    "error": {
+      "notFound": "Không tìm thấy lịch hẹn",
+      "notModifiable": "Lịch hẹn này không thể chỉnh sửa",
+      "overlap": "Khung giờ này đã có người đặt",
+      "outsideHours": "Giờ này nằm ngoài giờ làm việc",
+      "shopClosed": "Cửa hàng đóng cửa ngày này",
+      "timeInPast": "Không thể đặt lịch trong quá khứ",
+      "serviceInactive": "Dịch vụ này không còn hoạt động",
+      "slotsLoadFailed": "Tải khung giờ trống thất bại"
     }
   },
   "common": {
