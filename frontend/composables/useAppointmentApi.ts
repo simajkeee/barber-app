@@ -16,7 +16,7 @@ export function useAppointmentApi() {
     const query: Record<string, string | number | string[] | undefined> = {}
     if (filter?.dateFrom) query.dateFrom = filter.dateFrom
     if (filter?.dateTo) query.dateTo = filter.dateTo
-    if (filter?.status?.length) query.status = filter.status
+    if (filter?.status?.length) query['status[]'] = filter.status
     if (filter?.clientId) query.clientId = filter.clientId
     if (filter?.cursor) query.cursor = filter.cursor
     if (filter?.limit) query.limit = filter.limit

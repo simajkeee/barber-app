@@ -235,6 +235,7 @@
       "list": "Tất cả lịch hẹn"
     },
     "status": {
+      "all": "Tất cả",
       "scheduled": "Đã đặt",
       "completed": "Hoàn thành",
       "cancelled": "Đã hủy",

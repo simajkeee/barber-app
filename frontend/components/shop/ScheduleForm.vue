@@ -23,7 +23,7 @@ const entries = ref<ScheduleEntryForm[]>(
     return {
       dayOfWeek: day,
       openTime: existing?.openTime ?? '09:00',
-      closeTime: existing?.closeTime ?? '18:00',
+      closeTime: existing?.closeTime ?? '19:00',
       isOpen: existing?.isOpen ?? true,
     }
   }),

@@ -107,9 +107,9 @@ async function confirmDelete() {
   deleteLoading.value = true
   try {
     await shopApi.deleteService(deletingId.value)
-    toast.success('shop.services.deleted')
     confirmOpen.value = false
     deletingId.value = null
+    toast.success('shop.services.deleted')
     await loadServices()
   } catch {
     toast.error('shop.error.serviceNotFound')

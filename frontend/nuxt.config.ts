@@ -94,6 +94,8 @@ export default defineNuxtConfig({
     },
   },
 
+  css: ['vue-sonner/style.css'],
+
   tailwindcss: {
     cssPath: '~/assets/css/main.css',
   },

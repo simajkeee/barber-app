@@ -18,9 +18,9 @@ const dateLabel = computed(() => {
 })
 
 function shiftDay(delta: number) {
-  const d = new Date(props.date + 'T00:00:00')
-  d.setDate(d.getDate() + delta)
-  emit('update:date', d.toISOString().slice(0, 10))
+  const [y, m, d] = props.date.split('-').map(Number)
+  const shifted = new Date(Date.UTC(y, m - 1, d + delta))
+  emit('update:date', shifted.toISOString().slice(0, 10))
 }
 
 function onDateInput(e: Event) {

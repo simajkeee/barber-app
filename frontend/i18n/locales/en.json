@@ -235,6 +235,7 @@
       "list": "All Appointments"
     },
     "status": {
+      "all": "All",
       "scheduled": "Scheduled",
       "completed": "Completed",
       "cancelled": "Cancelled",
