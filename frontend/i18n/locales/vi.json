@@ -83,7 +83,8 @@
     "shop": "Cửa hàng",
     "clients": "Khách hàng",
     "services": "Dịch vụ",
-    "appointments": "Lịch hẹn"
+    "appointments": "Lịch hẹn",
+    "reminders": "Nhắc nhở"
   },
   "dashboard": {
     "title": "Bảng điều khiển",
@@ -329,12 +330,45 @@
       "slotsLoadFailed": "Tải khung giờ trống thất bại"
     }
   },
+  "reminders": {
+    "title": "Nhắc nhở",
+    "totalCount": "{count} khách cần nhắc nhở",
+    "loadMore": "Tải thêm",
+    "settings": {
+      "title": "Cài đặt nhắc nhở",
+      "daysSinceLastVisit": "Số ngày kể từ lần ghé cuối",
+      "messageTemplate": "Mẫu tin nhắn",
+      "templateHelp": "Biến: {client_name}, {shop_name}, {days_since_visit}, {client_phone}",
+      "save": "Lưu cài đặt",
+      "summary": "Nhắc nhở khách hàng chưa ghé trong {days} ngày"
+    },
+    "card": {
+      "daysSince": "{days} ngày trước",
+      "copyMessage": "Sao chép tin nhắn",
+      "callClient": "Gọi",
+      "zaloLink": "Zalo",
+      "markReminded": "Đã nhắc",
+      "reminded": "Đã đánh dấu nhắc nhở"
+    },
+    "empty": {
+      "title": "Không có nhắc nhở hôm nay",
+      "description": "Tất cả khách hàng đều cập nhật, hoặc không có ai đáp ứng tiêu chí nhắc nhở."
+    },
+    "toast": {
+      "loadError": "Tải danh sách nhắc nhở thất bại",
+      "markError": "Đánh dấu nhắc nhở thất bại",
+      "settingsError": "Tải cài đặt thất bại",
+      "settingsSaved": "Đã lưu cài đặt nhắc nhở",
+      "copied": "Đã sao chép tin nhắn"
+    }
+  },
   "common": {
     "confirm": "Xác nhận",
     "cancel": "Hủy",
     "save": "Lưu",
     "back": "Quay lại",
     "copy": "Sao chép",
-    "copied": "Đã sao chép"
+    "copied": "Đã sao chép",
+    "loading": "Đang tải..."
   }
 }

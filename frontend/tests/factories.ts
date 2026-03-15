@@ -9,6 +9,11 @@ import type {
   DailyScheduleResponse,
   TimeSlot,
 } from '~/types/appointment'
+import type {
+  ReminderCandidate,
+  ReminderSettings,
+  ReminderTodayResponse,
+} from '~/types/reminder'
 
 export function createUser(overrides: Partial<User> = {}): User {
   return {
@@ -158,6 +163,39 @@ export function createAppointmentListResponse(
   cursor: string | null = null,
 ): AppointmentListResponse {
   return { data: appointments, cursor }
+}
+
+export function createReminderCandidate(overrides: Partial<ReminderCandidate> = {}): ReminderCandidate {
+  return {
+    clientId: 'client-1',
+    clientName: 'Nguyen Van A',
+    clientPhone: '+84901234567',
+    daysSinceVisit: 45,
+    lastVisitAt: '2026-01-29T10:00:00+07:00',
+    lastRemindedAt: null,
+    message: 'Chào Nguyen Van A! Đã 45 ngày kể từ lần cắt tóc cuối tại Test Shop.',
+    ...overrides,
+  }
+}
+
+export function createReminderSettings(overrides: Partial<ReminderSettings> = {}): ReminderSettings {
+  return {
+    daysSinceLastVisit: 30,
+    messageTemplate: 'Chào {client_name}! Đã {days_since_visit} ngày kể từ lần cắt tóc cuối tại {shop_name}.',
+    ...overrides,
+  }
+}
+
+export function createReminderTodayResponse(
+  candidates: ReminderCandidate[] = [createReminderCandidate()],
+  overrides: Partial<ReminderTodayResponse> = {},
+): ReminderTodayResponse {
+  return {
+    data: candidates,
+    meta: { total: candidates.length, cursor: null },
+    settings: createReminderSettings(),
+    ...overrides,
+  }
 }
 
 export function createDefaultSchedule(): ScheduleEntry[] {
