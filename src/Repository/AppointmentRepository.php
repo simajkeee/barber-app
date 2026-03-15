@@ -172,6 +172,29 @@ final class AppointmentRepository extends ServiceEntityRepository
         ], $rows);
     }
 
+    public function countByShopPhoneAndDateRange(
+        Shop $shop,
+        string $phone,
+        \DateTimeImmutable $start,
+        \DateTimeImmutable $end,
+    ): int {
+        return (int) $this->createQueryBuilder('a')
+            ->select('COUNT(a.id)')
+            ->join('a.client', 'c')
+            ->where('a.shop = :shop')
+            ->andWhere('c.phone = :phone')
+            ->andWhere('a.createdAt >= :start')
+            ->andWhere('a.createdAt <= :end')
+            ->andWhere('a.status != :cancelled')
+            ->setParameter('shop', $shop)
+            ->setParameter('phone', $phone)
+            ->setParameter('start', $start)
+            ->setParameter('end', $end)
+            ->setParameter('cancelled', AppointmentStatus::CANCELLED->value)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
     private function encodeCursor(Appointment $appointment): string
     {
         return base64_encode(json_encode([

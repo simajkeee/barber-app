@@ -328,6 +328,50 @@
       "slotsLoadFailed": "Failed to load available slots"
     }
   },
+  "booking": {
+    "title": "Book Appointment",
+    "subtitle": "Book an appointment at",
+    "steps": {
+      "service": "Service",
+      "datetime": "Date & Time",
+      "details": "Your Info",
+      "confirm": "Confirm",
+      "duration": "Duration"
+    },
+    "date": {
+      "select": "Select a date"
+    },
+    "slot": {
+      "select": "Select a time",
+      "unavailable": "Unavailable",
+      "noSlots": "No available slots for this day"
+    },
+    "details": {
+      "name": "Full Name",
+      "phone": "Phone Number",
+      "namePlaceholder": "John Doe",
+      "phonePlaceholder": "0901234567"
+    },
+    "confirm": {
+      "title": "Confirm Booking",
+      "service": "Service",
+      "dateTime": "Date & Time",
+      "client": "Client",
+      "submit": "Book Now",
+      "submitting": "Booking..."
+    },
+    "success": {
+      "title": "Booking Confirmed!",
+      "message": "Your appointment has been confirmed.",
+      "bookAnother": "Book Another"
+    },
+    "error": {
+      "shopNotFound": "Shop not found",
+      "slotUnavailable": "This slot is no longer available. Please choose another time.",
+      "rateLimited": "Too many bookings today. Please try again later.",
+      "generic": "Something went wrong. Please try again."
+    }
+  },
   "common": {
     "confirm": "Confirm",
     "cancel": "Cancel",

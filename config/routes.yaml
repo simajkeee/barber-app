@@ -25,9 +25,9 @@ appointment:
         namespace: App\Appointment\Controller
     type: attribute
     prefix: /api/v1/appointments
-    exclude: ../src/Appointment/Controller/PublicAvailableSlotsController.php
-
-public_available_slots:
-    resource: App\Appointment\Controller\PublicAvailableSlotsController
+public_booking:
+    resource:
+        path: ../src/PublicBooking/Controller/
+        namespace: App\PublicBooking\Controller
     type: attribute
     prefix: /api/v1/public/shops
