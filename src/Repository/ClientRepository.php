@@ -33,6 +33,89 @@ final class ClientRepository extends ServiceEntityRepository
         return $this->findOneBy(['shop' => $shop, 'id' => $id]);
     }
 
+    /**
+     * @return Client[]
+     */
+    public function findReminderCandidates(
+        Shop $shop,
+        \DateTimeImmutable $threshold,
+        \DateTimeImmutable $cooldown,
+        int $limit,
+        ?string $cursor,
+    ): array {
+        $qb = $this->buildReminderBaseQuery($shop, $threshold, $cooldown)
+            ->orderBy('c.lastVisitAt', 'ASC')
+            ->addOrderBy('c.id', 'ASC');
+
+        if (null !== $cursor) {
+            $cursorData = $this->decodeReminderCursor($cursor);
+            $qb->andWhere('(c.lastVisitAt > :cursorVisit OR (c.lastVisitAt = :cursorVisit AND c.id > :cursorId))')
+                ->setParameter('cursorVisit', $cursorData['lastVisitAt'])
+                ->setParameter('cursorId', Uuid::fromString($cursorData['id']));
+        }
+
+        $qb->setMaxResults($limit + 1);
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function countReminderCandidates(
+        Shop $shop,
+        \DateTimeImmutable $threshold,
+        \DateTimeImmutable $cooldown,
+    ): int {
+        return (int) $this->buildReminderBaseQuery($shop, $threshold, $cooldown)
+            ->select('COUNT(c.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function encodeReminderCursor(Client $client): string
+    {
+        return base64_encode(json_encode([
+            'id' => (string) $client->getId(),
+            'lastVisitAt' => $client->getLastVisitAt()->format(\DateTimeInterface::ATOM),
+        ], JSON_THROW_ON_ERROR));
+    }
+
+    /**
+     * @return array{id: string, lastVisitAt: string}
+     */
+    public function decodeReminderCursor(string $cursor): array
+    {
+        $decoded = base64_decode($cursor, true);
+        if (false === $decoded) {
+            throw new ApiException('INVALID_CURSOR', 'Invalid cursor value.', 400);
+        }
+
+        try {
+            $data = json_decode($decoded, true, 3, JSON_THROW_ON_ERROR);
+        } catch (\JsonException) {
+            throw new ApiException('INVALID_CURSOR', 'Invalid cursor value.', 400);
+        }
+
+        if (!\is_array($data) || !isset($data['id'], $data['lastVisitAt'])) {
+            throw new ApiException('INVALID_CURSOR', 'Invalid cursor value.', 400);
+        }
+
+        return $data;
+    }
+
+    private function buildReminderBaseQuery(
+        Shop $shop,
+        \DateTimeImmutable $threshold,
+        \DateTimeImmutable $cooldown,
+    ): \Doctrine\ORM\QueryBuilder {
+        return $this->createQueryBuilder('c')
+            ->where('c.shop = :shop')
+            ->andWhere('c.lastVisitAt IS NOT NULL')
+            ->andWhere('c.lastVisitAt <= :threshold')
+            ->andWhere('c.lastRemindedAt IS NULL OR c.lastRemindedAt <= :cooldown')
+            ->setParameter('shop', $shop)
+            ->setParameter('threshold', $threshold)
+            ->setParameter('cooldown', $cooldown);
+    }
+
     public function findByShopAndPhone(Shop $shop, string $phone): ?Client
     {
         return $this->findOneBy(['shop' => $shop, 'phone' => $phone]);
@@ -50,21 +133,21 @@ final class ClientRepository extends ServiceEntityRepository
             ->where('c.shop = :shop')
             ->setParameter('shop', $shop);
 
-        if ($filter->search !== '') {
+        if ('' !== $filter->search) {
             $escaped = addcslashes($filter->search, '%_');
             $qb->andWhere(
-                'LOWER(c.firstName) LIKE LOWER(:search) OR LOWER(c.lastName) LIKE LOWER(:search) OR c.phone LIKE :search'
+                'LOWER(c.firstName) LIKE LOWER(:search) OR LOWER(c.lastName) LIKE LOWER(:search) OR c.phone LIKE :search',
             )
-            ->setParameter('search', '%' . $escaped . '%');
+            ->setParameter('search', '%'.$escaped.'%');
         }
 
-        if ($filter->cursor !== null) {
+        if (null !== $filter->cursor) {
             $cursorData = $this->decodeCursor($filter->cursor);
             $this->applyCursorCondition($qb, $sortColumn, $direction, $cursorData);
         }
 
         $qb->orderBy($sortColumn, $direction);
-        if ($sortColumn !== 'c.createdAt') {
+        if ('c.createdAt' !== $sortColumn) {
             $qb->addOrderBy('c.createdAt', 'DESC');
         }
         $qb->addOrderBy('c.id', 'DESC');
@@ -72,14 +155,14 @@ final class ClientRepository extends ServiceEntityRepository
         $qb->setMaxResults($filter->limit + 1);
 
         $results = $qb->getQuery()->getResult();
-        $hasMore = count($results) > $filter->limit;
+        $hasMore = \count($results) > $filter->limit;
 
         if ($hasMore) {
             array_pop($results);
         }
 
         $nextCursor = null;
-        if ($hasMore && count($results) > 0) {
+        if ($hasMore && \count($results) > 0) {
             $lastClient = $results[array_key_last($results)];
             $nextCursor = $this->encodeCursor($lastClient, $filter->sort);
         }
@@ -113,7 +196,7 @@ final class ClientRepository extends ServiceEntityRepository
     private function decodeCursor(string $cursor): array
     {
         $decoded = base64_decode($cursor, true);
-        if ($decoded === false) {
+        if (false === $decoded) {
             throw new ApiException('INVALID_CURSOR', 'Invalid cursor value.', 400);
         }
 
@@ -123,7 +206,7 @@ final class ClientRepository extends ServiceEntityRepository
             throw new ApiException('INVALID_CURSOR', 'Invalid cursor value.', 400);
         }
 
-        if (!is_array($data) || !isset($data['id'], $data['created_at'])) {
+        if (!\is_array($data) || !isset($data['id'], $data['created_at'])) {
             throw new ApiException('INVALID_CURSOR', 'Invalid cursor value.', 400);
         }
 
@@ -139,18 +222,19 @@ final class ClientRepository extends ServiceEntityRepository
         string $direction,
         array $cursorData,
     ): void {
-        $op = $direction === 'ASC' ? '>' : '<';
+        $op = 'ASC' === $direction ? '>' : '<';
         $sortValue = $cursorData['sort_value'] ?? null;
 
-        if ($sortValue === null || $sortColumn === 'c.createdAt') {
+        if (null === $sortValue || 'c.createdAt' === $sortColumn) {
             $qb->andWhere("({$sortColumn} {$op} :cursorValue OR ({$sortColumn} = :cursorValue AND c.id < :cursorId))")
                 ->setParameter('cursorValue', $sortValue)
                 ->setParameter('cursorId', Uuid::fromString($cursorData['id']));
+
             return;
         }
 
         $qb->andWhere(
-            "({$sortColumn} {$op} :cursorValue OR ({$sortColumn} = :cursorValue AND c.createdAt < :cursorCreated) OR ({$sortColumn} = :cursorValue AND c.createdAt = :cursorCreated AND c.id < :cursorId))"
+            "({$sortColumn} {$op} :cursorValue OR ({$sortColumn} = :cursorValue AND c.createdAt < :cursorCreated) OR ({$sortColumn} = :cursorValue AND c.createdAt = :cursorCreated AND c.id < :cursorId))",
         )
         ->setParameter('cursorValue', $sortValue)
         ->setParameter('cursorCreated', $cursorData['created_at'])

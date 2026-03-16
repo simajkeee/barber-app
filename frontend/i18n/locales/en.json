@@ -373,7 +373,9 @@
       "duration": "Duration"
     },
     "date": {
-      "select": "Select a date"
+      "select": "Select a date",
+      "today": "Today",
+      "closed": "Closed"
     },
     "slot": {
       "select": "Select a time",

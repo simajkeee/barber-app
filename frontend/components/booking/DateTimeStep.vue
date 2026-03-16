@@ -22,7 +22,7 @@ const loadingSlots = ref(false)
 const slotsError = ref('')
 
 const dates = computed(() => {
-  const result: { value: string; label: string; dayKey: string; closed: boolean }[] = []
+  const result: { value: string; label: string; dayKey: string; closed: boolean; isToday: boolean }[] = []
   const today = new Date()
 
   for (let i = 0; i < 30; i++) {
@@ -33,14 +33,17 @@ const dates = computed(() => {
     const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
     const dayKey = dayNames[d.getDay()]
     const closed = props.shop.workingHours[dayKey] === null
+    const isToday = i === 0
 
-    const label = new Intl.DateTimeFormat(locale.value === 'vi' ? 'vi-VN' : 'en-US', {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
-    }).format(d)
+    const label = isToday
+      ? t('booking.date.today')
+      : new Intl.DateTimeFormat(locale.value === 'vi' ? 'vi-VN' : 'en-US', {
+          weekday: 'short',
+          month: 'short',
+          day: 'numeric',
+        }).format(d)
 
-    result.push({ value, label, dayKey, closed })
+    result.push({ value, label, dayKey, closed, isToday })
   }
 
   return result
@@ -93,7 +96,8 @@ const unavailableSlots = computed(() => slots.value.filter(s => !s.available))
           :disabled="date.closed"
           @click="!date.closed && onSelectDate(date.value)"
         >
-          {{ date.label }}
+          <span class="block">{{ date.label }}</span>
+          <span v-if="date.closed" class="block text-xs">{{ t('booking.date.closed') }}</span>
         </button>
       </div>
     </div>

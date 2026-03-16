@@ -35,42 +35,8 @@ final class ReminderService
         $threshold = new \DateTimeImmutable(\sprintf('-%d days', $settings->getDaysSinceLastVisit()), $tz);
         $cooldown = new \DateTimeImmutable(\sprintf('-%d days', self::COOLDOWN_DAYS), $tz);
 
-        $qb = $this->clientRepository->createQueryBuilder('c')
-            ->where('c.shop = :shop')
-            ->andWhere('c.lastVisitAt IS NOT NULL')
-            ->andWhere('c.lastVisitAt <= :threshold')
-            ->andWhere('c.lastRemindedAt IS NULL OR c.lastRemindedAt <= :cooldown')
-            ->setParameter('shop', $shop)
-            ->setParameter('threshold', $threshold)
-            ->setParameter('cooldown', $cooldown)
-            ->orderBy('c.lastVisitAt', 'ASC')
-            ->addOrderBy('c.id', 'ASC');
-
-        if (null !== $query->cursor) {
-            $cursorData = $this->decodeCursor($query->cursor);
-            $qb->andWhere(
-                '(c.lastVisitAt > :cursorVisit OR (c.lastVisitAt = :cursorVisit AND c.id > :cursorId))',
-            )
-            ->setParameter('cursorVisit', $cursorData['lastVisitAt'])
-            ->setParameter('cursorId', Uuid::fromString($cursorData['id']));
-        }
-
-        // Get total count (without pagination)
-        $countQb = $this->clientRepository->createQueryBuilder('c')
-            ->select('COUNT(c.id)')
-            ->where('c.shop = :shop')
-            ->andWhere('c.lastVisitAt IS NOT NULL')
-            ->andWhere('c.lastVisitAt <= :threshold')
-            ->andWhere('c.lastRemindedAt IS NULL OR c.lastRemindedAt <= :cooldown')
-            ->setParameter('shop', $shop)
-            ->setParameter('threshold', $threshold)
-            ->setParameter('cooldown', $cooldown);
-
-        $total = (int) $countQb->getQuery()->getSingleScalarResult();
-
-        $qb->setMaxResults($query->limit + 1);
-        /** @var Client[] $results */
-        $results = $qb->getQuery()->getResult();
+        $total = $this->clientRepository->countReminderCandidates($shop, $threshold, $cooldown);
+        $results = $this->clientRepository->findReminderCandidates($shop, $threshold, $cooldown, $query->limit, $query->cursor);
 
         $hasMore = \count($results) > $query->limit;
         if ($hasMore) {
@@ -79,8 +45,7 @@ final class ReminderService
 
         $nextCursor = null;
         if ($hasMore && \count($results) > 0) {
-            $lastClient = $results[array_key_last($results)];
-            $nextCursor = $this->encodeCursor($lastClient);
+            $nextCursor = $this->clientRepository->encodeReminderCursor($results[array_key_last($results)]);
         }
 
         $now = new \DateTimeImmutable('now', $tz);
@@ -118,10 +83,11 @@ final class ReminderService
         string $shopName,
         \DateTimeImmutable $now,
     ): ReminderCandidate {
+        $clientName = $client->getFirstName().' '.$client->getLastName();
         $daysSinceVisit = (int) $now->diff($client->getLastVisitAt())->days;
 
         $message = $this->messageTemplateResolver->resolve($template, [
-            'client_name' => $client->getFirstName().' '.$client->getLastName(),
+            'client_name' => $clientName,
             'shop_name' => $shopName,
             'days_since_visit' => (string) $daysSinceVisit,
             'client_phone' => $client->getPhone(),
@@ -129,7 +95,7 @@ final class ReminderService
 
         return new ReminderCandidate(
             clientId: $client->getId(),
-            clientName: $client->getFirstName().' '.$client->getLastName(),
+            clientName: $clientName,
             clientPhone: $client->getPhone(),
             daysSinceVisit: $daysSinceVisit,
             lastVisitAt: $client->getLastVisitAt(),
@@ -152,38 +118,5 @@ final class ReminderService
             'lastRemindedAt' => $candidate->lastRemindedAt?->format(\DateTimeInterface::ATOM),
             'message' => $candidate->message,
         ];
-    }
-
-    private function encodeCursor(Client $client): string
-    {
-        $data = [
-            'id' => (string) $client->getId(),
-            'lastVisitAt' => $client->getLastVisitAt()->format(\DateTimeInterface::ATOM),
-        ];
-
-        return base64_encode(json_encode($data, JSON_THROW_ON_ERROR));
-    }
-
-    /**
-     * @return array{id: string, lastVisitAt: string}
-     */
-    private function decodeCursor(string $cursor): array
-    {
-        $decoded = base64_decode($cursor, true);
-        if (false === $decoded) {
-            throw new ApiException('INVALID_CURSOR', 'Invalid cursor value.', 400);
-        }
-
-        try {
-            $data = json_decode($decoded, true, 3, JSON_THROW_ON_ERROR);
-        } catch (\JsonException) {
-            throw new ApiException('INVALID_CURSOR', 'Invalid cursor value.', 400);
-        }
-
-        if (!\is_array($data) || !isset($data['id'], $data['lastVisitAt'])) {
-            throw new ApiException('INVALID_CURSOR', 'Invalid cursor value.', 400);
-        }
-
-        return $data;
     }
 }

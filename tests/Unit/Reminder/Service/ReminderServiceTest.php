@@ -10,14 +10,11 @@ use App\Entity\Shop;
 use App\Entity\User;
 use App\Reminder\Dto\ReminderTodayQuery;
 use App\Reminder\Entity\ReminderSettings;
-use App\Reminder\Repository\ReminderSettingsRepository;
 use App\Reminder\Service\MessageTemplateResolver;
 use App\Reminder\Service\ReminderService;
 use App\Reminder\Service\ReminderSettingsService;
 use App\Repository\ClientRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Query;
-use Doctrine\ORM\QueryBuilder;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -85,23 +82,11 @@ final class ReminderServiceTest extends TestCase
         return $settings;
     }
 
-    private function mockQueryBuilder(array $results, int $total = 0): void
+    private function mockCandidates(array $results, int $total = 0): void
     {
-        $query = $this->createMock(Query::class);
-        $query->method('getResult')->willReturn($results);
-        $query->method('getSingleScalarResult')->willReturn($total);
-
-        $qb = $this->createMock(QueryBuilder::class);
-        $qb->method('where')->willReturnSelf();
-        $qb->method('andWhere')->willReturnSelf();
-        $qb->method('select')->willReturnSelf();
-        $qb->method('setParameter')->willReturnSelf();
-        $qb->method('orderBy')->willReturnSelf();
-        $qb->method('addOrderBy')->willReturnSelf();
-        $qb->method('setMaxResults')->willReturnSelf();
-        $qb->method('getQuery')->willReturn($query);
-
-        $this->clientRepository->method('createQueryBuilder')->willReturn($qb);
+        $this->clientRepository->method('countReminderCandidates')->willReturn($total);
+        $this->clientRepository->method('findReminderCandidates')->willReturn($results);
+        $this->clientRepository->method('encodeReminderCursor')->willReturn('mock-cursor');
     }
 
     // --- getTodayReminders ---
@@ -113,7 +98,7 @@ final class ReminderServiceTest extends TestCase
         $settings = $this->createSettings($shop);
 
         $this->settingsService->method('getSettings')->with($shop)->willReturn($settings);
-        $this->mockQueryBuilder([], 0);
+        $this->mockCandidates([], 0);
 
         $result = $this->sut->getTodayReminders($shop, new ReminderTodayQuery());
 
@@ -133,7 +118,7 @@ final class ReminderServiceTest extends TestCase
         $client->setLastVisitAt(new \DateTimeImmutable('-45 days', new \DateTimeZone('Asia/Ho_Chi_Minh')));
 
         $this->settingsService->method('getSettings')->willReturn($settings);
-        $this->mockQueryBuilder([$client], 1);
+        $this->mockCandidates([$client], 1);
 
         $result = $this->sut->getTodayReminders($shop, new ReminderTodayQuery());
 
@@ -157,7 +142,7 @@ final class ReminderServiceTest extends TestCase
         $settings->setMessageTemplate('Custom: {client_name}');
 
         $this->settingsService->method('getSettings')->willReturn($settings);
-        $this->mockQueryBuilder([], 0);
+        $this->mockCandidates([], 0);
 
         $result = $this->sut->getTodayReminders($shop, new ReminderTodayQuery());
 
@@ -172,11 +157,61 @@ final class ReminderServiceTest extends TestCase
         $settings = $this->createSettings($shop);
 
         $this->settingsService->method('getSettings')->willReturn($settings);
-        $this->mockQueryBuilder([], 12);
+        $this->mockCandidates([], 12);
 
         $result = $this->sut->getTodayReminders($shop, new ReminderTodayQuery());
 
         self::assertSame(12, $result['meta']['total']);
+    }
+
+    #[Test]
+    public function testGetTodayRemindersPassesCursorToRepository(): void
+    {
+        $shop = $this->createShop();
+        $settings = $this->createSettings($shop);
+        $cursor = base64_encode(json_encode(['id' => (string) Uuid::v7(), 'lastVisitAt' => '2026-01-01T00:00:00+07:00']));
+
+        $this->settingsService->method('getSettings')->willReturn($settings);
+        $this->clientRepository->method('countReminderCandidates')->willReturn(0);
+        $this->clientRepository->expects(self::once())
+            ->method('findReminderCandidates')
+            ->with(
+                $shop,
+                self::isInstanceOf(\DateTimeImmutable::class),
+                self::isInstanceOf(\DateTimeImmutable::class),
+                50,
+                $cursor,
+            )
+            ->willReturn([]);
+
+        $result = $this->sut->getTodayReminders($shop, new ReminderTodayQuery(cursor: $cursor));
+
+        self::assertSame([], $result['data']);
+    }
+
+    #[Test]
+    public function testGetTodayRemindersPaginatesAndSetsCursor(): void
+    {
+        $shop = $this->createShop();
+        $settings = $this->createSettings($shop);
+
+        // Create limit+1 clients to trigger hasMore
+        $clients = [];
+        for ($i = 0; $i < 51; ++$i) {
+            $client = $this->createClient($shop);
+            $client->setLastVisitAt(new \DateTimeImmutable('-'.($i + 31).' days'));
+            $clients[] = $client;
+        }
+
+        $this->settingsService->method('getSettings')->willReturn($settings);
+        $this->clientRepository->method('countReminderCandidates')->willReturn(51);
+        $this->clientRepository->method('findReminderCandidates')->willReturn($clients);
+        $this->clientRepository->expects(self::once())->method('encodeReminderCursor')->willReturn('next-page-cursor');
+
+        $result = $this->sut->getTodayReminders($shop, new ReminderTodayQuery(limit: 50));
+
+        self::assertCount(50, $result['data']);
+        self::assertSame('next-page-cursor', $result['meta']['cursor']);
     }
 
     // --- markReminded ---
@@ -229,6 +264,50 @@ final class ReminderServiceTest extends TestCase
         self::assertNotNull($result->getLastRemindedAt());
     }
 
+    // --- cursor error propagation ---
+
+    #[Test]
+    public function testGetTodayRemindersPropagatesInvalidCursorException(): void
+    {
+        $shop = $this->createShop();
+        $settings = $this->createSettings($shop);
+        $cursor = 'not-valid-base64!!!';
+
+        $this->settingsService->method('getSettings')->willReturn($settings);
+        $this->clientRepository->method('countReminderCandidates')->willReturn(0);
+        $this->clientRepository->method('findReminderCandidates')
+            ->willThrowException(new ApiException('INVALID_CURSOR', 'Invalid cursor value.', 400));
+
+        try {
+            $this->sut->getTodayReminders($shop, new ReminderTodayQuery(cursor: $cursor));
+            self::fail('Expected ApiException');
+        } catch (ApiException $e) {
+            self::assertSame(400, $e->statusCode);
+            self::assertSame('INVALID_CURSOR', $e->errorCode);
+        }
+    }
+
+    #[Test]
+    public function testGetTodayRemindersPropagatesMissingCursorFieldsException(): void
+    {
+        $shop = $this->createShop();
+        $settings = $this->createSettings($shop);
+        $cursor = base64_encode(json_encode(['id' => 'test']));
+
+        $this->settingsService->method('getSettings')->willReturn($settings);
+        $this->clientRepository->method('countReminderCandidates')->willReturn(0);
+        $this->clientRepository->method('findReminderCandidates')
+            ->willThrowException(new ApiException('INVALID_CURSOR', 'Invalid cursor value.', 400));
+
+        try {
+            $this->sut->getTodayReminders($shop, new ReminderTodayQuery(cursor: $cursor));
+            self::fail('Expected ApiException');
+        } catch (ApiException $e) {
+            self::assertSame(400, $e->statusCode);
+            self::assertSame('INVALID_CURSOR', $e->errorCode);
+        }
+    }
+
     // --- serializeCandidate ---
 
     #[Test]
@@ -240,7 +319,7 @@ final class ReminderServiceTest extends TestCase
         $client->setLastVisitAt(new \DateTimeImmutable('-30 days', new \DateTimeZone('Asia/Ho_Chi_Minh')));
 
         $this->settingsService->method('getSettings')->willReturn($settings);
-        $this->mockQueryBuilder([$client], 1);
+        $this->mockCandidates([$client], 1);
 
         $result = $this->sut->getTodayReminders($shop, new ReminderTodayQuery());
         $candidate = $result['data'][0];
@@ -252,48 +331,5 @@ final class ReminderServiceTest extends TestCase
         self::assertArrayHasKey('lastVisitAt', $candidate);
         self::assertArrayHasKey('lastRemindedAt', $candidate);
         self::assertArrayHasKey('message', $candidate);
-    }
-
-    // --- cursor validation ---
-
-    #[Test]
-    public function testGetTodayRemindersThrowsOnInvalidCursor(): void
-    {
-        $shop = $this->createShop();
-        $settings = $this->createSettings($shop);
-
-        $this->settingsService->method('getSettings')->willReturn($settings);
-        $this->mockQueryBuilder([], 0);
-
-        $query = new ReminderTodayQuery(cursor: 'not-valid-base64!!!');
-
-        try {
-            $this->sut->getTodayReminders($shop, $query);
-            self::fail('Expected ApiException');
-        } catch (ApiException $e) {
-            self::assertSame(400, $e->statusCode);
-            self::assertSame('INVALID_CURSOR', $e->errorCode);
-        }
-    }
-
-    #[Test]
-    public function testGetTodayRemindersThrowsOnCursorWithMissingFields(): void
-    {
-        $shop = $this->createShop();
-        $settings = $this->createSettings($shop);
-
-        $this->settingsService->method('getSettings')->willReturn($settings);
-        $this->mockQueryBuilder([], 0);
-
-        $cursor = base64_encode(json_encode(['id' => 'test']));
-        $query = new ReminderTodayQuery(cursor: $cursor);
-
-        try {
-            $this->sut->getTodayReminders($shop, $query);
-            self::fail('Expected ApiException');
-        } catch (ApiException $e) {
-            self::assertSame(400, $e->statusCode);
-            self::assertSame('INVALID_CURSOR', $e->errorCode);
-        }
     }
 }

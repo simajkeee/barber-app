@@ -7,6 +7,7 @@ definePageMeta({
 })
 
 const { t } = useI18n()
+const localePath = useLocalePath()
 const reminderApi = useReminderApi()
 const toast = useToast()
 
@@ -63,7 +64,7 @@ onMounted(() => loadReminders())
   <div>
     <DashboardPageHeader :title="t('reminders.title')">
       <template #actions>
-        <NuxtLink :to="useLocalePath()('/dashboard/reminders/settings')">
+        <NuxtLink :to="localePath('/dashboard/reminders/settings')">
           <UiButton variant="secondary">{{ t('reminders.settings.title') }}</UiButton>
         </NuxtLink>
       </template>

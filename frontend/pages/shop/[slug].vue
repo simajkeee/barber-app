@@ -133,6 +133,18 @@ watch(shop, (s) => {
       title: `${s.name} — ${t('booking.title')}`,
       description: `${t('booking.subtitle')} ${s.name}. ${s.address}`,
     })
+    useHead({
+      script: [{
+        type: 'application/ld+json',
+        innerHTML: JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'LocalBusiness',
+          name: s.name,
+          address: { '@type': 'PostalAddress', streetAddress: s.address },
+          telephone: s.phone,
+        }),
+      }],
+    })
   }
 }, { immediate: true })
 

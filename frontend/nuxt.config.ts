@@ -110,7 +110,7 @@ export default defineNuxtConfig({
   },
 
   devServer: {
-    https: true,
+    https: false,
   },
 
   devtools: { enabled: true },

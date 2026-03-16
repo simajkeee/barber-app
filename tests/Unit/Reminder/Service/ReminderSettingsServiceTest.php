@@ -81,6 +81,19 @@ final class ReminderSettingsServiceTest extends TestCase
     }
 
     #[Test]
+    public function testUpdateSettingsFlushesChanges(): void
+    {
+        $shop = $this->createShop();
+        $settings = new ReminderSettings();
+        $settings->setShop($shop);
+
+        $this->repository->method('findByShop')->willReturn($settings);
+        $this->em->expects(self::once())->method('flush');
+
+        $this->sut->updateSettings($shop, new UpdateReminderSettingsRequest(daysSinceLastVisit: 14));
+    }
+
+    #[Test]
     public function testUpdateSettingsUpdatesDaysSinceLastVisit(): void
     {
         $shop = $this->createShop();

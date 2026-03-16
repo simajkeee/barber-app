@@ -14,6 +14,13 @@ import type {
   ReminderSettings,
   ReminderTodayResponse,
 } from '~/types/reminder'
+import type {
+  PublicService,
+  PublicShopInfo,
+  AvailableSlot,
+  PublicAvailableSlotsResponse,
+  BookingResponse,
+} from '~/types/booking'
 
 export function createUser(overrides: Partial<User> = {}): User {
   return {
@@ -194,6 +201,60 @@ export function createReminderTodayResponse(
     data: candidates,
     meta: { total: candidates.length, cursor: null },
     settings: createReminderSettings(),
+    ...overrides,
+  }
+}
+
+export function createPublicService(overrides: Partial<PublicService> = {}): PublicService {
+  return {
+    id: 'svc-1',
+    name: 'Haircut',
+    duration: 30,
+    price: 100000,
+    ...overrides,
+  }
+}
+
+export function createPublicShopInfo(overrides: Partial<PublicShopInfo> = {}): PublicShopInfo {
+  return {
+    name: 'Test Barber',
+    address: '123 Nguyen Hue, Q.1',
+    phone: '0901234567',
+    workingHours: {
+      monday: { open: '08:00', close: '20:00' },
+      tuesday: { open: '08:00', close: '20:00' },
+      wednesday: { open: '08:00', close: '20:00' },
+      thursday: { open: '08:00', close: '20:00' },
+      friday: { open: '08:00', close: '20:00' },
+      saturday: { open: '08:00', close: '20:00' },
+      sunday: null,
+    },
+    services: [createPublicService()],
+    ...overrides,
+  }
+}
+
+export function createAvailableSlot(overrides: Partial<AvailableSlot> = {}): AvailableSlot {
+  return { time: '09:00', available: true, ...overrides }
+}
+
+export function createAvailableSlotsResponse(
+  slots: AvailableSlot[] = [createAvailableSlot()],
+  overrides: Partial<PublicAvailableSlotsResponse> = {},
+): PublicAvailableSlotsResponse {
+  return { date: '2026-03-20', slots, ...overrides }
+}
+
+export function createBookingResponse(overrides: Partial<BookingResponse> = {}): BookingResponse {
+  return {
+    appointment: {
+      id: 'appt-1',
+      date: '2026-03-20',
+      time: '09:00',
+      service: { id: 'svc-1', name: 'Haircut', duration: 30 },
+      status: 'SCHEDULED',
+    },
+    message: 'Booking confirmed!',
     ...overrides,
   }
 }

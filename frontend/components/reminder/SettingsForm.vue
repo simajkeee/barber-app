@@ -55,7 +55,12 @@ const onSubmit = handleSubmit((values) => {
         :error="errors.messageTemplate"
       />
       <p class="mt-1 text-xs text-gray-500">
-        {{ t('reminders.settings.templateHelp') }}
+        {{ t('reminders.settings.templateHelp', {
+          client_name: '{client_name}',
+          shop_name: '{shop_name}',
+          days_since_visit: '{days_since_visit}',
+          client_phone: '{client_phone}',
+        }) }}
       </p>
     </div>
 

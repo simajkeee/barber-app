@@ -373,7 +373,9 @@
       "duration": "Thời lượng"
     },
     "date": {
-      "select": "Chọn ngày"
+      "select": "Chọn ngày",
+      "today": "Hôm nay",
+      "closed": "Đóng cửa"
     },
     "slot": {
       "select": "Chọn giờ",
