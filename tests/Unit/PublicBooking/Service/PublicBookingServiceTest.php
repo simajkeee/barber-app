@@ -21,6 +21,8 @@ use App\Repository\ShopRepository;
 use App\Repository\ShopServiceRepository;
 use App\Repository\WorkScheduleRepository;
 use App\Shop\Enum\DayOfWeek;
+use App\Subscription\Service\AppointmentLimitChecker;
+use App\Subscription\Service\SubscriptionService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
@@ -39,6 +41,8 @@ final class PublicBookingServiceTest extends TestCase
     private ClientResolverService&MockObject $clientResolverService;
     private EntityManagerInterface&MockObject $em;
     private ClockInterface&MockObject $clock;
+    private SubscriptionService&MockObject $subscriptionService;
+    private AppointmentLimitChecker&MockObject $appointmentLimitChecker;
     private PublicBookingService $sut;
 
     protected function setUp(): void
@@ -51,8 +55,18 @@ final class PublicBookingServiceTest extends TestCase
         $this->clientResolverService = $this->createMock(ClientResolverService::class);
         $this->em = $this->createMock(EntityManagerInterface::class);
         $this->clock = $this->createMock(ClockInterface::class);
+        $this->subscriptionService = $this->createMock(SubscriptionService::class);
+        $this->appointmentLimitChecker = $this->createMock(AppointmentLimitChecker::class);
 
-        $this->sut = new PublicBookingService(
+        // Default: subscription is active
+        $this->subscriptionService->method('isActive')->willReturn(true);
+
+        $this->sut = $this->buildSut($this->subscriptionService);
+    }
+
+    private function buildSut(?SubscriptionService $subscriptionService = null): PublicBookingService
+    {
+        return new PublicBookingService(
             $this->shopRepository,
             $this->shopServiceRepository,
             $this->workScheduleRepository,
@@ -61,6 +75,8 @@ final class PublicBookingServiceTest extends TestCase
             $this->clientResolverService,
             $this->em,
             $this->clock,
+            $subscriptionService ?? $this->subscriptionService,
+            $this->appointmentLimitChecker,
         );
     }
 
@@ -507,6 +523,101 @@ final class PublicBookingServiceTest extends TestCase
         } catch (ApiException $e) {
             self::assertSame('SERVICE_NOT_FOUND', $e->errorCode);
         }
+    }
+
+    #[Test]
+    public function getShopInfoThrowsWhenSubscriptionInactive(): void
+    {
+        $shop = $this->createShop();
+        $this->shopRepository->method('findBySlug')->willReturn($shop);
+
+        $inactiveSubscription = $this->createMock(SubscriptionService::class);
+        $inactiveSubscription->method('isActive')->willReturn(false);
+        $sut = $this->buildSut($inactiveSubscription);
+
+        try {
+            $sut->getShopInfo('test-shop');
+            self::fail('Expected ApiException');
+        } catch (ApiException $e) {
+            self::assertSame('SHOP_UNAVAILABLE', $e->errorCode);
+            self::assertSame(403, $e->statusCode);
+        }
+    }
+
+    #[Test]
+    public function bookThrowsWhenAppointmentLimitReached(): void
+    {
+        $shop = $this->createShop();
+        $service = $this->createService($shop);
+
+        $this->shopRepository->method('findBySlug')->willReturn($shop);
+        $this->shopServiceRepository->method('findOneBy')->willReturn($service);
+
+        $tz = new \DateTimeZone('Asia/Ho_Chi_Minh');
+        $this->clock->method('now')
+            ->willReturn(new \DateTimeImmutable('2026-03-16 07:00:00', $tz));
+
+        $schedule = $this->createSchedule($shop, DayOfWeek::MONDAY, '09:00', '18:00');
+        $this->workScheduleRepository->method('findByShopAndDay')->willReturn($schedule);
+
+        $this->appointmentRepository->method('findNonCancelledInRange')->willReturn([]);
+
+        $this->appointmentLimitChecker->method('check')
+            ->willThrowException(new ApiException('APPOINTMENT_LIMIT_REACHED', 'Monthly appointment limit reached.', 403));
+
+        $dto = new BookingRequest(
+            clientName: 'Test',
+            clientPhone: '0901234567',
+            serviceId: (string) $service->getId(),
+            date: '2026-03-16',
+            time: '10:00',
+        );
+
+        try {
+            $this->sut->book('test-shop', $dto);
+            self::fail('Expected ApiException');
+        } catch (ApiException $e) {
+            self::assertSame('APPOINTMENT_LIMIT_REACHED', $e->errorCode);
+            self::assertSame(403, $e->statusCode);
+        }
+    }
+
+    #[Test]
+    public function bookIncrementsAppointmentCountOnSuccess(): void
+    {
+        $shop = $this->createShop();
+        $service = $this->createService($shop);
+        $client = $this->createClient($shop);
+
+        $this->shopRepository->method('findBySlug')->willReturn($shop);
+
+        $tz = new \DateTimeZone('Asia/Ho_Chi_Minh');
+        $this->clock->method('now')
+            ->willReturn(new \DateTimeImmutable('2026-03-16 07:00:00', $tz));
+
+        $this->shopServiceRepository->method('findOneBy')->willReturn($service);
+
+        $schedule = $this->createSchedule($shop, DayOfWeek::MONDAY, '09:00', '18:00');
+        $this->workScheduleRepository->method('findByShopAndDay')->willReturn($schedule);
+
+        $this->appointmentRepository->method('findNonCancelledInRange')->willReturn([]);
+        $this->appointmentRepository->method('countByShopPhoneAndDateRange')->willReturn(0);
+
+        $this->clientResolverService->method('resolveClient')->willReturn($client);
+
+        $this->subscriptionService->expects(self::once())
+            ->method('incrementAppointmentCount')
+            ->with($shop);
+
+        $dto = new BookingRequest(
+            clientName: 'Nguyen Van A',
+            clientPhone: '0901234567',
+            serviceId: (string) $service->getId(),
+            date: '2026-03-16',
+            time: '10:00',
+        );
+
+        $this->sut->book('test-shop', $dto);
     }
 
     private function createShop(): Shop

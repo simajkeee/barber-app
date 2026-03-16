@@ -101,11 +101,16 @@ final class SubscriptionServiceTest extends TestCase
 
         $this->subscriptionRepository->method('findByShop')->with($shop)->willReturn($subscription);
 
+        $before = new \DateTimeImmutable('now', new \DateTimeZone('Asia/Ho_Chi_Minh'));
         $result = $this->sut->activate($shop, 30);
+        $after = new \DateTimeImmutable('now', new \DateTimeZone('Asia/Ho_Chi_Minh'));
 
         self::assertSame(SubscriptionPlan::PRO, $result->getPlan());
         self::assertSame(SubscriptionStatus::ACTIVE, $result->getStatus());
         self::assertNotNull($result->getEndDate());
+        // startDate must be reset to ~now (BR8)
+        self::assertGreaterThanOrEqual($before->getTimestamp(), $result->getStartDate()->getTimestamp());
+        self::assertLessThanOrEqual($after->getTimestamp(), $result->getStartDate()->getTimestamp());
     }
 
     #[Test]

@@ -36,12 +36,13 @@ final readonly class CreateBookingController
 
         $tz = new \DateTimeZone('Asia/Ho_Chi_Minh');
         $service = $appointment->getService();
+        $startLocal = $appointment->getStartTime()->setTimezone($tz);
 
         return new JsonResponse([
             'appointment' => [
                 'id' => (string) $appointment->getId(),
-                'date' => $appointment->getStartTime()->setTimezone($tz)->format('Y-m-d'),
-                'time' => $appointment->getStartTime()->setTimezone($tz)->format('H:i'),
+                'date' => $startLocal->format('Y-m-d'),
+                'time' => $startLocal->format('H:i'),
                 'service' => [
                     'id' => (string) $service->getId(),
                     'name' => $service->getName(),

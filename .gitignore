@@ -37,6 +37,12 @@ Thumbs.db
 
 ###> Internal tooling ###
 ###< Internal tooling ###
+
+###> Project docs / internal ###
+/development/
+/docs/
+/migrations/
+###< Project docs / internal ###
 ###> friendsofphp/php-cs-fixer ###
 /.php-cs-fixer.php
 /.php-cs-fixer.cache

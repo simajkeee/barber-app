@@ -73,7 +73,7 @@ onMounted(() => loadReminders())
     <ReminderSettingsSummary v-if="settings && !isLoading" :settings="settings" />
 
     <p v-if="!isLoading && total > 0" class="mb-4 text-sm text-gray-500">
-      {{ t('reminders.totalCount', { count: total }) }}
+      {{ t('reminders.totalCount', total) }}
     </p>
 
     <ReminderList

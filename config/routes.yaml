@@ -54,11 +54,6 @@ admin_downgrade:
     type: attribute
     prefix: /api/v1/admin
 
-public_available_slots:
-    resource: App\Appointment\Controller\PublicAvailableSlotsController
-    type: attribute
-    prefix: /api/v1/public/shops
-
 public_booking:
     resource:
         path: ../src/PublicBooking/Controller/

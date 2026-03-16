@@ -7,7 +7,7 @@ import { z } from 'zod'
 
 // Configure Zod to return i18n-style keys (mirrors plugins/zod-i18n.ts)
 z.setErrorMap((issue) => {
-  if (issue.code === 'too_small' && issue.origin === 'string') {
+  if (issue.code === 'too_small' && issue.type === 'string') {
     if (issue.minimum === 1) return { message: 'validation.required' }
     return { message: 'validation.minLength' }
   }

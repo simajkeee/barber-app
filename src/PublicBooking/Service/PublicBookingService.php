@@ -14,6 +14,8 @@ use App\Repository\ShopRepository;
 use App\Repository\ShopServiceRepository;
 use App\Repository\WorkScheduleRepository;
 use App\Shop\Enum\DayOfWeek;
+use App\Subscription\Service\AppointmentLimitChecker;
+use App\Subscription\Service\SubscriptionService;
 use Doctrine\DBAL\Exception\DriverException;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Clock\ClockInterface;
@@ -34,6 +36,8 @@ final class PublicBookingService
         private readonly ClientResolverService $clientResolverService,
         private readonly EntityManagerInterface $em,
         private readonly ClockInterface $clock,
+        private readonly SubscriptionService $subscriptionService,
+        private readonly AppointmentLimitChecker $appointmentLimitChecker,
     ) {
     }
 
@@ -143,6 +147,8 @@ final class PublicBookingService
             throw new ApiException('SLOT_UNAVAILABLE', 'This time slot is no longer available.', 409);
         }
 
+        $this->appointmentLimitChecker->check($shop);
+
         $normalizedPhone = PhoneNormalizer::normalize($dto->clientPhone);
         $this->checkPhoneBookingRateLimit($shop, $normalizedPhone);
 
@@ -167,6 +173,8 @@ final class PublicBookingService
             throw $e;
         }
 
+        $this->subscriptionService->incrementAppointmentCount($shop);
+
         return $appointment;
     }
 
@@ -175,6 +183,10 @@ final class PublicBookingService
         $shop = $this->shopRepository->findBySlug($slug);
         if (null === $shop) {
             throw new ApiException('SHOP_NOT_FOUND', 'Shop not found.', 404);
+        }
+
+        if (!$this->subscriptionService->isActive($shop)) {
+            throw new ApiException('SHOP_UNAVAILABLE', 'This shop is not currently accepting online bookings.', 403);
         }
 
         return $shop;

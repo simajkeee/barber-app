@@ -29,7 +29,10 @@ const dates = computed(() => {
     const d = new Date(today)
     d.setDate(today.getDate() + i)
 
-    const value = d.toISOString().split('T')[0]
+    const y = d.getFullYear()
+    const m = String(d.getMonth() + 1).padStart(2, '0')
+    const day = String(d.getDate()).padStart(2, '0')
+    const value = `${y}-${m}-${day}`
     const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
     const dayKey = dayNames[d.getDay()]
     const closed = props.shop.workingHours[dayKey] === null

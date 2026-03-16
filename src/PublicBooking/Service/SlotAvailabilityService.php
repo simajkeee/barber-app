@@ -60,13 +60,8 @@ final class SlotAvailabilityService
         $minAdvanceCutoff = $now->modify('+'.self::MIN_ADVANCE_MINUTES.' minutes');
         $serviceDuration = $service->getDurationMinutes();
 
-        $openHour = (int) $openTime->format('H');
-        $openMinute = (int) $openTime->format('i');
-        $closeHour = (int) $closeTime->format('H');
-        $closeMinute = (int) $closeTime->format('i');
-
-        $slotStart = $dateInTz->setTime($openHour, $openMinute);
-        $closingTime = $dateInTz->setTime($closeHour, $closeMinute);
+        $slotStart = $dateInTz->setTime((int) $openTime->format('H'), (int) $openTime->format('i'));
+        $closingTime = $dateInTz->setTime((int) $closeTime->format('H'), (int) $closeTime->format('i'));
 
         $slots = [];
         while (true) {
@@ -109,13 +104,8 @@ final class SlotAvailabilityService
             return false;
         }
 
-        $openHour = (int) $openTime->format('H');
-        $openMinute = (int) $openTime->format('i');
-        $closeHour = (int) $closeTime->format('H');
-        $closeMinute = (int) $closeTime->format('i');
-
-        $dayOpen = $dateTimeInTz->setTime($openHour, $openMinute);
-        $dayClose = $dateTimeInTz->setTime($closeHour, $closeMinute);
+        $dayOpen = $dateTimeInTz->setTime((int) $openTime->format('H'), (int) $openTime->format('i'));
+        $dayClose = $dateTimeInTz->setTime((int) $closeTime->format('H'), (int) $closeTime->format('i'));
 
         $endTime = $dateTimeInTz->modify("+{$service->getDurationMinutes()} minutes");
 
@@ -123,12 +113,12 @@ final class SlotAvailabilityService
             return false;
         }
 
-        $endTimeUtc = $dateTime->setTimezone(new \DateTimeZone('UTC'));
+        $startTimeUtc = $dateTime->setTimezone(new \DateTimeZone('UTC'));
         $endTimeCalcUtc = $endTime->setTimezone(new \DateTimeZone('UTC'));
 
         $overlapping = $this->appointmentRepository->findNonCancelledInRange(
             $shop,
-            $endTimeUtc,
+            $startTimeUtc,
             $endTimeCalcUtc,
         );
 

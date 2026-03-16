@@ -51,6 +51,24 @@ describe('ReminderSettingsForm', () => {
     expect(wrapper.text()).toContain('reminders.settings.templateHelp')
   })
 
+  it('passes all placeholder names to templateHelp translation to prevent empty interpolation', () => {
+    const tSpy = vi.fn((key: string) => key)
+    vi.stubGlobal('useI18n', () => ({ t: tSpy, locale: { value: 'en' } }))
+
+    mountForm()
+
+    const helpCall = tSpy.mock.calls.find(([key]) => key === 'reminders.settings.templateHelp')
+    expect(helpCall).toBeDefined()
+    expect(helpCall![1]).toEqual({
+      client_name: '{client_name}',
+      shop_name: '{shop_name}',
+      days_since_visit: '{days_since_visit}',
+      client_phone: '{client_phone}',
+    })
+
+    vi.stubGlobal('useI18n', () => ({ t: (key: string) => key, locale: { value: 'vi' } }))
+  })
+
   it('renders save button', () => {
     const wrapper = mountForm()
     expect(wrapper.text()).toContain('reminders.settings.save')
