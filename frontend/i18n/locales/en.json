@@ -332,7 +332,7 @@
   },
   "reminders": {
     "title": "Reminders",
-    "totalCount": "{count} clients to remind",
+    "totalCount": "{count} client to remind | {count} clients to remind",
     "loadMore": "Load More",
     "settings": {
       "title": "Reminder Settings",
