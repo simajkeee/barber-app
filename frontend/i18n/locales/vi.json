@@ -362,6 +362,50 @@
       "copied": "Đã sao chép tin nhắn"
     }
   },
+  "booking": {
+    "title": "Đặt lịch",
+    "subtitle": "Đặt lịch hẹn tại",
+    "steps": {
+      "service": "Dịch vụ",
+      "datetime": "Ngày & Giờ",
+      "details": "Thông tin",
+      "confirm": "Xác nhận",
+      "duration": "Thời lượng"
+    },
+    "date": {
+      "select": "Chọn ngày"
+    },
+    "slot": {
+      "select": "Chọn giờ",
+      "unavailable": "Không khả dụng",
+      "noSlots": "Không có khung giờ trống cho ngày này"
+    },
+    "details": {
+      "name": "Họ và tên",
+      "phone": "Số điện thoại",
+      "namePlaceholder": "Nguyễn Văn A",
+      "phonePlaceholder": "0901234567"
+    },
+    "confirm": {
+      "title": "Xác nhận đặt lịch",
+      "service": "Dịch vụ",
+      "dateTime": "Ngày & Giờ",
+      "client": "Khách hàng",
+      "submit": "Đặt lịch",
+      "submitting": "Đang đặt..."
+    },
+    "success": {
+      "title": "Đặt lịch thành công!",
+      "message": "Lịch hẹn của bạn đã được xác nhận.",
+      "bookAnother": "Đặt lịch khác"
+    },
+    "error": {
+      "shopNotFound": "Không tìm thấy cửa hàng",
+      "slotUnavailable": "Khung giờ này đã có người đặt. Vui lòng chọn giờ khác.",
+      "rateLimited": "Bạn đã đặt quá nhiều lịch hôm nay. Vui lòng thử lại sau.",
+      "generic": "Đã có lỗi xảy ra. Vui lòng thử lại."
+    }
+  },
   "common": {
     "confirm": "Xác nhận",
     "cancel": "Hủy",

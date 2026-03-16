@@ -30,3 +30,11 @@ framework:
             policy: sliding_window
             limit: 3
             interval: '1 hour'
+        public_shop_read:
+            policy: sliding_window
+            limit: 30
+            interval: '1 minute'
+        public_booking:
+            policy: sliding_window
+            limit: 5
+            interval: '1 minute'

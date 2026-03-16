@@ -34,7 +34,9 @@ reminder:
     type: attribute
     prefix: /api/v1/reminders
 
-public_available_slots:
-    resource: App\Appointment\Controller\PublicAvailableSlotsController
+public_booking:
+    resource:
+        path: ../src/PublicBooking/Controller/
+        namespace: App\PublicBooking\Controller
     type: attribute
     prefix: /api/v1/public/shops

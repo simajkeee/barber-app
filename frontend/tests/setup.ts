@@ -55,6 +55,7 @@ vi.stubGlobal('useShopApi', vi.fn())
 vi.stubGlobal('useClientApi', vi.fn())
 vi.stubGlobal('useAppointmentApi', vi.fn())
 vi.stubGlobal('useReminderApi', vi.fn())
+vi.stubGlobal('usePublicBookingApi', vi.fn())
 vi.stubGlobal('useToast', () => ({ success: vi.fn(), error: vi.fn() }))
 vi.stubGlobal('useFormatters', () => ({
   formatPrice: (price: number) => `${price} ₫`,
