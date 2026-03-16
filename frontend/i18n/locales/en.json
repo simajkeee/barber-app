@@ -84,7 +84,8 @@
     "clients": "Clients",
     "services": "Services",
     "appointments": "Appointments",
-    "reminders": "Reminders"
+"reminders": "Reminders",
+    "subscription": "Subscription"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -406,6 +407,39 @@
       "slotUnavailable": "This slot is no longer available. Please choose another time.",
       "rateLimited": "Too many bookings today. Please try again later.",
       "generic": "Something went wrong. Please try again."
+    }
+  },
+  "subscription": {
+    "title": "Subscription",
+    "plan": {
+      "title": "Current Plan",
+      "free": "Free",
+      "pro": "Pro"
+    },
+    "status": {
+      "label": "Status",
+      "active": "Active",
+      "expired": "Expired",
+      "cancelled": "Cancelled"
+    },
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "daysRemaining": "Days Remaining",
+    "daysRemainingCount": "{count} days",
+    "usage": {
+      "title": "Appointments This Month",
+      "count": "appointments",
+      "unlimited": "Unlimited",
+      "limitReached": "You've reached your monthly appointment limit. Upgrade to Pro for unlimited appointments.",
+      "remaining": "{count} remaining"
+    },
+    "upgrade": {
+      "title": "Upgrade to Pro",
+      "description": "Unlimited appointments, multi-staff management, and more premium features.",
+      "contact": "Contact: 0901 234 567 or email support{'@'}barberpro.vn to upgrade."
+    },
+    "error": {
+      "loadFailed": "Failed to load subscription information"
     }
   },
   "common": {

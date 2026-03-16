@@ -14,9 +14,11 @@ use App\Shop\Dto\CreateShopRequest;
 use App\Shop\Dto\UpdateScheduleRequest;
 use App\Shop\Dto\UpdateShopRequest;
 use App\Shop\Enum\DayOfWeek;
+use App\Shop\Event\ShopCreatedEvent;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\String\Slugger\AsciiSlugger;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 final class ShopManager
 {
@@ -24,6 +26,7 @@ final class ShopManager
         private readonly ShopRepository $shopRepository,
         private readonly WorkScheduleRepository $workScheduleRepository,
         private readonly EntityManagerInterface $em,
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -50,6 +53,8 @@ final class ShopManager
         } catch (UniqueConstraintViolationException) {
             throw new ApiException('SHOP_ALREADY_EXISTS', 'You already have a shop.', 409);
         }
+
+        $this->eventDispatcher->dispatch(new ShopCreatedEvent($shop->getId()));
 
         return $shop;
     }

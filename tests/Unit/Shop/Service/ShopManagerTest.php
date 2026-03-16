@@ -19,6 +19,7 @@ use App\Shop\Service\ShopManager;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -29,6 +30,7 @@ final class ShopManagerTest extends TestCase
     private ShopRepository&MockObject $shopRepository;
     private WorkScheduleRepository&MockObject $workScheduleRepository;
     private EntityManagerInterface&MockObject $em;
+    private EventDispatcherInterface&MockObject $eventDispatcher;
     private ShopManager $sut;
 
     protected function setUp(): void
@@ -36,11 +38,13 @@ final class ShopManagerTest extends TestCase
         $this->shopRepository = $this->createMock(ShopRepository::class);
         $this->workScheduleRepository = $this->createMock(WorkScheduleRepository::class);
         $this->em = $this->createMock(EntityManagerInterface::class);
+        $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
 
         $this->sut = new ShopManager(
             $this->shopRepository,
             $this->workScheduleRepository,
             $this->em,
+            $this->eventDispatcher,
         );
     }
 
