@@ -37,6 +37,10 @@ async function onSubmit(data: CreateAppointmentRequest) {
       formRef.value?.setError('_general', t('appointments.error.timeInPast'))
     } else if (error === 'SERVICE_INACTIVE') {
       formRef.value?.setError('serviceId', t('appointments.error.serviceInactive'))
+    } else if (error === 'APPOINTMENT_LIMIT_REACHED') {
+      formRef.value?.setError('_general', t('subscription.usage.limitReached'))
+    } else if (error === 'SUBSCRIPTION_CANCELLED') {
+      formRef.value?.setError('_general', t('appointments.error.subscriptionCancelled'))
     } else {
       toast.error('appointments.toast.createError')
     }
