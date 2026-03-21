@@ -218,7 +218,7 @@ final class PasswordResetServiceTest extends TestCase
     }
 
     #[Test]
-    public function testResetPasswordWithInvalidTokenThrows401(): void
+    public function testResetPasswordWithInvalidTokenThrows400(): void
     {
         $rawToken = bin2hex(random_bytes(32));
 
@@ -228,13 +228,13 @@ final class PasswordResetServiceTest extends TestCase
             $this->sut->resetPassword($rawToken, 'newpassword123');
             self::fail('Expected ApiException');
         } catch (ApiException $e) {
-            self::assertSame(401, $e->statusCode);
+            self::assertSame(400, $e->statusCode);
             self::assertSame('INVALID_RESET_TOKEN', $e->errorCode);
         }
     }
 
     #[Test]
-    public function testResetPasswordWithExpiredTokenThrows401(): void
+    public function testResetPasswordWithExpiredTokenThrows400(): void
     {
         $rawToken = bin2hex(random_bytes(32));
         $tokenHash = hash('sha256', $rawToken);
@@ -253,13 +253,13 @@ final class PasswordResetServiceTest extends TestCase
             $this->sut->resetPassword($rawToken, 'newpassword123');
             self::fail('Expected ApiException');
         } catch (ApiException $e) {
-            self::assertSame(401, $e->statusCode);
+            self::assertSame(400, $e->statusCode);
             self::assertSame('INVALID_RESET_TOKEN', $e->errorCode);
         }
     }
 
     #[Test]
-    public function testResetPasswordWithUsedTokenThrows401(): void
+    public function testResetPasswordWithUsedTokenThrows400(): void
     {
         $rawToken = bin2hex(random_bytes(32));
         $tokenHash = hash('sha256', $rawToken);
@@ -279,7 +279,7 @@ final class PasswordResetServiceTest extends TestCase
             $this->sut->resetPassword($rawToken, 'newpassword123');
             self::fail('Expected ApiException');
         } catch (ApiException $e) {
-            self::assertSame(401, $e->statusCode);
+            self::assertSame(400, $e->statusCode);
             self::assertSame('INVALID_RESET_TOKEN', $e->errorCode);
         }
     }

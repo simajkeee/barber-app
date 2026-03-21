@@ -59,7 +59,7 @@ final class PasswordResetService
         $resetToken = $this->passwordResetTokenRepository->findByTokenHash($tokenHash);
 
         if ($resetToken === null || $resetToken->isUsed() || $resetToken->isExpired()) {
-            throw new ApiException('INVALID_RESET_TOKEN', 'This reset link is invalid or has expired.', 401);
+            throw new ApiException('INVALID_RESET_TOKEN', 'This reset link is invalid or has expired.', 400);
         }
 
         $user = $resetToken->getUser();
