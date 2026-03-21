@@ -192,6 +192,30 @@ describe('ShopSlugPage', () => {
     expect(wrapper.find('.datetime-step').exists()).toBe(true)
   })
 
+  it('shows localized limitReached error for APPOINTMENT_LIMIT_REACHED', async () => {
+    const shop = createPublicShopInfo()
+    mockGetShopInfo.mockResolvedValue(shop)
+    const limitError = new FetchError('Forbidden')
+    ;(limitError as any).data = { code: 'APPOINTMENT_LIMIT_REACHED', message: 'Monthly appointment limit reached. Upgrade to PRO for unlimited appointments.' }
+    mockCreateBooking.mockRejectedValue(limitError)
+
+    const wrapper = mountPage()
+    await flushPromises()
+
+    await wrapper.findComponent(BookingServiceStepStub).vm.$emit('select', shop.services[0])
+    await wrapper.findComponent(BookingDateTimeStepStub).vm.$emit('selectDate', '2026-03-20')
+    await wrapper.findComponent(BookingDateTimeStepStub).vm.$emit('selectTime', '10:00')
+    await wrapper.findComponent(BookingDetailsStepStub).vm.$emit('submit', {
+      clientName: 'Test',
+      clientPhone: '0901234567',
+    })
+    await wrapper.findComponent(BookingConfirmStepStub).vm.$emit('confirm')
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('booking.error.limitReached')
+    expect(wrapper.text()).not.toContain('Monthly appointment limit reached')
+  })
+
   it('resets state when book another clicked', async () => {
     const shop = createPublicShopInfo()
     mockGetShopInfo.mockResolvedValue(shop)

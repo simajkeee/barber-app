@@ -98,6 +98,8 @@ async function onConfirm() {
         selectedTime.value = null
       } else if (code === 'BOOKING_RATE_LIMIT_EXCEEDED') {
         bookingError.value = t('booking.error.rateLimited')
+      } else if (code === 'APPOINTMENT_LIMIT_REACHED') {
+        bookingError.value = t('booking.error.limitReached')
       } else {
         bookingError.value = err.data.message || t('booking.error.generic')
       }
