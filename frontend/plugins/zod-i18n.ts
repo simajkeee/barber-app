@@ -14,6 +14,10 @@ export default defineNuxtPlugin((nuxtApp) => {
       return { message: t('validation.emailInvalid') }
     }
 
+    if (issue.code === 'invalid_string' && issue.validation === 'regex') {
+      return { message: t('validation.phoneInvalid') }
+    }
+
     return { message: t('validation.invalid') }
   })
 })

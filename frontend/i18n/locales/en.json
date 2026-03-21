@@ -76,7 +76,8 @@
     "required": "This field is required",
     "emailInvalid": "Please enter a valid email",
     "minLength": "Must be at least {min} characters",
-    "invalid": "Invalid value"
+    "invalid": "Invalid value",
+    "phoneInvalid": "Invalid phone number"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -328,7 +329,8 @@
       "shopClosed": "The shop is closed on this day",
       "timeInPast": "Cannot book in the past",
       "serviceInactive": "This service is no longer available",
-      "slotsLoadFailed": "Failed to load available slots"
+      "slotsLoadFailed": "Failed to load available slots",
+      "subscriptionCancelled": "Your subscription has been cancelled. Please contact support to continue."
     }
   },
   "reminders": {
@@ -406,7 +408,8 @@
       "shopNotFound": "Shop not found",
       "slotUnavailable": "This slot is no longer available. Please choose another time.",
       "rateLimited": "Too many bookings today. Please try again later.",
-      "generic": "Something went wrong. Please try again."
+      "generic": "Something went wrong. Please try again.",
+      "limitReached": "This shop is not accepting online bookings at this time. Please contact them directly."
     }
   },
   "subscription": {

@@ -76,7 +76,8 @@
     "required": "Trường này là bắt buộc",
     "emailInvalid": "Email không hợp lệ",
     "minLength": "Phải có ít nhất {min} ký tự",
-    "invalid": "Giá trị không hợp lệ"
+    "invalid": "Giá trị không hợp lệ",
+    "phoneInvalid": "Số điện thoại không hợp lệ"
   },
   "nav": {
     "dashboard": "Trang chủ",
@@ -328,7 +329,8 @@
       "shopClosed": "Cửa hàng đóng cửa ngày này",
       "timeInPast": "Không thể đặt lịch trong quá khứ",
       "serviceInactive": "Dịch vụ này không còn hoạt động",
-      "slotsLoadFailed": "Tải khung giờ trống thất bại"
+      "slotsLoadFailed": "Tải khung giờ trống thất bại",
+      "subscriptionCancelled": "Gói dịch vụ đã bị hủy. Vui lòng liên hệ hỗ trợ để tiếp tục."
     }
   },
   "reminders": {
@@ -406,7 +408,8 @@
       "shopNotFound": "Không tìm thấy cửa hàng",
       "slotUnavailable": "Khung giờ này đã có người đặt. Vui lòng chọn giờ khác.",
       "rateLimited": "Bạn đã đặt quá nhiều lịch hôm nay. Vui lòng thử lại sau.",
-      "generic": "Đã có lỗi xảy ra. Vui lòng thử lại."
+      "generic": "Đã có lỗi xảy ra. Vui lòng thử lại.",
+      "limitReached": "Tiệm hiện không nhận lịch online. Vui lòng liên hệ trực tiếp."
     }
   },
   "subscription": {
