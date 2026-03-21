@@ -236,7 +236,11 @@ final class AppointmentService
 
         $schedule = $this->getScheduleForDay($shop, $dayOfWeek);
         if ($schedule === null || !$schedule->isOpen()) {
-            throw new ApiException('SHOP_CLOSED', 'The shop is closed on this day.', 400);
+            return [
+                'date' => $dateInTz->format('Y-m-d'),
+                'serviceDurationMinutes' => $service->getDurationMinutes(),
+                'slots' => [],
+            ];
         }
 
         $slots = $this->slotCalculator->calculateAvailableSlots($shop, $date, $service->getDurationMinutes());

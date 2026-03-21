@@ -662,7 +662,7 @@ final class AppointmentServiceTest extends TestCase
     // --- getAvailableSlots ---
 
     #[Test]
-    public function testGetAvailableSlotsThrowsWhenShopClosed(): void
+    public function testGetAvailableSlotsReturnsEmptySlotsWhenShopClosed(): void
     {
         $shop = $this->createShop();
         $service = $this->createService($shop);
@@ -674,13 +674,13 @@ final class AppointmentServiceTest extends TestCase
         $closedSchedule->setIsOpen(false);
         $this->workScheduleRepository->method('findByShopAndDay')->willReturn($closedSchedule);
 
-        try {
-            $this->sut->getAvailableSlots($shop, $date, $service);
-            self::fail('Expected ApiException');
-        } catch (ApiException $e) {
-            self::assertSame(400, $e->statusCode);
-            self::assertSame('SHOP_CLOSED', $e->errorCode);
-        }
+        $this->slotCalculator->expects(self::never())->method('calculateAvailableSlots');
+
+        $result = $this->sut->getAvailableSlots($shop, $date, $service);
+
+        self::assertSame('2026-03-22', $result['date']);
+        self::assertSame([], $result['slots']);
+        self::assertSame($service->getDurationMinutes(), $result['serviceDurationMinutes']);
     }
 
     #[Test]
