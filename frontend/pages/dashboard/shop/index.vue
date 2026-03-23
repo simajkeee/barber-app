@@ -64,10 +64,10 @@ async function onSubmit(data: Record<string, unknown>) {
 
       <div class="flex gap-3">
         <NuxtLink :to="localePath('/dashboard/shop/schedule')">
-          <UiButton variant="secondary">{{ t('shop.schedule.title') }}</UiButton>
+          <UiButton variant="secondary">{{ t('nav.workingHours') }} →</UiButton>
         </NuxtLink>
         <NuxtLink :to="localePath('/dashboard/shop/services')">
-          <UiButton variant="secondary">{{ t('shop.services.title') }}</UiButton>
+          <UiButton variant="secondary">{{ t('shop.services.title') }} →</UiButton>
         </NuxtLink>
       </div>
     </div>

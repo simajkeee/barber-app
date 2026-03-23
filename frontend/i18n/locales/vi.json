@@ -41,7 +41,11 @@
       "password": "Mật khẩu",
       "submit": "Tạo tài khoản",
       "hasAccount": "Đã có tài khoản?",
-      "loginLink": "Đăng nhập"
+      "loginLink": "Đăng nhập",
+      "termsPrefix": "Khi tạo tài khoản, bạn đồng ý với",
+      "termsLink": "Điều khoản dịch vụ",
+      "termsAnd": "và",
+      "privacyLink": "Chính sách bảo mật"
     },
     "facebook": {
       "button": "Tiếp tục với Facebook"
@@ -82,17 +86,33 @@
   "nav": {
     "dashboard": "Trang chủ",
     "shop": "Cửa hàng",
+    "workingHours": "Giờ làm việc",
     "clients": "Khách hàng",
     "services": "Dịch vụ",
     "appointments": "Lịch hẹn",
-"reminders": "Nhắc nhở",
+    "reminders": "Nhắc nhở",
     "subscription": "Gói dịch vụ"
   },
   "dashboard": {
     "title": "Bảng điều khiển",
     "toggleMenu": "Mở menu",
     "noShop": "Chưa có cửa hàng",
-    "noShopDescription": "Tạo hồ sơ cửa hàng để bắt đầu"
+    "noShopDescription": "Tạo hồ sơ cửa hàng để bắt đầu",
+    "stats": {
+      "today": "Hôm nay",
+      "next": "Lịch hẹn tiếp theo",
+      "nextNone": "Không có lịch hẹn sắp tới",
+      "usage": "Tháng này",
+      "plan": "Gói",
+      "appointmentsOf": "{used} / {limit} lịch hẹn",
+      "unlimited": "Không giới hạn",
+      "daysRemaining": "Còn {n} ngày",
+      "upgrade": "Nâng cấp lên Pro →"
+    },
+    "actions": {
+      "newAppointment": "Tạo lịch hẹn",
+      "newClient": "Thêm khách hàng"
+    }
   },
   "shop": {
     "create": {
@@ -216,6 +236,7 @@
       "deleteTitle": "Xóa khách hàng",
       "deleteDescription": "Bạn có chắc muốn xóa khách hàng này? Hành động này không thể hoàn tác."
     },
+    "dangerZone": "Vùng nguy hiểm",
     "toast": {
       "created": "Đã thêm khách hàng",
       "updated": "Đã cập nhật khách hàng",
@@ -224,6 +245,11 @@
       "updateError": "Cập nhật khách hàng thất bại",
       "deleteError": "Xóa khách hàng thất bại",
       "loadError": "Tải danh sách khách hàng thất bại"
+    },
+    "history": {
+      "title": "Lịch sử lịch hẹn",
+      "empty": "Chưa có lịch hẹn nào",
+      "error": "Không thể tải lịch sử lịch hẹn."
     },
     "error": {
       "phoneExists": "Số điện thoại này đã được sử dụng cho khách hàng khác.",
@@ -300,7 +326,8 @@
       "noShow": "Không đến",
       "cancel": "Hủy lịch",
       "edit": "Sửa",
-      "view": "Xem"
+      "view": "Xem",
+      "bookAgain": "Đặt lại"
     },
     "confirm": {
       "completeTitle": "Đánh dấu hoàn thành?",
@@ -343,7 +370,13 @@
       "messageTemplate": "Mẫu tin nhắn",
       "templateHelp": "Biến: {client_name}, {shop_name}, {days_since_visit}, {client_phone}",
       "save": "Lưu cài đặt",
-      "summary": "Nhắc nhở khách hàng chưa ghé trong {days} ngày"
+      "summary": "Nhắc nhở khách hàng chưa ghé trong {days} ngày",
+      "templateLocale": "Ngôn ngữ mẫu: {locale}",
+      "loadError": "Tải cài đặt nhắc nhở thất bại",
+      "locale": {
+        "vi": "Tiếng Việt",
+        "en": "Tiếng Anh"
+      }
     },
     "card": {
       "daysSince": "{days} ngày trước",
@@ -406,6 +439,9 @@
     },
     "error": {
       "shopNotFound": "Không tìm thấy cửa hàng",
+      "shopUnavailable": "Tiệm tạm thời không khả dụng",
+      "shopUnavailableDesc": "Tiệm có thể đang thiết lập tài khoản. Vui lòng thử lại sau hoặc liên hệ trực tiếp.",
+      "backToHome": "Về trang chủ",
       "slotUnavailable": "Khung giờ này đã có người đặt. Vui lòng chọn giờ khác.",
       "rateLimited": "Bạn đã đặt quá nhiều lịch hôm nay. Vui lòng thử lại sau.",
       "generic": "Đã có lỗi xảy ra. Vui lòng thử lại.",
@@ -439,10 +475,25 @@
     "upgrade": {
       "title": "Nâng cấp lên Chuyên nghiệp",
       "description": "Đặt lịch không giới hạn, quản lý nhiều nhân viên và nhiều tính năng cao cấp khác.",
-      "contact": "Liên hệ: 0901 234 567 hoặc email support{'@'}barberpro.vn để nâng cấp."
+      "contact": "Liên hệ: 0901 234 567 hoặc email support{'@'}barberpro.vn để nâng cấp.",
+      "feature1": "Đặt lịch không giới hạn",
+      "feature2": "Nhắc nhở SMS tự động",
+      "feature3": "Hỗ trợ ưu tiên",
+      "requestButton": "Yêu cầu nâng cấp",
+      "formTitle": "Thông tin của bạn",
+      "namePlaceholder": "Tên của bạn",
+      "emailPlaceholder": "email{'@'}cua.ban",
+      "phonePlaceholder": "+84 901 234 567",
+      "messagePlaceholder": "Giới thiệu về tiệm của bạn và cách bạn đang quản lý lịch hẹn...",
+      "submitButton": "Gửi yêu cầu",
+      "successMessage": "Cảm ơn! Chúng tôi sẽ liên hệ với bạn trong vòng 24 giờ.",
+      "alreadySubmitted": "Bạn đã có yêu cầu đang chờ xử lý. Chúng tôi sẽ sớm liên hệ với bạn."
     },
     "error": {
-      "loadFailed": "Tải thông tin gói dịch vụ thất bại"
+      "loadFailed": "Tải thông tin gói dịch vụ thất bại",
+      "retry": "Thử lại",
+      "contactSupport": "Liên hệ hỗ trợ",
+      "setupInProgress": "Gói dịch vụ của bạn đang được thiết lập. Vui lòng tải lại trang sau giây lát."
     }
   },
   "common": {
@@ -452,6 +503,63 @@
     "back": "Quay lại",
     "copy": "Sao chép",
     "copied": "Đã sao chép",
-    "loading": "Đang tải..."
+    "loading": "Đang tải...",
+    "retry": "Thử lại"
+  },
+  "footer": {
+    "privacy": "Chính sách bảo mật",
+    "terms": "Điều khoản dịch vụ"
+  },
+  "legal": {
+    "terms": {
+      "title": "Điều khoản dịch vụ"
+    },
+    "privacy": {
+      "title": "Chính sách bảo mật"
+    },
+    "comingSoon": "Tài liệu này sẽ sớm được cập nhật."
+  },
+  "landing": {
+    "hero": {
+      "headline": "Quản lý tiệm cắt tóc của bạn, dễ dàng hơn",
+      "subheadline": "Nhận đặt lịch trực tuyến, quản lý khách hàng và gửi nhắc hẹn — tất cả trong một nơi.",
+      "ctaRegister": "Dùng thử miễn phí",
+      "ctaLogin": "Đăng nhập"
+    },
+    "features": {
+      "bookings": {
+        "title": "Đặt lịch trực tuyến",
+        "description": "Cho phép khách hàng đặt lịch 24/7 qua trang đặt hẹn riêng của bạn."
+      },
+      "clients": {
+        "title": "Quản lý khách hàng",
+        "description": "Theo dõi lịch sử, sở thích và thông tin liên lạc của từng khách hàng."
+      },
+      "reminders": {
+        "title": "Nhắc nhở lịch hẹn",
+        "description": "Tự động nhắc khách hàng về lịch hẹn sắp tới để giảm tình trạng vắng mặt."
+      }
+    },
+    "social": {
+      "title": "Được tin dùng bởi hàng trăm tiệm cắt tóc trên cả nước",
+      "quote1": "BarberPro giúp chúng tôi giảm một nửa số lượt khách vắng mặt. Khách hàng rất thích đặt lịch online.",
+      "author1": "Minh Tuấn",
+      "shop1": "Tuấn Barber – Hà Nội",
+      "quote2": "Cuối cùng có một công cụ dành riêng cho thợ cắt tóc. Cài đặt chỉ 10 phút.",
+      "author2": "Hoàng Nam",
+      "shop2": "Nam Classic – TP.HCM",
+      "quote3": "Tính năng nhắc hẹn một mình đã đáng giá rồi — khách hàng quay lại nhiều hơn.",
+      "author3": "Đức Anh",
+      "shop3": "Đức Anh Barbershop – Đà Nẵng"
+    }
+  },
+  "onboarding": {
+    "title": "Bắt đầu thiết lập",
+    "progress": "Đã hoàn thành {done}/{total} bước",
+    "step1": "Hoàn thiện hồ sơ cửa hàng",
+    "step2": "Thêm dịch vụ",
+    "step3": "Thiết lập giờ làm việc",
+    "step4": "Chia sẻ link đặt lịch",
+    "dismiss": "Ẩn"
   }
 }

@@ -12,17 +12,22 @@ const emit = defineEmits<{
   noShow: [id: string]
   cancel: [id: string]
 }>()
+
+const localePath = useLocalePath()
 </script>
 
 <template>
-  <div class="rounded-lg border border-gray-200 bg-white p-4">
+  <NuxtLink
+    :to="localePath(`/dashboard/appointments/${appointment.id}`)"
+    class="block rounded-lg border border-gray-200 bg-white p-4 transition-colors hover:bg-gray-50"
+  >
     <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
       <div class="flex flex-col gap-1.5 min-w-0">
         <AppointmentTimeBadge :start-time="appointment.startTime" :end-time="appointment.endTime" show-date />
         <AppointmentClientInfo :client="appointment.client" />
         <AppointmentServiceInfo :service="appointment.service" />
       </div>
-      <div class="flex flex-col items-start gap-2 sm:items-end">
+      <div class="flex flex-col items-start gap-2 sm:items-end" @click.stop>
         <AppointmentStatusBadge :status="appointment.status" />
         <AppointmentQuickActions
           :status="appointment.status"
@@ -35,5 +40,5 @@ const emit = defineEmits<{
       </div>
     </div>
     <p v-if="appointment.notes" class="mt-2 text-xs text-gray-400 italic">{{ appointment.notes }}</p>
-  </div>
+  </NuxtLink>
 </template>

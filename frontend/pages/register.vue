@@ -27,6 +27,12 @@ function onSuccess() {
       <AuthRegisterForm @success="onSuccess" />
       <AuthDivider />
       <AuthFacebookLoginButton @success="onSuccess" />
+      <p class="mt-4 text-center text-xs text-gray-400">
+        {{ t('auth.register.termsPrefix') }}
+        <NuxtLink :to="localePath('/terms')" class="underline hover:text-gray-600">{{ t('auth.register.termsLink') }}</NuxtLink>
+        {{ t('auth.register.termsAnd') }}
+        <NuxtLink :to="localePath('/privacy')" class="underline hover:text-gray-600">{{ t('auth.register.privacyLink') }}</NuxtLink>
+      </p>
     </div>
 
     <AuthFooterLink

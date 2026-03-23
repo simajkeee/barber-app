@@ -41,7 +41,11 @@
       "password": "Password",
       "submit": "Create Account",
       "hasAccount": "Already have an account?",
-      "loginLink": "Log In"
+      "loginLink": "Log In",
+      "termsPrefix": "By creating an account you agree to our",
+      "termsLink": "Terms of Service",
+      "termsAnd": "and",
+      "privacyLink": "Privacy Policy"
     },
     "facebook": {
       "button": "Continue with Facebook"
@@ -82,17 +86,33 @@
   "nav": {
     "dashboard": "Dashboard",
     "shop": "My Shop",
+    "workingHours": "Working Hours",
     "clients": "Clients",
     "services": "Services",
     "appointments": "Appointments",
-"reminders": "Reminders",
+    "reminders": "Reminders",
     "subscription": "Subscription"
   },
   "dashboard": {
     "title": "Dashboard",
     "toggleMenu": "Toggle menu",
     "noShop": "No shop yet",
-    "noShopDescription": "Create your barbershop profile to get started"
+    "noShopDescription": "Create your barbershop profile to get started",
+    "stats": {
+      "today": "Today's Appointments",
+      "next": "Next Appointment",
+      "nextNone": "No upcoming appointments",
+      "usage": "This Month",
+      "plan": "Plan",
+      "appointmentsOf": "{used} / {limit} appointments",
+      "unlimited": "Unlimited",
+      "daysRemaining": "{n} days left",
+      "upgrade": "Upgrade to Pro →"
+    },
+    "actions": {
+      "newAppointment": "New Appointment",
+      "newClient": "New Client"
+    }
   },
   "shop": {
     "create": {
@@ -216,6 +236,7 @@
       "deleteTitle": "Delete Client",
       "deleteDescription": "Are you sure you want to delete this client? This action cannot be undone."
     },
+    "dangerZone": "Danger Zone",
     "toast": {
       "created": "Client created",
       "updated": "Client updated",
@@ -224,6 +245,11 @@
       "updateError": "Failed to update client",
       "deleteError": "Failed to delete client",
       "loadError": "Failed to load clients"
+    },
+    "history": {
+      "title": "Appointment History",
+      "empty": "No appointments yet",
+      "error": "Failed to load appointment history."
     },
     "error": {
       "phoneExists": "A client with this phone number already exists.",
@@ -300,7 +326,8 @@
       "noShow": "No Show",
       "cancel": "Cancel",
       "edit": "Edit",
-      "view": "View"
+      "view": "View",
+      "bookAgain": "Book Again"
     },
     "confirm": {
       "completeTitle": "Mark as Completed?",
@@ -343,7 +370,13 @@
       "messageTemplate": "Message template",
       "templateHelp": "Placeholders: {client_name}, {shop_name}, {days_since_visit}, {client_phone}",
       "save": "Save Settings",
-      "summary": "Reminding clients who haven't visited in {days} days"
+      "summary": "Reminding clients who haven't visited in {days} days",
+      "templateLocale": "Template language: {locale}",
+      "loadError": "Failed to load reminder settings",
+      "locale": {
+        "vi": "Vietnamese",
+        "en": "English"
+      }
     },
     "card": {
       "daysSince": "{days} days ago",
@@ -406,6 +439,9 @@
     },
     "error": {
       "shopNotFound": "Shop not found",
+      "shopUnavailable": "This shop is temporarily unavailable",
+      "shopUnavailableDesc": "The shop may be setting up their account. Please try again later or contact them directly.",
+      "backToHome": "Go to Homepage",
       "slotUnavailable": "This slot is no longer available. Please choose another time.",
       "rateLimited": "Too many bookings today. Please try again later.",
       "generic": "Something went wrong. Please try again.",
@@ -439,10 +475,25 @@
     "upgrade": {
       "title": "Upgrade to Pro",
       "description": "Unlimited appointments, multi-staff management, and more premium features.",
-      "contact": "Contact: 0901 234 567 or email support{'@'}barberpro.vn to upgrade."
+      "contact": "Contact: 0901 234 567 or email support{'@'}barberpro.vn to upgrade.",
+      "feature1": "Unlimited appointments",
+      "feature2": "Automated SMS reminders",
+      "feature3": "Priority support",
+      "requestButton": "Request Upgrade",
+      "formTitle": "Tell us about your shop",
+      "namePlaceholder": "Your name",
+      "emailPlaceholder": "your{'@'}email.com",
+      "phonePlaceholder": "+84 901 234 567",
+      "messagePlaceholder": "Tell us about your shop and how you currently manage appointments...",
+      "submitButton": "Submit Request",
+      "successMessage": "Thanks! We'll be in touch within 24 hours.",
+      "alreadySubmitted": "You already have a pending request. We'll contact you soon."
     },
     "error": {
-      "loadFailed": "Failed to load subscription information"
+      "loadFailed": "Failed to load subscription information",
+      "retry": "Try Again",
+      "contactSupport": "Contact Support",
+      "setupInProgress": "Your subscription is being set up. Please refresh the page in a moment."
     }
   },
   "common": {
@@ -452,6 +503,63 @@
     "back": "Back",
     "copy": "Copy",
     "copied": "Copied",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "retry": "Try Again"
+  },
+  "footer": {
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service"
+  },
+  "legal": {
+    "terms": {
+      "title": "Terms of Service"
+    },
+    "privacy": {
+      "title": "Privacy Policy"
+    },
+    "comingSoon": "This document is coming soon."
+  },
+  "landing": {
+    "hero": {
+      "headline": "Manage your barbershop, effortlessly",
+      "subheadline": "Accept online bookings, manage clients, and send appointment reminders — all in one place.",
+      "ctaRegister": "Get Started Free",
+      "ctaLogin": "Log In"
+    },
+    "features": {
+      "bookings": {
+        "title": "Online Bookings",
+        "description": "Let clients book appointments 24/7 through your personalized booking page."
+      },
+      "clients": {
+        "title": "Client Management",
+        "description": "Keep track of every client's history, preferences, and contact details."
+      },
+      "reminders": {
+        "title": "Appointment Reminders",
+        "description": "Automatically remind clients of upcoming appointments to reduce no-shows."
+      }
+    },
+    "social": {
+      "title": "Trusted by barbers across Vietnam",
+      "quote1": "BarberPro cut our no-shows in half. Clients love booking online.",
+      "author1": "Minh Tuan",
+      "shop1": "Tuan Barber – Hà Nội",
+      "quote2": "Finally a tool built for barbers. Setup took 10 minutes.",
+      "author2": "Hoang Nam",
+      "shop2": "Nam Classic – TP.HCM",
+      "quote3": "The reminder feature alone is worth it — clients come back more.",
+      "author3": "Duc Anh",
+      "shop3": "Duc Anh Barbershop – Đà Nẵng"
+    }
+  },
+  "onboarding": {
+    "title": "Get started",
+    "progress": "{done} of {total} steps complete",
+    "step1": "Complete shop profile",
+    "step2": "Add a service",
+    "step3": "Set working hours",
+    "step4": "Share your booking link",
+    "dismiss": "Dismiss"
   }
 }

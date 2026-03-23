@@ -122,7 +122,7 @@ defineExpose({ setError })
     </div>
 
     <div class="mt-6 flex gap-3">
-      <UiButton v-if="isEditMode" variant="secondary" @click="emit('cancel')">
+      <UiButton variant="secondary" @click="emit('cancel')">
         {{ t('shop.profile.cancel') }}
       </UiButton>
       <UiButton type="submit" :loading="loading || isSubmitting">

@@ -20,6 +20,7 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
+const route = useRoute()
 const appointmentApi = useAppointmentApi()
 const shopApi = useShopApi()
 const clientApi = useClientApi()
@@ -35,8 +36,8 @@ const generalError = ref<string | null>(null)
 const { handleSubmit, setFieldError, setFieldValue } = useForm({
   validationSchema: toTypedSchema(appointmentSchema),
   initialValues: {
-    clientId: props.appointment?.client.id ?? '',
-    serviceId: props.appointment?.service.id ?? '',
+    clientId: props.appointment?.client.id ?? (typeof route.query.clientId === 'string' ? route.query.clientId : '') ?? '',
+    serviceId: props.appointment?.service.id ?? (typeof route.query.serviceId === 'string' ? route.query.serviceId : '') ?? '',
     startTime: props.appointment?.startTime ?? '',
     notes: props.appointment?.notes ?? '',
   },

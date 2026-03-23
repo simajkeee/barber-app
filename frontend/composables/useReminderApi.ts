@@ -19,8 +19,10 @@ export function useReminderApi() {
     return api<ReminderTodayResponse>('/reminders/today', { query })
   }
 
-  async function getSettings(): Promise<ReminderSettings> {
-    return api<ReminderSettings>('/reminders/settings')
+  async function getSettings(locale?: 'vi' | 'en'): Promise<ReminderSettings> {
+    const query: Record<string, string> = {}
+    if (locale) query.locale = locale
+    return api<ReminderSettings>('/reminders/settings', { query })
   }
 
   async function updateSettings(data: UpdateReminderSettingsRequest): Promise<ReminderSettings> {

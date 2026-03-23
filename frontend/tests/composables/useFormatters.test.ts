@@ -15,7 +15,8 @@ describe('useFormatters', () => {
     it('formats price in VND for vi locale', () => {
       const { formatPrice } = useFormatters()
       const result = formatPrice(100000)
-      expect(result).toContain('100.000')
+      const expected = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(100000)
+      expect(result).toBe(expected)
     })
 
     it('formats zero price', () => {

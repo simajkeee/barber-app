@@ -61,6 +61,13 @@ function onCancel() {
 <template>
   <div class="mx-auto max-w-lg">
     <DashboardPageHeader :title="t('clients.edit.title')" />
+    <UiBreadcrumb
+      :items="[
+        { label: t('clients.title'), to: localePath('/dashboard/clients') },
+        { label: client ? `${client.firstName} ${client.lastName}` : '...', to: localePath(`/dashboard/clients/${clientId}`) },
+        { label: t('clients.edit.title') },
+      ]"
+    />
 
     <div v-if="isLoading" class="flex justify-center py-12">
       <div class="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-primary-700" />

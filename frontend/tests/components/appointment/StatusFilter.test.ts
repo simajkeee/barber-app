@@ -8,9 +8,9 @@ function mountFilter(modelValue: AppointmentStatus[] = []) {
 }
 
 describe('AppointmentStatusFilter', () => {
-  it('renders a button for each of the 4 statuses', () => {
+  it('renders a button for each of the 4 statuses plus an All button', () => {
     const wrapper = mountFilter()
-    expect(wrapper.findAll('button')).toHaveLength(4)
+    expect(wrapper.findAll('button')).toHaveLength(5)
   })
 
   it('shows status i18n keys as button labels', () => {

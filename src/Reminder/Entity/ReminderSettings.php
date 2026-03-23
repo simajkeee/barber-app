@@ -12,12 +12,13 @@ use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: ReminderSettingsRepository::class)]
 #[ORM\Table(name: 'reminder_settings')]
-#[ORM\UniqueConstraint(name: 'uniq_reminder_settings_shop', columns: ['shop_id'])]
+#[ORM\UniqueConstraint(name: 'uniq_reminder_settings_shop_locale', columns: ['shop_id', 'locale'])]
 #[ORM\HasLifecycleCallbacks]
 class ReminderSettings
 {
     public const DEFAULT_DAYS_SINCE_LAST_VISIT = 30;
     public const DEFAULT_MESSAGE_TEMPLATE = 'Chào {client_name}! Đã {days_since_visit} ngày kể từ lần cắt tóc cuối tại {shop_name}. Bạn có muốn đặt lịch hẹn mới không? 💈';
+    public const DEFAULT_MESSAGE_TEMPLATE_EN = 'Hi {client_name}! It\'s been {days_since_visit} days since your last visit at {shop_name}. Ready to book your next appointment? 💈';
 
     #[ORM\Id]
     #[ORM\Column(type: 'uuid')]
@@ -32,6 +33,9 @@ class ReminderSettings
 
     #[ORM\Column(type: Types::TEXT)]
     private string $messageTemplate = self::DEFAULT_MESSAGE_TEMPLATE;
+
+    #[ORM\Column(length: 5, options: ['default' => 'vi'])]
+    private string $locale = 'vi';
 
     #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE)]
     private \DateTimeImmutable $createdAt;
@@ -85,6 +89,16 @@ class ReminderSettings
     public function setMessageTemplate(string $messageTemplate): void
     {
         $this->messageTemplate = $messageTemplate;
+    }
+
+    public function getLocale(): string
+    {
+        return $this->locale;
+    }
+
+    public function setLocale(string $locale): void
+    {
+        $this->locale = $locale;
     }
 
     public function getCreatedAt(): \DateTimeImmutable

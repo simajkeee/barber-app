@@ -7,5 +7,17 @@ export function useSubscriptionApi() {
     return api<SubscriptionResponse>('/subscription/')
   }
 
-  return { getSubscription }
+  async function upgradeRequest(data: {
+    name: string
+    email: string
+    phone?: string
+    message?: string
+  }): Promise<{ id: string; createdAt: string }> {
+    return api<{ id: string; createdAt: string }>('/subscription/upgrade-request', {
+      method: 'POST',
+      body: data,
+    })
+  }
+
+  return { getSubscription, upgradeRequest }
 }

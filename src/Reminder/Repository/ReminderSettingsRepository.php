@@ -23,4 +23,9 @@ final class ReminderSettingsRepository extends ServiceEntityRepository
     {
         return $this->findOneBy(['shop' => $shop]);
     }
+
+    public function findByShopAndLocale(Shop $shop, string $locale): ?ReminderSettings
+    {
+        return $this->findOneBy(['shop' => $shop, 'locale' => $locale]);
+    }
 }

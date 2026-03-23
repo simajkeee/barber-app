@@ -14,7 +14,7 @@ onMounted(async () => {
   <div class="min-h-screen bg-gray-50 text-gray-900 antialiased lg:flex">
     <!-- Mobile header -->
     <header class="flex items-center justify-between border-b bg-white px-4 py-3 lg:hidden">
-      <UiAppLogo size="sm" />
+      <UiAppLogo size="sm" to="/dashboard" />
       <button
         type="button"
         class="rounded-lg p-2 text-gray-500 hover:bg-gray-100"
@@ -40,7 +40,7 @@ onMounted(async () => {
       :class="isSidebarOpen ? 'translate-x-0' : '-translate-x-full'"
     >
       <div class="flex h-16 items-center border-b px-6">
-        <UiAppLogo />
+        <UiAppLogo to="/dashboard" />
       </div>
 
       <nav class="flex-1 space-y-1 p-4">
@@ -52,6 +52,11 @@ onMounted(async () => {
         <DashboardSidebarLink v-if="shopStore.hasShop" :to="'/dashboard/shop'" :label="t('nav.shop')">
           <template #icon>
             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          </template>
+        </DashboardSidebarLink>
+        <DashboardSidebarLink v-if="shopStore.hasShop" :to="'/dashboard/shop/schedule'" :label="t('nav.workingHours')">
+          <template #icon>
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
           </template>
         </DashboardSidebarLink>
         <DashboardSidebarLink v-if="shopStore.hasShop" :to="'/dashboard/clients'" :label="t('nav.clients')">

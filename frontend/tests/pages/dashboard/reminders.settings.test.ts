@@ -76,7 +76,7 @@ describe('RemindersSettingsPage', () => {
     await formEl.vm.$emit('save', { daysSinceLastVisit: 14 })
     await flushPromises()
 
-    expect(mockUpdateSettings).toHaveBeenCalledWith({ daysSinceLastVisit: 14 })
+    expect(mockUpdateSettings).toHaveBeenCalledWith({ daysSinceLastVisit: 14, locale: 'vi' })
     expect(navigateTo).toHaveBeenCalled()
   })
 

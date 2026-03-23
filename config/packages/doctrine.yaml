@@ -22,3 +22,9 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Reminder/Entity'
                 prefix: 'App\Reminder\Entity'
                 alias: Reminder
+            Subscription:
+                type: attribute
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Subscription/Entity'
+                prefix: 'App\Subscription\Entity'
+                alias: Subscription

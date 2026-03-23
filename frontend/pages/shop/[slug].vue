@@ -16,6 +16,7 @@ const slug = computed(() => route.params.slug as string)
 const shop = ref<PublicShopInfo | null>(null)
 const loading = ref(true)
 const notFound = ref(false)
+const shopUnavailable = ref(false)
 const step = ref<'service' | 'datetime' | 'details' | 'confirm' | 'success'>('service')
 const selectedService = ref<PublicService | null>(null)
 const selectedDate = ref<string | null>(null)
@@ -44,8 +45,14 @@ async function loadShop() {
   try {
     shop.value = await api.getShopInfo(slug.value)
   } catch (err) {
-    if (err instanceof FetchError && err.response?.status === 404) {
-      notFound.value = true
+    if (err instanceof FetchError) {
+      if (err.response?.status === 404) {
+        notFound.value = true
+      } else {
+        shopUnavailable.value = true
+      }
+    } else {
+      shopUnavailable.value = true
     }
   } finally {
     loading.value = false
@@ -160,8 +167,26 @@ onMounted(loadShop)
   </div>
 
   <!-- Not found -->
-  <div v-else-if="notFound" class="text-center py-16">
+  <div v-else-if="notFound" class="text-center py-16 px-4">
     <h1 class="text-xl font-bold text-gray-900 mb-2">{{ t('booking.error.shopNotFound') }}</h1>
+    <NuxtLink to="/" class="text-sm text-primary-600 hover:underline">
+      {{ t('booking.error.backToHome') }}
+    </NuxtLink>
+  </div>
+
+  <!-- Unavailable -->
+  <div v-else-if="shopUnavailable" class="text-center py-16 px-4">
+    <h1 class="text-xl font-bold text-gray-900 mb-2">{{ t('booking.error.shopUnavailable') }}</h1>
+    <p class="text-gray-500 mb-6">{{ t('booking.error.shopUnavailableDesc') }}</p>
+    <div class="flex items-center justify-center gap-4">
+      <button type="button" class="text-sm text-primary-600 hover:underline" @click="loadShop">
+        {{ t('common.retry') }}
+      </button>
+      <span class="text-gray-300">|</span>
+      <NuxtLink to="/" class="text-sm text-gray-500 hover:underline">
+        {{ t('booking.error.backToHome') }}
+      </NuxtLink>
+    </div>
   </div>
 
   <!-- Main content -->

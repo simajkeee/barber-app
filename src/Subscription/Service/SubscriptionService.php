@@ -91,7 +91,7 @@ final class SubscriptionService
     {
         $subscription = $this->subscriptionRepository->findByShop($shop);
         if ($subscription === null) {
-            throw new ApiException('SUBSCRIPTION_NOT_FOUND', 'Subscription not found.', 404);
+            return $this->createFreeForShop($shop);
         }
 
         return $subscription;
@@ -99,20 +99,14 @@ final class SubscriptionService
 
     public function isActive(Shop $shop): bool
     {
-        $subscription = $this->subscriptionRepository->findByShop($shop);
-        if ($subscription === null) {
-            return false;
-        }
+        $subscription = $this->getByShop($shop);
 
         return $subscription->getStatus() !== SubscriptionStatus::CANCELLED;
     }
 
     public function canCreateAppointment(Shop $shop): bool
     {
-        $subscription = $this->subscriptionRepository->findByShop($shop);
-        if ($subscription === null) {
-            return false;
-        }
+        $subscription = $this->getByShop($shop);
 
         if ($subscription->getStatus() === SubscriptionStatus::CANCELLED) {
             return false;
@@ -127,22 +121,12 @@ final class SubscriptionService
 
     public function incrementAppointmentCount(Shop $shop): void
     {
-        $subscription = $this->subscriptionRepository->findByShop($shop);
-        if ($subscription === null) {
-            return;
-        }
-
-        $this->subscriptionRepository->incrementAppointmentCount($subscription);
+        $this->subscriptionRepository->incrementAppointmentCount($this->getByShop($shop));
     }
 
     public function decrementAppointmentCount(Shop $shop): void
     {
-        $subscription = $this->subscriptionRepository->findByShop($shop);
-        if ($subscription === null) {
-            return;
-        }
-
-        $this->subscriptionRepository->decrementAppointmentCount($subscription);
+        $this->subscriptionRepository->decrementAppointmentCount($this->getByShop($shop));
     }
 
     public function expireOverdueSubscriptions(): int

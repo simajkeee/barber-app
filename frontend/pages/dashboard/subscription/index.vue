@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { SubscriptionResponse } from '~/types/subscription'
+import { FetchError } from 'ofetch'
 
 definePageMeta({
   layout: 'dashboard',
@@ -18,8 +19,12 @@ async function fetchSubscription() {
   error.value = null
   try {
     subscription.value = await getSubscription()
-  } catch {
-    error.value = t('subscription.error.loadFailed')
+  } catch (err) {
+    if (err instanceof FetchError && err.data?.code === 'SUBSCRIPTION_NOT_FOUND') {
+      error.value = t('subscription.error.setupInProgress')
+    } else {
+      error.value = t('subscription.error.loadFailed')
+    }
   } finally {
     isLoading.value = false
   }
@@ -38,12 +43,22 @@ onMounted(fetchSubscription)
     </div>
 
     <!-- Error -->
-    <UiAlert
-      v-else-if="error"
-      type="error"
-      :message="error"
-      class="mt-6"
-    />
+    <div v-else-if="error" class="mt-6 space-y-3">
+      <UiAlert type="error" :message="error" />
+      <div class="flex gap-3">
+        <button
+          type="button"
+          class="text-sm text-primary-600 hover:underline"
+          @click="fetchSubscription"
+        >
+          {{ t('subscription.error.retry') }}
+        </button>
+        <span class="text-gray-400">·</span>
+        <a href="mailto:support@barberpro.vn" class="text-sm text-gray-500 hover:underline">
+          {{ t('subscription.error.contactSupport') }}
+        </a>
+      </div>
+    </div>
 
     <!-- Content -->
     <div v-else-if="subscription" class="mt-6 space-y-6">

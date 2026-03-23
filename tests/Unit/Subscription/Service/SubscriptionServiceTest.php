@@ -209,12 +209,12 @@ final class SubscriptionServiceTest extends TestCase
     }
 
     #[Test]
-    public function testCanCreateAppointmentReturnsFalseWhenNoSubscription(): void
+    public function testCanCreateAppointmentReturnsTrueWhenNoSubscriptionExistsAutoCreatesFreePlan(): void
     {
         $shop = $this->createShop();
         $this->subscriptionRepository->method('findByShop')->willReturn(null);
 
-        self::assertFalse($this->sut->canCreateAppointment($shop));
+        self::assertTrue($this->sut->canCreateAppointment($shop));
     }
 
     // --- cancel ---
@@ -266,18 +266,18 @@ final class SubscriptionServiceTest extends TestCase
     // --- getByShop ---
 
     #[Test]
-    public function testGetByShopThrows404WhenNotFound(): void
+    public function testGetByShopAutoCreatesFreeSubscriptionWhenNotFound(): void
     {
         $shop = $this->createShop();
         $this->subscriptionRepository->method('findByShop')->willReturn(null);
+        $this->em->expects(self::once())->method('persist');
+        $this->em->expects(self::once())->method('flush');
 
-        try {
-            $this->sut->getByShop($shop);
-            self::fail('Expected ApiException');
-        } catch (ApiException $e) {
-            self::assertSame(404, $e->statusCode);
-            self::assertSame('SUBSCRIPTION_NOT_FOUND', $e->errorCode);
-        }
+        $result = $this->sut->getByShop($shop);
+
+        self::assertSame(SubscriptionPlan::FREE, $result->getPlan());
+        self::assertSame(SubscriptionStatus::ACTIVE, $result->getStatus());
+        self::assertSame($shop, $result->getShop());
     }
 
     #[Test]
@@ -327,12 +327,12 @@ final class SubscriptionServiceTest extends TestCase
     }
 
     #[Test]
-    public function testIsActiveReturnsFalseWhenNoSubscription(): void
+    public function testIsActiveReturnsTrueWhenNoSubscriptionExistsAutoCreatesFreePlan(): void
     {
         $shop = $this->createShop();
         $this->subscriptionRepository->method('findByShop')->willReturn(null);
 
-        self::assertFalse($this->sut->isActive($shop));
+        self::assertTrue($this->sut->isActive($shop));
     }
 
     // --- incrementAppointmentCount ---
@@ -352,11 +352,11 @@ final class SubscriptionServiceTest extends TestCase
     }
 
     #[Test]
-    public function testIncrementAppointmentCountDoesNothingWhenNoSubscription(): void
+    public function testIncrementAppointmentCountAutoCreatesFreeSubscriptionWhenNotFound(): void
     {
         $shop = $this->createShop();
         $this->subscriptionRepository->method('findByShop')->willReturn(null);
-        $this->subscriptionRepository->expects(self::never())->method('incrementAppointmentCount');
+        $this->subscriptionRepository->expects(self::once())->method('incrementAppointmentCount');
 
         $this->sut->incrementAppointmentCount($shop);
     }
@@ -378,11 +378,11 @@ final class SubscriptionServiceTest extends TestCase
     }
 
     #[Test]
-    public function testDecrementAppointmentCountDoesNothingWhenNoSubscription(): void
+    public function testDecrementAppointmentCountAutoCreatesFreeSubscriptionWhenNotFound(): void
     {
         $shop = $this->createShop();
         $this->subscriptionRepository->method('findByShop')->willReturn(null);
-        $this->subscriptionRepository->expects(self::never())->method('decrementAppointmentCount');
+        $this->subscriptionRepository->expects(self::once())->method('decrementAppointmentCount');
 
         $this->sut->decrementAppointmentCount($shop);
     }

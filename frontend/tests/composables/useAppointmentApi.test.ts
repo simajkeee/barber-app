@@ -33,7 +33,7 @@ describe('useAppointmentApi', () => {
         query: {
           dateFrom: '2026-03-01',
           dateTo: '2026-03-31',
-          status: ['scheduled', 'completed'],
+          'status[]': ['scheduled', 'completed'],
           clientId: 'c-1',
           cursor: 'abc',
           limit: 10,

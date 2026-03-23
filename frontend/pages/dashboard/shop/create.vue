@@ -44,6 +44,12 @@ async function onSubmit(data: Record<string, unknown>) {
       :title="t('shop.create.title')"
       :subtitle="t('shop.create.subtitle')"
     />
-    <ShopProfileForm ref="formRef" :loading="loading" @submit="onSubmit" />
+    <UiBreadcrumb
+      :items="[
+        { label: t('dashboard.title'), to: localePath('/dashboard') },
+        { label: t('shop.create.title') },
+      ]"
+    />
+    <ShopProfileForm ref="formRef" :loading="loading" @submit="onSubmit" @cancel="navigateTo(localePath('/dashboard'))" />
   </div>
 </template>

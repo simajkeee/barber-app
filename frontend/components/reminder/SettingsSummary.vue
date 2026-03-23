@@ -19,6 +19,9 @@ const localePath = useLocalePath()
         <p class="mt-0.5 truncate text-xs text-gray-400" :title="settings.messageTemplate">
           {{ settings.messageTemplate }}
         </p>
+        <p class="mt-1 text-xs text-gray-400">
+          {{ t('reminders.settings.templateLocale', { locale: t(`reminders.settings.locale.${settings.locale}`) }) }}
+        </p>
       </div>
       <NuxtLink
         :to="localePath('/dashboard/reminders/settings')"

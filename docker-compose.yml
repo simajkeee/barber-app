@@ -34,9 +34,15 @@ services:
       - .:/app
       - ./.claude:/home/claude/.claude
       - ~/.claude/skills:/home/claude/.claude/skills
+      - ~/.claude/commands:/home/claude/.claude/commands
+      - ~/.claude/plugins:${HOME}/.claude/plugins
+      - ~/.claude/projects/-Users-aleksandrkarelin-Projects-barber-app:/home/claude/.claude/projects/-app
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       DATABASE_URL: postgresql://barber:barber@database:5432/barber_app?serverVersion=16&charset=utf8
+      HOST_HOME: ${HOME}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       database:
         condition: service_healthy

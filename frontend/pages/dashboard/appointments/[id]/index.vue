@@ -102,7 +102,7 @@ const confirmDescription = computed(() => {
     <template v-else-if="appointment">
       <DashboardPageHeader :title="pageTitle">
         <template #actions>
-          <UiButton variant="ghost" @click="navigateTo(localePath('/dashboard/appointments'))">
+          <UiButton variant="secondary" @click="navigateTo(localePath('/dashboard/appointments'))">
             {{ t('common.back') }}
           </UiButton>
           <UiButton
@@ -116,13 +116,19 @@ const confirmDescription = computed(() => {
             <UiButton variant="primary" @click="promptAction('complete')">
               {{ t('appointments.actions.complete') }}
             </UiButton>
-            <UiButton variant="ghost" @click="promptAction('noShow')">
+            <UiButton variant="secondary" @click="promptAction('noShow')">
               {{ t('appointments.actions.noShow') }}
             </UiButton>
             <UiButton variant="danger" @click="promptAction('cancel')">
               {{ t('appointments.actions.cancel') }}
             </UiButton>
           </template>
+          <NuxtLink
+            v-if="appointment.status === 'completed'"
+            :to="localePath(`/dashboard/appointments/create?clientId=${appointment.client.id}&serviceId=${appointment.service.id}`)"
+          >
+            <UiButton variant="secondary">{{ t('appointments.actions.bookAgain') }}</UiButton>
+          </NuxtLink>
         </template>
       </DashboardPageHeader>
 

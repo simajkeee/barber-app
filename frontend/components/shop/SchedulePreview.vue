@@ -11,7 +11,7 @@ const { t } = useI18n()
 <template>
   <div class="rounded-xl border border-gray-200 bg-white shadow-sm">
     <div class="border-b px-6 py-3">
-      <h3 class="text-sm font-semibold text-gray-900">{{ t('shop.schedule.title') }}</h3>
+      <h2 class="text-sm font-semibold text-gray-900">{{ t('shop.schedule.title') }}</h2>
     </div>
     <div class="divide-y">
       <div

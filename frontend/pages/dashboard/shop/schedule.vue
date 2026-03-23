@@ -46,10 +46,16 @@ async function onSubmit(data: { schedule: ScheduleEntry[] }) {
     <DashboardPageHeader :title="t('shop.schedule.title')">
       <template #actions>
         <NuxtLink :to="localePath('/dashboard/shop')">
-          <UiButton variant="ghost">{{ t('common.back') }}</UiButton>
+          <UiButton variant="secondary">{{ t('common.back') }}</UiButton>
         </NuxtLink>
       </template>
     </DashboardPageHeader>
+    <UiBreadcrumb
+      :items="[
+        { label: t('nav.shop'), to: localePath('/dashboard/shop') },
+        { label: t('shop.schedule.title') },
+      ]"
+    />
 
     <div class="mx-auto max-w-2xl">
       <ShopScheduleForm

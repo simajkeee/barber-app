@@ -50,9 +50,17 @@ describe('ShopForm', () => {
       expect(labels).not.toContain('shop.profile.coverImageUrl')
     })
 
-    it('does not render cancel button', () => {
+    it('renders cancel button', () => {
       const wrapper = mountForm()
-      expect(wrapper.text()).not.toContain('shop.profile.cancel')
+      expect(wrapper.text()).toContain('shop.profile.cancel')
+    })
+
+    it('emits cancel when cancel button clicked in create mode', async () => {
+      const wrapper = mountForm()
+      const buttons = wrapper.findAll('button')
+      const cancelBtn = buttons.find(b => b.text().includes('shop.profile.cancel'))!
+      await cancelBtn.trigger('click')
+      expect(wrapper.emitted('cancel')).toHaveLength(1)
     })
 
     it('shows create title on submit button', () => {

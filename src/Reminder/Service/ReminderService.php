@@ -28,9 +28,9 @@ final class ReminderService
     /**
      * @return array{data: array<array<string, mixed>>, meta: array{total: int, cursor: ?string}, settings: array<string, mixed>}
      */
-    public function getTodayReminders(Shop $shop, ReminderTodayQuery $query): array
+    public function getTodayReminders(Shop $shop, ReminderTodayQuery $query, string $locale = 'vi'): array
     {
-        $settings = $this->reminderSettingsService->getSettings($shop);
+        $settings = $this->reminderSettingsService->getSettings($shop, $locale);
         $tz = new \DateTimeZone('Asia/Ho_Chi_Minh');
         $threshold = new \DateTimeImmutable(\sprintf('-%d days', $settings->getDaysSinceLastVisit()), $tz);
         $cooldown = new \DateTimeImmutable(\sprintf('-%d days', self::COOLDOWN_DAYS), $tz);

@@ -6,19 +6,24 @@ definePageMeta({
   middleware: 'auth',
 })
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const localePath = useLocalePath()
 const reminderApi = useReminderApi()
 const toast = useToast()
 
-const settings = ref<ReminderSettings | null>(null)
+type Locale = 'vi' | 'en'
+
+const activeLocale = ref<Locale>(locale.value === 'en' ? 'en' : 'vi')
+const settingsCache = ref<Partial<Record<Locale, ReminderSettings>>>({})
 const isLoading = ref(true)
 const isSaving = ref(false)
 
-async function loadSettings() {
+const settings = computed(() => settingsCache.value[activeLocale.value] ?? null)
+
+async function loadSettings(locale: Locale) {
   isLoading.value = true
   try {
-    settings.value = await reminderApi.getSettings()
+    settingsCache.value[locale] = await reminderApi.getSettings(locale)
   } catch {
     toast.error('reminders.toast.settingsError')
   } finally {
@@ -26,10 +31,18 @@ async function loadSettings() {
   }
 }
 
+async function switchLocale(locale: Locale) {
+  activeLocale.value = locale
+  if (!settingsCache.value[locale]) {
+    await loadSettings(locale)
+  }
+}
+
 async function onSave(data: UpdateReminderSettingsRequest) {
   isSaving.value = true
   try {
-    settings.value = await reminderApi.updateSettings(data)
+    const saved = await reminderApi.updateSettings({ ...data, locale: activeLocale.value })
+    settingsCache.value[activeLocale.value] = saved
     toast.success('reminders.toast.settingsSaved')
     await navigateTo(localePath('/dashboard/reminders'))
   } catch {
@@ -39,7 +52,7 @@ async function onSave(data: UpdateReminderSettingsRequest) {
   }
 }
 
-onMounted(() => loadSettings())
+onMounted(() => loadSettings(activeLocale.value))
 </script>
 
 <template>
@@ -52,6 +65,21 @@ onMounted(() => loadSettings())
       </template>
     </DashboardPageHeader>
 
+    <!-- Locale tabs -->
+    <div class="mb-6 flex gap-1 rounded-lg border border-gray-200 bg-gray-50 p-1 max-w-xs">
+      <button
+        v-for="loc in (['vi', 'en'] as const)"
+        :key="loc"
+        class="flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors"
+        :class="activeLocale === loc
+          ? 'bg-white shadow-sm text-gray-900'
+          : 'text-gray-500 hover:text-gray-700'"
+        @click="switchLocale(loc)"
+      >
+        {{ t(`reminders.settings.locale.${loc}`) }}
+      </button>
+    </div>
+
     <div v-if="isLoading" class="animate-pulse space-y-4">
       <div class="h-10 w-64 rounded bg-gray-200" />
       <div class="h-24 w-full max-w-lg rounded bg-gray-200" />
@@ -59,9 +87,17 @@ onMounted(() => loadSettings())
 
     <ReminderSettingsForm
       v-else-if="settings"
+      :key="activeLocale"
       :settings="settings"
       :is-loading="isSaving"
       @save="onSave"
     />
+
+    <div v-else class="rounded-lg border border-red-100 bg-red-50 px-4 py-3">
+      <p class="text-sm text-red-700">{{ t('reminders.settings.loadError') }}</p>
+      <button class="mt-2 text-sm font-medium text-red-700 underline hover:no-underline" @click="loadSettings(activeLocale)">
+        {{ t('common.retry') }}
+      </button>
+    </div>
   </div>
 </template>

@@ -11,8 +11,12 @@ z.setErrorMap((issue) => {
     if (issue.minimum === 1) return { message: 'validation.required' }
     return { message: 'validation.minLength' }
   }
-  if (issue.code === 'invalid_format' && issue.format === 'email') {
+  // Zod v3 emits invalid_string (not invalid_format) for email/regex validations
+  if (issue.code === 'invalid_string' && issue.validation === 'email') {
     return { message: 'validation.emailInvalid' }
+  }
+  if (issue.code === 'invalid_string' && issue.validation === 'regex') {
+    return { message: 'validation.phoneInvalid' }
   }
   return { message: 'validation.invalid' }
 })
@@ -85,6 +89,7 @@ vi.stubGlobal('useI18n', () => ({
 }))
 vi.stubGlobal('useSwitchLocalePath', () => (code: string) => `/${code}`)
 vi.stubGlobal('useLocalePath', () => (path: string) => path)
+vi.stubGlobal('useRoute', () => ({ params: {}, query: {} }))
 vi.stubGlobal('defineNuxtRouteMiddleware', (fn: Function) => fn)
 vi.stubGlobal('$fetch', vi.fn())
 

@@ -39,6 +39,11 @@ subscription:
     type: attribute
     prefix: /api/v1/subscription
 
+subscription_upgrade_request:
+    resource: App\Subscription\Controller\CreateUpgradeRequestController
+    type: attribute
+    prefix: /api/v1/subscription
+
 admin_activate:
     resource: App\Subscription\Controller\AdminActivateSubscriptionController
     type: attribute

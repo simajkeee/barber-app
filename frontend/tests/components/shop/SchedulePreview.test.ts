@@ -8,7 +8,7 @@ describe('SchedulePreview', () => {
     const wrapper = mount(SchedulePreview, {
       props: { schedule: [] },
     })
-    expect(wrapper.find('h3').text()).toContain('shop.schedule.title')
+    expect(wrapper.find('h2').text()).toContain('shop.schedule.title')
   })
 
   it('renders a row for each schedule entry', () => {

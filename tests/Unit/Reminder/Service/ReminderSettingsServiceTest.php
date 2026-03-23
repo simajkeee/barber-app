@@ -55,29 +55,78 @@ final class ReminderSettingsServiceTest extends TestCase
         $settings->setShop($shop);
         $settings->setDaysSinceLastVisit(14);
 
-        $this->repository->method('findByShop')->with($shop)->willReturn($settings);
+        $this->repository->method('findByShopAndLocale')->with($shop, 'vi')->willReturn($settings);
         $this->em->expects(self::never())->method('persist');
 
-        $result = $this->sut->getSettings($shop);
+        $result = $this->sut->getSettings($shop, 'vi');
 
         self::assertSame($settings, $result);
         self::assertSame(14, $result->getDaysSinceLastVisit());
     }
 
     #[Test]
-    public function testGetSettingsLazyCreatesDefaultsWhenNotFound(): void
+    public function testGetSettingsLazyCreatesViDefaultsWhenNotFound(): void
     {
         $shop = $this->createShop();
 
-        $this->repository->method('findByShop')->with($shop)->willReturn(null);
+        $this->repository->method('findByShopAndLocale')->with($shop, 'vi')->willReturn(null);
         $this->em->expects(self::once())->method('persist')->with(self::isInstanceOf(ReminderSettings::class));
         $this->em->expects(self::once())->method('flush');
 
-        $result = $this->sut->getSettings($shop);
+        $result = $this->sut->getSettings($shop, 'vi');
 
         self::assertSame($shop, $result->getShop());
         self::assertSame(ReminderSettings::DEFAULT_DAYS_SINCE_LAST_VISIT, $result->getDaysSinceLastVisit());
         self::assertSame(ReminderSettings::DEFAULT_MESSAGE_TEMPLATE, $result->getMessageTemplate());
+        self::assertSame('vi', $result->getLocale());
+    }
+
+    #[Test]
+    public function testGetSettingsLazyCreatesEnDefaultsWhenNotFound(): void
+    {
+        $shop = $this->createShop();
+
+        $this->repository->method('findByShopAndLocale')->with($shop, 'en')->willReturn(null);
+        $this->em->expects(self::once())->method('persist');
+        $this->em->expects(self::once())->method('flush');
+
+        $result = $this->sut->getSettings($shop, 'en');
+
+        self::assertSame(ReminderSettings::DEFAULT_MESSAGE_TEMPLATE_EN, $result->getMessageTemplate());
+        self::assertSame('en', $result->getLocale());
+    }
+
+    #[Test]
+    public function testGetSettingsUsesViLocaleByDefault(): void
+    {
+        $shop = $this->createShop();
+        $settings = new ReminderSettings();
+        $settings->setShop($shop);
+
+        $this->repository->method('findByShopAndLocale')->with($shop, 'vi')->willReturn($settings);
+
+        $result = $this->sut->getSettings($shop);
+
+        self::assertSame($settings, $result);
+    }
+
+    #[Test]
+    public function testGetSettingsThrowsOnConcurrentInsertWithMissingRecord(): void
+    {
+        $shop = $this->createShop();
+
+        // Simulate: first findByShopAndLocale returns null (triggers creation),
+        // flush throws UniqueConstraintViolationException (concurrent insert won),
+        // second findByShopAndLocale also returns null (impossible race, but must not return null from the method)
+        $this->repository->method('findByShopAndLocale')->willReturn(null);
+        $this->em->method('flush')->willThrowException(
+            $this->createMock(\Doctrine\DBAL\Exception\UniqueConstraintViolationException::class)
+        );
+        $this->em->expects(self::once())->method('clear');
+
+        $this->expectException(\RuntimeException::class);
+
+        $this->sut->getSettings($shop, 'en');
     }
 
     #[Test]
@@ -86,8 +135,9 @@ final class ReminderSettingsServiceTest extends TestCase
         $shop = $this->createShop();
         $settings = new ReminderSettings();
         $settings->setShop($shop);
+        $settings->setLocale('vi');
 
-        $this->repository->method('findByShop')->willReturn($settings);
+        $this->repository->method('findByShopAndLocale')->willReturn($settings);
         $this->em->expects(self::once())->method('flush');
 
         $this->sut->updateSettings($shop, new UpdateReminderSettingsRequest(daysSinceLastVisit: 14));
@@ -100,7 +150,7 @@ final class ReminderSettingsServiceTest extends TestCase
         $settings = new ReminderSettings();
         $settings->setShop($shop);
 
-        $this->repository->method('findByShop')->willReturn($settings);
+        $this->repository->method('findByShopAndLocale')->willReturn($settings);
 
         $dto = new UpdateReminderSettingsRequest(daysSinceLastVisit: 14);
         $result = $this->sut->updateSettings($shop, $dto);
@@ -116,7 +166,7 @@ final class ReminderSettingsServiceTest extends TestCase
         $settings = new ReminderSettings();
         $settings->setShop($shop);
 
-        $this->repository->method('findByShop')->willReturn($settings);
+        $this->repository->method('findByShopAndLocale')->willReturn($settings);
 
         $dto = new UpdateReminderSettingsRequest(messageTemplate: 'Hello {client_name}!');
         $result = $this->sut->updateSettings($shop, $dto);
@@ -132,7 +182,7 @@ final class ReminderSettingsServiceTest extends TestCase
         $settings = new ReminderSettings();
         $settings->setShop($shop);
 
-        $this->repository->method('findByShop')->willReturn($settings);
+        $this->repository->method('findByShopAndLocale')->willReturn($settings);
 
         $dto = new UpdateReminderSettingsRequest(daysSinceLastVisit: 7, messageTemplate: 'Hi {client_name}');
         $result = $this->sut->updateSettings($shop, $dto);
@@ -150,7 +200,7 @@ final class ReminderSettingsServiceTest extends TestCase
         $settings->setDaysSinceLastVisit(14);
         $settings->setMessageTemplate('Custom template');
 
-        $this->repository->method('findByShop')->willReturn($settings);
+        $this->repository->method('findByShopAndLocale')->willReturn($settings);
 
         $dto = new UpdateReminderSettingsRequest();
         $result = $this->sut->updateSettings($shop, $dto);
@@ -160,17 +210,35 @@ final class ReminderSettingsServiceTest extends TestCase
     }
 
     #[Test]
+    public function testUpdateSettingsUsesLocaleFromDto(): void
+    {
+        $shop = $this->createShop();
+        $settings = new ReminderSettings();
+        $settings->setShop($shop);
+        $settings->setLocale('en');
+
+        $this->repository->method('findByShopAndLocale')->with($shop, 'en')->willReturn($settings);
+
+        $dto = new UpdateReminderSettingsRequest(locale: 'en', messageTemplate: 'Hi there');
+        $result = $this->sut->updateSettings($shop, $dto);
+
+        self::assertSame('Hi there', $result->getMessageTemplate());
+    }
+
+    #[Test]
     public function testSerializeSettingsReturnsExpectedStructure(): void
     {
         $settings = new ReminderSettings();
         $settings->setShop($this->createShop());
         $settings->setDaysSinceLastVisit(14);
         $settings->setMessageTemplate('Hello');
+        $settings->setLocale('en');
 
         $result = ReminderSettingsService::serializeSettings($settings);
 
         self::assertSame(14, $result['daysSinceLastVisit']);
         self::assertSame('Hello', $result['messageTemplate']);
-        self::assertCount(2, $result);
+        self::assertSame('en', $result['locale']);
+        self::assertCount(3, $result);
     }
 }

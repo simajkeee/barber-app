@@ -34,7 +34,7 @@ final readonly class GetTodayRemindersController
             throw new ApiException('SHOP_NOT_FOUND', 'Shop not found. Create one first.', 404);
         }
 
-        $result = $this->reminderService->getTodayReminders($shop, $query ?? new ReminderTodayQuery());
+        $result = $this->reminderService->getTodayReminders($shop, $query ?? new ReminderTodayQuery(), $user->getLocale()->value);
 
         return new JsonResponse($result);
     }

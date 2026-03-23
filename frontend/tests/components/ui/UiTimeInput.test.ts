@@ -15,54 +15,47 @@ describe('UiTimeInput', () => {
       expect(wrapper.find('label').text()).toBe('Open time')
     })
 
-    it('links label to select via id', () => {
+    it('links label to trigger button via id', () => {
       const wrapper = mountInput()
       const labelFor = wrapper.find('label').attributes('for')
-      const selectId = wrapper.find('select').attributes('id')
-      expect(labelFor).toBe(selectId)
+      const buttonId = wrapper.find('button').attributes('id')
+      expect(labelFor).toBe(buttonId)
     })
 
-    it('generates time options from 06:00 to 23:45 in 15-min intervals', () => {
+    it('shows current modelValue in trigger button', () => {
+      const wrapper = mountInput({ modelValue: '14:30' })
+      expect(wrapper.find('button').text()).toContain('14:30')
+    })
+
+    it('shows placeholder when modelValue is null', () => {
+      const wrapper = mountInput({ modelValue: null })
+      expect(wrapper.find('button').text()).toContain('--:--')
+    })
+
+    it('generates 72 time options from 06:00 to 23:45 in 15-min intervals when open', async () => {
       const wrapper = mountInput()
-      const options = wrapper.findAll('option').filter(o => o.attributes('value') !== '')
-      // 6:00 to 23:45 = 18 hours * 4 = 72 options
+      await wrapper.find('button').trigger('click')
+      const options = wrapper.findAll('[role="option"]')
       expect(options).toHaveLength(72)
       expect(options[0].text()).toBe('06:00')
       expect(options[options.length - 1].text()).toBe('23:45')
     })
-
-    it('has disabled placeholder option', () => {
-      const wrapper = mountInput()
-      const placeholder = wrapper.find('option[value=""]')
-      expect(placeholder.exists()).toBe(true)
-      expect(placeholder.attributes('disabled')).toBeDefined()
-      expect(placeholder.text()).toBe('--:--')
-    })
-
-    it('selects current modelValue', () => {
-      const wrapper = mountInput({ modelValue: '14:30' })
-      expect((wrapper.find('select').element as HTMLSelectElement).value).toBe('14:30')
-    })
   })
 
   describe('v-model', () => {
-    it('emits update:modelValue on change', async () => {
+    it('emits update:modelValue when an option is clicked', async () => {
       const wrapper = mountInput({ modelValue: '09:00' })
-      await wrapper.find('select').setValue('10:30')
+      await wrapper.find('button').trigger('click')
+      const option = wrapper.findAll('[role="option"]').find(o => o.text() === '10:30')
+      await option!.trigger('click')
       expect(wrapper.emitted('update:modelValue')![0][0]).toBe('10:30')
-    })
-
-    it('emits null when empty option selected', async () => {
-      const wrapper = mountInput({ modelValue: '09:00' })
-      await wrapper.find('select').setValue('')
-      expect(wrapper.emitted('update:modelValue')![0][0]).toBeNull()
     })
   })
 
   describe('disabled state', () => {
-    it('disables select when disabled prop is true', () => {
+    it('disables trigger button when disabled prop is true', () => {
       const wrapper = mountInput({ disabled: true })
-      expect(wrapper.find('select').attributes('disabled')).toBeDefined()
+      expect((wrapper.find('button').element as HTMLButtonElement).disabled).toBe(true)
     })
   })
 
@@ -77,15 +70,15 @@ describe('UiTimeInput', () => {
       expect(wrapper.find('[role="alert"]').exists()).toBe(false)
     })
 
-    it('sets aria-invalid when error present', () => {
+    it('sets aria-invalid on trigger button when error present', () => {
       const wrapper = mountInput({ error: 'Bad' })
-      expect(wrapper.find('select').attributes('aria-invalid')).toBe('true')
+      expect(wrapper.find('button').attributes('aria-invalid')).toBe('true')
     })
 
-    it('links error via aria-describedby', () => {
+    it('links error via aria-describedby on trigger button', () => {
       const wrapper = mountInput({ error: 'Bad' })
       const errorId = wrapper.find('[role="alert"]').attributes('id')
-      expect(wrapper.find('select').attributes('aria-describedby')).toBe(errorId)
+      expect(wrapper.find('button').attributes('aria-describedby')).toBe(errorId)
     })
   })
 })

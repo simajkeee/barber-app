@@ -57,6 +57,12 @@ function onCancel() {
 <template>
   <div class="mx-auto max-w-lg">
     <DashboardPageHeader :title="t('appointments.create.title')" />
+    <UiBreadcrumb
+      :items="[
+        { label: t('appointments.title'), to: localePath('/dashboard/appointments') },
+        { label: t('appointments.create.title') },
+      ]"
+    />
     <AppointmentForm ref="formRef" :loading="loading" @submit="onSubmit" @cancel="onCancel" />
   </div>
 </template>

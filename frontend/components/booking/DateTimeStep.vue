@@ -74,6 +74,12 @@ function onSelectDate(date: string) {
 
 const availableSlots = computed(() => slots.value.filter(s => s.available))
 const unavailableSlots = computed(() => slots.value.filter(s => !s.available))
+
+onMounted(() => {
+  if (props.selectedDate) {
+    loadSlots(props.selectedDate)
+  }
+})
 </script>
 
 <template>

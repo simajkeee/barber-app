@@ -63,7 +63,7 @@ describe('BookingDateTimeStep', () => {
 
     // Click first enabled date (monday or today)
     const buttons = wrapper.findAll('button')
-    const enabledButton = buttons.find(b => !b.attributes('disabled'))
+    const enabledButton = buttons.find(b => !(b.element as HTMLButtonElement).disabled)
     await enabledButton!.trigger('click')
 
     expect(wrapper.emitted('selectDate')).toBeTruthy()
@@ -79,7 +79,7 @@ describe('BookingDateTimeStep', () => {
 
     const wrapper = mountStep({ selectedDate: '2026-03-17' })
     const buttons = wrapper.findAll('button')
-    const enabledButton = buttons.find(b => !b.attributes('disabled'))
+    const enabledButton = buttons.find(b => !(b.element as HTMLButtonElement).disabled)
     await enabledButton!.trigger('click')
     await flushPromises()
 

@@ -8,6 +8,7 @@ use App\Entity\Shop;
 use App\Reminder\Dto\UpdateReminderSettingsRequest;
 use App\Reminder\Entity\ReminderSettings;
 use App\Reminder\Repository\ReminderSettingsRepository;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 
 final class ReminderSettingsService
@@ -18,16 +19,23 @@ final class ReminderSettingsService
     ) {
     }
 
-    public function getSettings(Shop $shop): ReminderSettings
+    public function getSettings(Shop $shop, string $locale = 'vi'): ReminderSettings
     {
-        $settings = $this->reminderSettingsRepository->findByShop($shop);
+        $settings = $this->reminderSettingsRepository->findByShopAndLocale($shop, $locale);
 
         if (null === $settings) {
-            $settings = new ReminderSettings();
-            $settings->setShop($shop);
-
+            $settings = $this->createDefaultSettings($shop, $locale);
             $this->em->persist($settings);
-            $this->em->flush();
+            try {
+                $this->em->flush();
+            } catch (UniqueConstraintViolationException) {
+                // Concurrent request already created the record — fetch and return it
+                $this->em->clear();
+                $settings = $this->reminderSettingsRepository->findByShopAndLocale($shop, $locale);
+                if (null === $settings) {
+                    throw new \RuntimeException(sprintf('Failed to load reminder settings for shop %s locale %s after concurrent insert.', $shop->getId(), $locale));
+                }
+            }
         }
 
         return $settings;
@@ -35,7 +43,8 @@ final class ReminderSettingsService
 
     public function updateSettings(Shop $shop, UpdateReminderSettingsRequest $dto): ReminderSettings
     {
-        $settings = $this->getSettings($shop);
+        $locale = $dto->locale ?? 'vi';
+        $settings = $this->getSettings($shop, $locale);
 
         if (null !== $dto->daysSinceLastVisit) {
             $settings->setDaysSinceLastVisit($dto->daysSinceLastVisit);
@@ -58,6 +67,20 @@ final class ReminderSettingsService
         return [
             'daysSinceLastVisit' => $settings->getDaysSinceLastVisit(),
             'messageTemplate' => $settings->getMessageTemplate(),
+            'locale' => $settings->getLocale(),
         ];
+    }
+
+    private function createDefaultSettings(Shop $shop, string $locale): ReminderSettings
+    {
+        $settings = new ReminderSettings();
+        $settings->setShop($shop);
+        $settings->setLocale($locale);
+
+        if ('en' === $locale) {
+            $settings->setMessageTemplate(ReminderSettings::DEFAULT_MESSAGE_TEMPLATE_EN);
+        }
+
+        return $settings;
     }
 }

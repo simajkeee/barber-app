@@ -64,7 +64,8 @@ describe('ScheduleDayRow', () => {
 
     it('hides time inputs when closed', () => {
       const wrapper = mountRow({ modelValue: createEntry({ isOpen: false }) })
-      expect(wrapper.findAll('select')).toHaveLength(0)
+      const timeContainer = wrapper.find('.flex.gap-4')
+      expect(timeContainer.classes()).toContain('invisible')
     })
   })
 

@@ -14,6 +14,9 @@ final readonly class UpdateReminderSettingsRequest
 
         #[Assert\Length(max: 1000)]
         public ?string $messageTemplate = null,
+
+        #[Assert\Choice(choices: ['vi', 'en'])]
+        public ?string $locale = null,
     ) {
     }
 }

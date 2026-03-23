@@ -42,7 +42,7 @@ describe('useReminderApi', () => {
       const api = useReminderApi()
       const result = await api.getSettings()
 
-      expect(mockApi).toHaveBeenCalledWith('/reminders/settings')
+      expect(mockApi).toHaveBeenCalledWith('/reminders/settings', { query: {} })
       expect(result).toEqual(settings)
     })
   })
