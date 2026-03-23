@@ -14,8 +14,8 @@ useSeoMeta({
   ogDescription: () => t('seo.register.description'),
 })
 
-function onSuccess() {
-  navigateTo(localePath('/dashboard'))
+function onSuccess(_payload?: { isNewUser?: boolean }) {
+  navigateTo(localePath('/dashboard/shop/create'))
 }
 </script>
 

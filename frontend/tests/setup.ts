@@ -41,6 +41,7 @@ vi.stubGlobal('storeToRefs', storeToRefs)
 // Individual tests that need to mock store behavior should import and override
 vi.stubGlobal('useAuthStore', vi.fn())
 vi.stubGlobal('useShopStore', vi.fn())
+vi.stubGlobal('useOnboardingStore', vi.fn())
 
 // Composable auto-imports
 vi.stubGlobal('useApiError', () => ({

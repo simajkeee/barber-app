@@ -40,7 +40,7 @@ function loadFacebookSdk(appId: string): Promise<void> {
 
 <script setup lang="ts">
 const emit = defineEmits<{
-  success: []
+  success: [payload: { isNewUser?: boolean }]
 }>()
 
 const { t } = useI18n()
@@ -75,7 +75,7 @@ async function onClick() {
     const result = await facebookLogin(fbAccessToken)
 
     if (result.success) {
-      emit('success')
+      emit('success', { isNewUser: result.isNewUser })
     } else {
       error.value = t('auth.error.facebookFailed')
     }
