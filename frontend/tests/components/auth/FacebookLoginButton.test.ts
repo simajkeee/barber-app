@@ -55,9 +55,9 @@ describe('FacebookLoginButton', () => {
     expect(wrapper.find('button').text()).toContain('auth.facebook.button')
   })
 
-  it('emits success on successful Facebook login', async () => {
+  it('emits success with isNewUser payload on successful Facebook login', async () => {
     ;(window as any).FB = createMockFB()
-    mockFacebookLogin.mockResolvedValueOnce({ success: true })
+    mockFacebookLogin.mockResolvedValueOnce({ success: true, isNewUser: true })
 
     const wrapper = mountButton()
     await wrapper.find('button').trigger('click')
@@ -65,6 +65,18 @@ describe('FacebookLoginButton', () => {
 
     expect(mockFacebookLogin).toHaveBeenCalledWith('fb-token-123')
     expect(wrapper.emitted('success')).toHaveLength(1)
+    expect(wrapper.emitted('success')![0]).toEqual([{ isNewUser: true }])
+  })
+
+  it('emits success with isNewUser false for returning users', async () => {
+    ;(window as any).FB = createMockFB()
+    mockFacebookLogin.mockResolvedValueOnce({ success: true, isNewUser: false })
+
+    const wrapper = mountButton()
+    await wrapper.find('button').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.emitted('success')![0]).toEqual([{ isNewUser: false }])
   })
 
   it('shows error when Facebook login returns failure result', async () => {

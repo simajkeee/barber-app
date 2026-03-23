@@ -17,8 +17,12 @@ useSeoMeta({
   ogDescription: () => t('seo.login.description'),
 })
 
-function onSuccess() {
-  navigateTo(localePath('/dashboard'))
+function onSuccess(payload?: { isNewUser?: boolean }) {
+  if (payload?.isNewUser) {
+    navigateTo(localePath('/dashboard/shop/create'))
+  } else {
+    navigateTo(localePath('/dashboard'))
+  }
 }
 </script>
 

@@ -554,12 +554,16 @@
     }
   },
   "onboarding": {
-    "title": "Get started",
-    "progress": "{done} of {total} steps complete",
-    "step1": "Complete shop profile",
-    "step2": "Add a service",
-    "step3": "Set working hours",
-    "step4": "Share your booking link",
-    "dismiss": "Dismiss"
+    "title": "Getting Started",
+    "subtitle": "Complete these steps to start accepting appointments",
+    "dismiss": "Dismiss",
+    "completed": "completed",
+    "notCompleted": "not yet completed",
+    "steps": {
+      "shop": "Create your shop",
+      "service": "Add your first service",
+      "schedule": "Review your working hours",
+      "client": "Add your first client"
+    }
   }
 }

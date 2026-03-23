@@ -554,12 +554,16 @@
     }
   },
   "onboarding": {
-    "title": "Bắt đầu thiết lập",
-    "progress": "Đã hoàn thành {done}/{total} bước",
-    "step1": "Hoàn thiện hồ sơ cửa hàng",
-    "step2": "Thêm dịch vụ",
-    "step3": "Thiết lập giờ làm việc",
-    "step4": "Chia sẻ link đặt lịch",
-    "dismiss": "Ẩn"
+    "title": "Bắt đầu",
+    "subtitle": "Hoàn thành các bước sau để bắt đầu nhận lịch hẹn",
+    "dismiss": "Ẩn",
+    "completed": "đã hoàn thành",
+    "notCompleted": "chưa hoàn thành",
+    "steps": {
+      "shop": "Tạo cửa hàng của bạn",
+      "service": "Thêm dịch vụ đầu tiên",
+      "schedule": "Xem lại giờ làm việc",
+      "client": "Thêm khách hàng đầu tiên"
+    }
   }
 }

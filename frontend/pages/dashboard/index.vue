@@ -11,6 +11,7 @@ const { t, locale } = useI18n()
 const localePath = useLocalePath()
 const authStore = useAuthStore()
 const shopStore = useShopStore()
+const onboardingStore = useOnboardingStore()
 const appointmentApi = useAppointmentApi()
 const subscriptionApi = useSubscriptionApi()
 const shopApi = useShopApi()
@@ -25,19 +26,6 @@ const isNextLoading = ref(false)
 
 const subscription = ref<SubscriptionResponse | null>(null)
 const isSubLoading = ref(false)
-
-// Onboarding checklist
-const isDismissed = ref(false)
-const hasServices = ref(false)
-
-const hasSchedule = computed(() =>
-  shopStore.schedule.some(entry => entry.isOpen),
-)
-
-function onDismissChecklist() {
-  localStorage.setItem('onboarding_dismissed', '1')
-  isDismissed.value = true
-}
 
 function todayDate() {
   return new Date().toISOString().slice(0, 10)
@@ -67,19 +55,20 @@ async function loadStats() {
 
     shopApi
       .fetchServices()
-      .then(r => { hasServices.value = r.services.length > 0 })
+      .then(r => { onboardingStore.setServiceAdded(r.services.length > 0) })
       .catch(() => {}),
   ])
 }
 
 onMounted(async () => {
-  isDismissed.value = localStorage.getItem('onboarding_dismissed') === '1'
+  onboardingStore.init()
 
   if (!shopStore.shop && !shopStore.isLoading) {
     await shopStore.fetchShop()
   }
   if (shopStore.hasShop) {
     loadStats()
+    onboardingStore.fetchChecklistData()
   }
 })
 
@@ -127,14 +116,7 @@ const nextAppointmentTime = computed(() => {
 
     <template v-else>
       <!-- Onboarding checklist -->
-      <DashboardOnboardingChecklist
-        v-if="!isDismissed"
-        :has-shop="shopStore.hasShop"
-        :has-services="hasServices"
-        :has-schedule="hasSchedule"
-        class="mt-6"
-        @dismiss="onDismissChecklist"
-      />
+      <DashboardOnboardingChecklist class="mt-6" />
 
       <!-- Quick actions -->
       <div class="mt-6 flex flex-wrap gap-3">
