@@ -437,6 +437,10 @@
       "message": "Your appointment has been confirmed.",
       "bookAnother": "Book Another"
     },
+    "captcha": {
+      "label": "Verify you're not a robot",
+      "required": "Please complete the CAPTCHA verification"
+    },
     "error": {
       "shopNotFound": "Shop not found",
       "shopUnavailable": "This shop is temporarily unavailable",
@@ -445,7 +449,8 @@
       "slotUnavailable": "This slot is no longer available. Please choose another time.",
       "rateLimited": "Too many bookings today. Please try again later.",
       "generic": "Something went wrong. Please try again.",
-      "limitReached": "This shop is not accepting online bookings at this time. Please contact them directly."
+      "limitReached": "This shop is not accepting online bookings at this time. Please contact them directly.",
+      "captchaInvalid": "CAPTCHA verification failed. Please try again."
     }
   },
   "subscription": {

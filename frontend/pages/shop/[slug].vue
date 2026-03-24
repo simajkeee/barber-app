@@ -23,6 +23,7 @@ const selectedDate = ref<string | null>(null)
 const selectedTime = ref<string | null>(null)
 const clientName = ref('')
 const clientPhone = ref('')
+const captchaToken = ref('')
 const submitting = ref(false)
 const bookingResult = ref<BookingResponse | null>(null)
 const bookingError = ref('')
@@ -75,9 +76,12 @@ function onSelectTime(time: string) {
   step.value = 'details'
 }
 
-function onDetailsSubmit(data: { clientName: string; clientPhone: string }) {
+const detailsStepRef = ref<{ resetCaptcha: () => void } | null>(null)
+
+function onDetailsSubmit(data: { clientName: string; clientPhone: string; captchaToken: string }) {
   clientName.value = data.clientName
   clientPhone.value = data.clientPhone
+  captchaToken.value = data.captchaToken
   step.value = 'confirm'
 }
 
@@ -94,12 +98,17 @@ async function onConfirm() {
       serviceId: selectedService.value.id,
       date: selectedDate.value,
       time: selectedTime.value,
+      captchaToken: captchaToken.value,
     })
     step.value = 'success'
   } catch (err) {
     if (err instanceof FetchError && err.data) {
       const code = err.data.code
-      if (code === 'SLOT_UNAVAILABLE') {
+      if (code === 'CAPTCHA_INVALID') {
+        bookingError.value = t('booking.error.captchaInvalid')
+        captchaToken.value = ''
+        detailsStepRef.value?.resetCaptcha()
+      } else if (code === 'SLOT_UNAVAILABLE') {
         bookingError.value = t('booking.error.slotUnavailable')
         step.value = 'datetime'
         selectedTime.value = null
@@ -131,6 +140,7 @@ function onBookAnother() {
   selectedTime.value = null
   clientName.value = ''
   clientPhone.value = ''
+  captchaToken.value = ''
   bookingResult.value = null
   bookingError.value = ''
 }
@@ -239,6 +249,7 @@ onMounted(loadShop)
       <!-- Step 3: Details -->
       <div v-else-if="step === 'details'">
         <BookingDetailsStep
+          ref="detailsStepRef"
           :initial-name="clientName"
           :initial-phone="clientPhone"
           @submit="onDetailsSubmit"

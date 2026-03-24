@@ -76,6 +76,7 @@ vi.stubGlobal('useRuntimeConfig', () => ({
     apiBase: '/api/v1',
     siteUrl: 'http://localhost:3000',
     facebookAppId: '',
+    turnstileSiteKey: '1x00000000000000000000AA',
   },
 }))
 vi.stubGlobal('useCookie', (_name: string) => ref(null))

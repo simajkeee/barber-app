@@ -31,6 +31,10 @@ final readonly class BookingRequest
         #[Assert\NotBlank]
         #[Assert\Regex(pattern: '/^\d{2}:\d{2}$/')]
         public string $time = '',
+
+        #[Assert\NotBlank]
+        #[Assert\Length(max: 2048)]
+        public string $captchaToken = '',
     ) {
     }
 }

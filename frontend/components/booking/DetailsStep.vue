@@ -9,10 +9,11 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  submit: [data: { clientName: string; clientPhone: string }]
+  submit: [data: { clientName: string; clientPhone: string; captchaToken: string }]
 }>()
 
 const { t } = useI18n()
+const config = useRuntimeConfig()
 
 const { handleSubmit, errors, defineField } = useForm({
   validationSchema: toTypedSchema(bookingDetailsSchema),
@@ -25,9 +26,60 @@ const { handleSubmit, errors, defineField } = useForm({
 const [clientName, clientNameAttrs] = defineField('clientName')
 const [clientPhone, clientPhoneAttrs] = defineField('clientPhone')
 
-const onSubmit = handleSubmit((values) => {
-  emit('submit', values)
+const captchaToken = ref('')
+const captchaError = ref('')
+const turnstileWidgetId = ref<string | null>(null)
+const turnstileContainer = ref<HTMLElement | null>(null)
+
+function onTurnstileSuccess(token: string) {
+  captchaToken.value = token
+  captchaError.value = ''
+}
+
+function resetCaptcha() {
+  captchaToken.value = ''
+  if (turnstileWidgetId.value && window.turnstile) {
+    window.turnstile.reset(turnstileWidgetId.value)
+  }
+}
+
+function renderWidget() {
+  if (!turnstileContainer.value || !window.turnstile) return
+  if (turnstileWidgetId.value) return
+
+  turnstileWidgetId.value = window.turnstile.render(turnstileContainer.value, {
+    sitekey: config.public.turnstileSiteKey,
+    callback: onTurnstileSuccess,
+    theme: 'light',
+  })
+}
+
+onMounted(() => {
+  if (window.turnstile) {
+    renderWidget()
+    return
+  }
+
+  const script = document.createElement('script')
+  script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=onTurnstileLoad'
+  script.async = true
+  ;(window as any).onTurnstileLoad = () => renderWidget()
+  try {
+    document.head.appendChild(script)
+  } catch {
+    // Silently fail in test environments where script loading is disabled
+  }
 })
+
+const onSubmit = handleSubmit((values) => {
+  if (!captchaToken.value) {
+    captchaError.value = t('booking.captcha.required')
+    return
+  }
+  emit('submit', { ...values, captchaToken: captchaToken.value })
+})
+
+defineExpose({ resetCaptcha })
 </script>
 
 <template>
@@ -64,6 +116,15 @@ const onSubmit = handleSubmit((values) => {
           :placeholder="t('booking.details.phonePlaceholder')"
         />
         <p v-if="errors.clientPhone" class="mt-1 text-sm text-red-500">{{ errors.clientPhone }}</p>
+      </div>
+
+      <!-- Turnstile CAPTCHA -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          {{ t('booking.captcha.label') }}
+        </label>
+        <div ref="turnstileContainer" class="cf-turnstile" />
+        <p v-if="captchaError" class="mt-1 text-sm text-red-500">{{ captchaError }}</p>
       </div>
 
       <button

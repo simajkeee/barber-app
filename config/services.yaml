@@ -30,6 +30,13 @@ services:
         bind:
             $fromAddress: '%mailer_sender%'
 
+    App\Common\Service\CaptchaValidatorInterface:
+        alias: App\Common\Service\CaptchaValidatorService
+
+    App\Common\Service\CaptchaValidatorService:
+        arguments:
+            $turnstileSecretKey: '%env(TURNSTILE_SECRET_KEY)%'
+
     App\Common\EventListener\ApiExceptionListener:
         tags:
             - { name: kernel.event_listener, event: kernel.exception, priority: 10 }

@@ -143,6 +143,7 @@ describe('ShopSlugPage', () => {
     await wrapper.findComponent(BookingDetailsStepStub).vm.$emit('submit', {
       clientName: 'Nguyen Van A',
       clientPhone: '0901234567',
+      captchaToken: 'test-token',
     })
 
     expect(wrapper.find('.confirm-step').exists()).toBe(true)
@@ -161,6 +162,7 @@ describe('ShopSlugPage', () => {
     await wrapper.findComponent(BookingDetailsStepStub).vm.$emit('submit', {
       clientName: 'Nguyen Van A',
       clientPhone: '0901234567',
+      captchaToken: 'test-token',
     })
     await wrapper.findComponent(BookingConfirmStepStub).vm.$emit('confirm')
     await flushPromises()
@@ -184,6 +186,7 @@ describe('ShopSlugPage', () => {
     await wrapper.findComponent(BookingDetailsStepStub).vm.$emit('submit', {
       clientName: 'Test',
       clientPhone: '0901234567',
+      captchaToken: 'test-token',
     })
     await wrapper.findComponent(BookingConfirmStepStub).vm.$emit('confirm')
     await flushPromises()
@@ -208,12 +211,37 @@ describe('ShopSlugPage', () => {
     await wrapper.findComponent(BookingDetailsStepStub).vm.$emit('submit', {
       clientName: 'Test',
       clientPhone: '0901234567',
+      captchaToken: 'test-token',
     })
     await wrapper.findComponent(BookingConfirmStepStub).vm.$emit('confirm')
     await flushPromises()
 
     expect(wrapper.text()).toContain('booking.error.limitReached')
     expect(wrapper.text()).not.toContain('Monthly appointment limit reached')
+  })
+
+  it('shows CAPTCHA_INVALID error message', async () => {
+    const shop = createPublicShopInfo()
+    mockGetShopInfo.mockResolvedValue(shop)
+    const captchaError = new FetchError('Unprocessable Entity')
+    ;(captchaError as any).data = { code: 'CAPTCHA_INVALID' }
+    mockCreateBooking.mockRejectedValue(captchaError)
+
+    const wrapper = mountPage()
+    await flushPromises()
+
+    await wrapper.findComponent(BookingServiceStepStub).vm.$emit('select', shop.services[0])
+    await wrapper.findComponent(BookingDateTimeStepStub).vm.$emit('selectDate', '2026-03-20')
+    await wrapper.findComponent(BookingDateTimeStepStub).vm.$emit('selectTime', '10:00')
+    await wrapper.findComponent(BookingDetailsStepStub).vm.$emit('submit', {
+      clientName: 'Test',
+      clientPhone: '0901234567',
+      captchaToken: 'invalid-token',
+    })
+    await wrapper.findComponent(BookingConfirmStepStub).vm.$emit('confirm')
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('booking.error.captchaInvalid')
   })
 
   it('resets state when book another clicked', async () => {
@@ -229,6 +257,7 @@ describe('ShopSlugPage', () => {
     await wrapper.findComponent(BookingDetailsStepStub).vm.$emit('submit', {
       clientName: 'Test',
       clientPhone: '0901234567',
+      captchaToken: 'test-token',
     })
     await wrapper.findComponent(BookingConfirmStepStub).vm.$emit('confirm')
     await flushPromises()
