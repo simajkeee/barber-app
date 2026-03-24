@@ -437,6 +437,10 @@
       "message": "Lịch hẹn của bạn đã được xác nhận.",
       "bookAnother": "Đặt lịch khác"
     },
+    "captcha": {
+      "label": "Xác minh bạn không phải robot",
+      "required": "Vui lòng hoàn thành xác minh CAPTCHA"
+    },
     "error": {
       "shopNotFound": "Không tìm thấy cửa hàng",
       "shopUnavailable": "Tiệm tạm thời không khả dụng",
@@ -445,7 +449,8 @@
       "slotUnavailable": "Khung giờ này đã có người đặt. Vui lòng chọn giờ khác.",
       "rateLimited": "Bạn đã đặt quá nhiều lịch hôm nay. Vui lòng thử lại sau.",
       "generic": "Đã có lỗi xảy ra. Vui lòng thử lại.",
-      "limitReached": "Tiệm hiện không nhận lịch online. Vui lòng liên hệ trực tiếp."
+      "limitReached": "Tiệm hiện không nhận lịch online. Vui lòng liên hệ trực tiếp.",
+      "captchaInvalid": "Xác minh CAPTCHA thất bại. Vui lòng thử lại."
     }
   },
   "subscription": {

@@ -33,6 +33,7 @@ export default defineNuxtConfig({
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000',
       apiBase: process.env.NUXT_PUBLIC_API_BASE || '/api/v1',
       facebookAppId: process.env.NUXT_PUBLIC_FACEBOOK_APP_ID || '',
+      turnstileSiteKey: process.env.NUXT_PUBLIC_TURNSTILE_SITE_KEY || '',
     },
   },
 

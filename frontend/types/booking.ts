@@ -29,6 +29,7 @@ export interface BookingRequest {
   serviceId: string
   date: string
   time: string
+  captchaToken: string
 }
 
 export interface BookingAppointment {

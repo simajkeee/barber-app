@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\PublicBooking\Controller;
 
+use App\Common\Exception\ApiException;
+use App\Common\Service\CaptchaValidatorInterface;
 use App\PublicBooking\Dto\BookingRequest;
 use App\PublicBooking\Service\PublicBookingService;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -20,6 +22,7 @@ final readonly class CreateBookingController
     public function __construct(
         private PublicBookingService $publicBookingService,
         private RateLimiterFactory $publicBookingLimiter,
+        private CaptchaValidatorInterface $captchaValidator,
     ) {
     }
 
@@ -31,6 +34,10 @@ final readonly class CreateBookingController
     ): JsonResponse {
         $limiter = $this->publicBookingLimiter->create($request->getClientIp() ?? 'unknown');
         $limiter->consume()->ensureAccepted();
+
+        if (!$this->captchaValidator->validate($dto->captchaToken)) {
+            throw new ApiException('CAPTCHA_INVALID', 'Xác minh CAPTCHA thất bại. Vui lòng thử lại.', 422);
+        }
 
         $appointment = $this->publicBookingService->book($slug, $dto);
 
