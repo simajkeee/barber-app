@@ -22,6 +22,8 @@ export default defineNuxtConfig({
   },
 
   routeRules: {
+    '/vi': { redirect: { to: '/', statusCode: 301 } },
+    '/vi/**': { redirect: { to: '/**', statusCode: 301 } },
     '/dashboard/**': { ssr: false, robots: false },
     '/en/dashboard/**': { ssr: false, robots: false },
   },

@@ -106,6 +106,7 @@ export function useAuth() {
   async function logout() {
     clearTokens()
     store.clear()
+    useShopStore().clearShop()
     await navigateTo(localePath('/login'))
   }
 

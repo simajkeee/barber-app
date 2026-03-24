@@ -557,6 +557,7 @@
     "title": "Bắt đầu",
     "subtitle": "Hoàn thành các bước sau để bắt đầu nhận lịch hẹn",
     "dismiss": "Ẩn",
+    "dismissLabel": "Ẩn danh sách kiểm tra",
     "completed": "đã hoàn thành",
     "notCompleted": "chưa hoàn thành",
     "steps": {

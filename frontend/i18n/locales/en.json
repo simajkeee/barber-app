@@ -557,6 +557,7 @@
     "title": "Getting Started",
     "subtitle": "Complete these steps to start accepting appointments",
     "dismiss": "Dismiss",
+    "dismissLabel": "Dismiss onboarding checklist",
     "completed": "completed",
     "notCompleted": "not yet completed",
     "steps": {
