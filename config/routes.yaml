@@ -1,3 +1,9 @@
+health:
+    resource:
+        path: ../src/Health/Controller/
+        namespace: App\Health\Controller
+    type: attribute
+
 auth:
     resource:
         path: ../src/Auth/Controller/
