@@ -56,6 +56,9 @@ final class AppointmentRepository extends ServiceEntityRepository
     public function findByShopAndDate(Shop $shop, \DateTimeImmutable $dayStart, \DateTimeImmutable $dayEnd): array
     {
         return $this->createQueryBuilder('a')
+            ->addSelect('c', 's')
+            ->join('a.client', 'c')
+            ->join('a.service', 's')
             ->where('a.shop = :shop')
             ->andWhere('a.startTime >= :dayStart')
             ->andWhere('a.startTime < :dayEnd')
@@ -81,6 +84,9 @@ final class AppointmentRepository extends ServiceEntityRepository
         int $limit,
     ): array {
         $qb = $this->createQueryBuilder('a')
+            ->addSelect('c', 's')
+            ->join('a.client', 'c')
+            ->join('a.service', 's')
             ->where('a.shop = :shop')
             ->setParameter('shop', $shop);
 
