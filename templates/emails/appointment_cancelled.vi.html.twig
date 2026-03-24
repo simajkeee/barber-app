@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="vi">
+<body style="font-family: sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <h2>Lịch hẹn của bạn đã bị hủy</h2>
+  <p>Xin chào {{ clientFirstName }},</p>
+  <p>Rất tiếc, lịch hẹn sau đây đã bị hủy:</p>
+  <table style="width: 100%; border-collapse: collapse;">
+    <tr><td style="padding: 6px 0; color: #666;">Dịch vụ</td><td>{{ serviceName }}</td></tr>
+    <tr><td style="padding: 6px 0; color: #666;">Thời gian</td><td>{{ startTime|date('H:i, D, d/m/Y') }}</td></tr>
+    <tr><td style="padding: 6px 0; color: #666;">Tiệm</td><td>{{ shopName }}</td></tr>
+  </table>
+  <p style="margin-top: 24px;">
+    Vui lòng liên hệ chúng tôi để đặt lịch lại: <strong>{{ shopPhone }}</strong>
+  </p>
+</body>
+</html>

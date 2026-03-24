@@ -8,6 +8,8 @@ use App\Client\Util\PhoneNormalizer;
 use App\Common\Exception\ApiException;
 use App\Entity\Appointment;
 use App\Entity\Shop;
+use App\Notification\Message\SendBookingConfirmationEmailMessage;
+use App\Notification\Message\SendNewBookingNotificationEmailMessage;
 use App\PublicBooking\Dto\BookingRequest;
 use App\Repository\AppointmentRepository;
 use App\Repository\ShopRepository;
@@ -19,6 +21,7 @@ use App\Subscription\Service\SubscriptionService;
 use Doctrine\DBAL\Exception\DriverException;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Clock\ClockInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 
 final class PublicBookingService
@@ -38,6 +41,7 @@ final class PublicBookingService
         private readonly ClockInterface $clock,
         private readonly SubscriptionService $subscriptionService,
         private readonly AppointmentLimitChecker $appointmentLimitChecker,
+        private readonly MessageBusInterface $messageBus,
     ) {
     }
 
@@ -174,6 +178,33 @@ final class PublicBookingService
         }
 
         $this->subscriptionService->incrementAppointmentCount($shop);
+
+        if (null !== $client->getEmail()) {
+            $this->messageBus->dispatch(new SendBookingConfirmationEmailMessage(
+                clientEmail: $client->getEmail(),
+                clientFirstName: $client->getFirstName(),
+                serviceName: $service->getName(),
+                durationMinutes: $service->getDurationMinutes(),
+                startTimeUtc: $startTimeUtc,
+                shopName: $shop->getName(),
+                shopAddress: $shop->getAddress(),
+                shopPhone: $shop->getPhone(),
+                locale: 'vi',
+            ));
+        }
+
+        $owner = $shop->getOwner();
+        $this->messageBus->dispatch(new SendNewBookingNotificationEmailMessage(
+            ownerEmail: $owner->getEmail(),
+            clientFullName: $client->getFirstName() . ' ' . $client->getLastName(),
+            clientPhone: $client->getPhone(),
+            serviceName: $service->getName(),
+            durationMinutes: $service->getDurationMinutes(),
+            price: $service->getPrice(),
+            startTimeUtc: $startTimeUtc,
+            notes: $appointment->getNotes(),
+            locale: $owner->getLocale()->value,
+        ));
 
         return $appointment;
     }

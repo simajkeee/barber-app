@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<body style="font-family: sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <h2>Booking Confirmation</h2>
+  <p>Hello {{ clientFirstName }},</p>
+  <p>Your appointment has been confirmed. Here are the details:</p>
+  <table style="width: 100%; border-collapse: collapse;">
+    <tr><td style="padding: 6px 0; color: #666;">Service</td><td>{{ serviceName }} ({{ durationMinutes }} minutes)</td></tr>
+    <tr><td style="padding: 6px 0; color: #666;">Time</td><td>{{ startTime|date('H:i, l, d/m/Y') }}</td></tr>
+    <tr><td style="padding: 6px 0; color: #666;">Shop</td><td>{{ shopName }}</td></tr>
+    <tr><td style="padding: 6px 0; color: #666;">Address</td><td>{{ shopAddress }}</td></tr>
+    <tr><td style="padding: 6px 0; color: #666;">Phone</td><td>{{ shopPhone }}</td></tr>
+  </table>
+  <p style="margin-top: 24px;">Thank you for booking at {{ shopName }}!</p>
+</body>
+</html>
