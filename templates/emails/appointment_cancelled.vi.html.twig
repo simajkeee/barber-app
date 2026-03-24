@@ -6,7 +6,7 @@
   <p>Rất tiếc, lịch hẹn sau đây đã bị hủy:</p>
   <table style="width: 100%; border-collapse: collapse;">
     <tr><td style="padding: 6px 0; color: #666;">Dịch vụ</td><td>{{ serviceName }}</td></tr>
-    <tr><td style="padding: 6px 0; color: #666;">Thời gian</td><td>{{ startTime|date('H:i, D, d/m/Y') }}</td></tr>
+    <tr><td style="padding: 6px 0; color: #666;">Thời gian</td><td>{{ startTime|date('H:i, D, d/m/Y', false) }}</td></tr>
     <tr><td style="padding: 6px 0; color: #666;">Tiệm</td><td>{{ shopName }}</td></tr>
   </table>
   <p style="margin-top: 24px;">

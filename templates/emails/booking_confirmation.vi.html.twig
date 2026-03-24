@@ -6,7 +6,7 @@
   <p>Lịch hẹn của bạn đã được xác nhận. Chi tiết như sau:</p>
   <table style="width: 100%; border-collapse: collapse;">
     <tr><td style="padding: 6px 0; color: #666;">Dịch vụ</td><td>{{ serviceName }} ({{ durationMinutes }} phút)</td></tr>
-    <tr><td style="padding: 6px 0; color: #666;">Thời gian</td><td>{{ startTime|date('H:i, D, d/m/Y') }}</td></tr>
+    <tr><td style="padding: 6px 0; color: #666;">Thời gian</td><td>{{ startTime|date('H:i, D, d/m/Y', false) }}</td></tr>
     <tr><td style="padding: 6px 0; color: #666;">Tiệm</td><td>{{ shopName }}</td></tr>
     <tr><td style="padding: 6px 0; color: #666;">Địa chỉ</td><td>{{ shopAddress }}</td></tr>
     <tr><td style="padding: 6px 0; color: #666;">Điện thoại</td><td>{{ shopPhone }}</td></tr>
