@@ -30,9 +30,11 @@
         "symfony/runtime": "7.2.*",
         "symfony/security-bundle": "7.2.*",
         "symfony/serializer": "7.2.*",
+        "symfony/twig-bundle": "7.2.*",
         "symfony/uid": "7.2.*",
         "symfony/validator": "7.2.*",
-        "symfony/yaml": "7.2.*"
+        "symfony/yaml": "7.2.*",
+        "twig/twig": "^3.24"
     },
     "require-dev": {
         "dg/bypass-finals": "^1.9",

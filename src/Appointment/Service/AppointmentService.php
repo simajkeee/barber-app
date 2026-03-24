@@ -13,6 +13,7 @@ use App\Entity\Appointment;
 use App\Entity\Shop;
 use App\Entity\ShopService;
 use App\Entity\WorkSchedule;
+use App\Notification\Message\SendAppointmentCancelledEmailMessage;
 use App\Repository\AppointmentRepository;
 use App\Repository\ClientRepository;
 use App\Repository\ShopServiceRepository;
@@ -22,6 +23,7 @@ use App\Subscription\Service\AppointmentLimitChecker;
 use App\Subscription\Service\SubscriptionService;
 use Doctrine\DBAL\Exception\DriverException;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
@@ -40,6 +42,7 @@ final class AppointmentService
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly AppointmentLimitChecker $appointmentLimitChecker,
         private readonly SubscriptionService $subscriptionService,
+        private readonly MessageBusInterface $messageBus,
     ) {
     }
 
@@ -178,6 +181,19 @@ final class AppointmentService
 
         if ($newStatus === AppointmentStatus::CANCELLED) {
             $this->subscriptionService->decrementAppointmentCount($appointment->getShop());
+
+            $client = $appointment->getClient();
+            if (null !== $client->getEmail()) {
+                $this->messageBus->dispatch(new SendAppointmentCancelledEmailMessage(
+                    clientEmail: $client->getEmail(),
+                    clientFirstName: $client->getFirstName(),
+                    serviceName: $appointment->getService()->getName(),
+                    startTimeUtc: $appointment->getStartTime(),
+                    shopName: $appointment->getShop()->getName(),
+                    shopPhone: $appointment->getShop()->getPhone(),
+                    locale: 'vi',
+                ));
+            }
         }
 
         return $appointment;

@@ -31,8 +31,11 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
+use App\Notification\Message\SendAppointmentCancelledEmailMessage;
 use App\Subscription\Service\AppointmentLimitChecker;
 use App\Subscription\Service\SubscriptionService;
+use Symfony\Component\Messenger\Envelope;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 #[CoversClass(AppointmentService::class)]
@@ -48,6 +51,7 @@ final class AppointmentServiceTest extends TestCase
     private EventDispatcherInterface&MockObject $eventDispatcher;
     private AppointmentLimitChecker&MockObject $appointmentLimitChecker;
     private SubscriptionService&MockObject $subscriptionService;
+    private MessageBusInterface&MockObject $messageBus;
     private AppointmentService $sut;
 
     protected function setUp(): void
@@ -62,6 +66,8 @@ final class AppointmentServiceTest extends TestCase
         $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
         $this->appointmentLimitChecker = $this->createMock(AppointmentLimitChecker::class);
         $this->subscriptionService = $this->createMock(SubscriptionService::class);
+        $this->messageBus = $this->createMock(MessageBusInterface::class);
+        $this->messageBus->method('dispatch')->willReturn(new Envelope(new \stdClass()));
 
         $this->sut = new AppointmentService(
             $this->appointmentRepository,
@@ -74,6 +80,7 @@ final class AppointmentServiceTest extends TestCase
             $this->eventDispatcher,
             $this->appointmentLimitChecker,
             $this->subscriptionService,
+            $this->messageBus,
         );
     }
 
@@ -438,6 +445,136 @@ final class AppointmentServiceTest extends TestCase
         $result = $this->sut->changeStatus($appointment, AppointmentStatus::CANCELLED);
 
         self::assertSame(AppointmentStatus::CANCELLED, $result->getStatus());
+    }
+
+    #[Test]
+    public function testChangeStatusToCancelledDispatchesCancellationEmailWhenClientHasEmail(): void
+    {
+        $shop = $this->createShop();
+        $client = $this->createClient($shop);
+        $client->setEmail('client@example.com');
+        $appointment = $this->createAppointment($shop, $client);
+
+        $this->messageBus = $this->createMock(MessageBusInterface::class);
+        $this->messageBus->expects(self::once())
+            ->method('dispatch')
+            ->with(self::callback(function (SendAppointmentCancelledEmailMessage $msg): bool {
+                self::assertSame('client@example.com', $msg->clientEmail);
+                self::assertSame('John', $msg->clientFirstName);
+                self::assertSame('Haircut', $msg->serviceName);
+                self::assertSame('Test Shop', $msg->shopName);
+                self::assertSame('0901234567', $msg->shopPhone);
+                self::assertSame('vi', $msg->locale);
+
+                return true;
+            }))
+            ->willReturn(new Envelope(new \stdClass()));
+
+        $sut = new AppointmentService(
+            $this->appointmentRepository,
+            $this->clientRepository,
+            $this->shopServiceRepository,
+            $this->workScheduleRepository,
+            $this->overlapDetector,
+            $this->slotCalculator,
+            $this->em,
+            $this->eventDispatcher,
+            $this->appointmentLimitChecker,
+            $this->subscriptionService,
+            $this->messageBus,
+        );
+
+        $sut->changeStatus($appointment, AppointmentStatus::CANCELLED);
+    }
+
+    #[Test]
+    public function testChangeStatusToCancelledDoesNotDispatchWhenClientHasNoEmail(): void
+    {
+        $shop = $this->createShop();
+        $client = $this->createClient($shop);
+        // client has no email by default
+        $appointment = $this->createAppointment($shop, $client);
+
+        $this->messageBus = $this->createMock(MessageBusInterface::class);
+        $this->messageBus->expects(self::never())->method('dispatch');
+
+        $sut = new AppointmentService(
+            $this->appointmentRepository,
+            $this->clientRepository,
+            $this->shopServiceRepository,
+            $this->workScheduleRepository,
+            $this->overlapDetector,
+            $this->slotCalculator,
+            $this->em,
+            $this->eventDispatcher,
+            $this->appointmentLimitChecker,
+            $this->subscriptionService,
+            $this->messageBus,
+        );
+
+        $sut->changeStatus($appointment, AppointmentStatus::CANCELLED);
+    }
+
+    #[Test]
+    public function testChangeStatusToCompletedDoesNotDispatchCancellationEmail(): void
+    {
+        $shop = $this->createShop();
+        $client = $this->createClient($shop);
+        $client->setEmail('client@example.com');
+        $appointment = $this->createAppointment($shop, $client);
+
+        $this->messageBus = $this->createMock(MessageBusInterface::class);
+        $this->messageBus->expects(self::never())
+            ->method('dispatch')
+            ->with(self::isInstanceOf(SendAppointmentCancelledEmailMessage::class));
+        $this->messageBus->method('dispatch')->willReturn(new Envelope(new \stdClass()));
+
+        $sut = new AppointmentService(
+            $this->appointmentRepository,
+            $this->clientRepository,
+            $this->shopServiceRepository,
+            $this->workScheduleRepository,
+            $this->overlapDetector,
+            $this->slotCalculator,
+            $this->em,
+            $this->eventDispatcher,
+            $this->appointmentLimitChecker,
+            $this->subscriptionService,
+            $this->messageBus,
+        );
+
+        $sut->changeStatus($appointment, AppointmentStatus::COMPLETED);
+    }
+
+    #[Test]
+    public function testChangeStatusToNoShowDoesNotDispatchCancellationEmail(): void
+    {
+        $shop = $this->createShop();
+        $client = $this->createClient($shop);
+        $client->setEmail('client@example.com');
+        $appointment = $this->createAppointment($shop, $client);
+
+        $this->messageBus = $this->createMock(MessageBusInterface::class);
+        $this->messageBus->expects(self::never())
+            ->method('dispatch')
+            ->with(self::isInstanceOf(SendAppointmentCancelledEmailMessage::class));
+        $this->messageBus->method('dispatch')->willReturn(new Envelope(new \stdClass()));
+
+        $sut = new AppointmentService(
+            $this->appointmentRepository,
+            $this->clientRepository,
+            $this->shopServiceRepository,
+            $this->workScheduleRepository,
+            $this->overlapDetector,
+            $this->slotCalculator,
+            $this->em,
+            $this->eventDispatcher,
+            $this->appointmentLimitChecker,
+            $this->subscriptionService,
+            $this->messageBus,
+        );
+
+        $sut->changeStatus($appointment, AppointmentStatus::NO_SHOW);
     }
 
     #[Test]

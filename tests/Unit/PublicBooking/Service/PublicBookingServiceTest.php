@@ -21,6 +21,8 @@ use App\Repository\ShopRepository;
 use App\Repository\ShopServiceRepository;
 use App\Repository\WorkScheduleRepository;
 use App\Shop\Enum\DayOfWeek;
+use App\Notification\Message\SendBookingConfirmationEmailMessage;
+use App\Notification\Message\SendNewBookingNotificationEmailMessage;
 use App\Subscription\Service\AppointmentLimitChecker;
 use App\Subscription\Service\SubscriptionService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -29,6 +31,8 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Clock\ClockInterface;
+use Symfony\Component\Messenger\Envelope;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 #[CoversClass(PublicBookingService::class)]
 final class PublicBookingServiceTest extends TestCase
@@ -43,6 +47,7 @@ final class PublicBookingServiceTest extends TestCase
     private ClockInterface&MockObject $clock;
     private SubscriptionService&MockObject $subscriptionService;
     private AppointmentLimitChecker&MockObject $appointmentLimitChecker;
+    private MessageBusInterface&MockObject $messageBus;
     private PublicBookingService $sut;
 
     protected function setUp(): void
@@ -57,6 +62,8 @@ final class PublicBookingServiceTest extends TestCase
         $this->clock = $this->createMock(ClockInterface::class);
         $this->subscriptionService = $this->createMock(SubscriptionService::class);
         $this->appointmentLimitChecker = $this->createMock(AppointmentLimitChecker::class);
+        $this->messageBus = $this->createMock(MessageBusInterface::class);
+        $this->messageBus->method('dispatch')->willReturn(new Envelope(new \stdClass()));
 
         // Default: subscription is active
         $this->subscriptionService->method('isActive')->willReturn(true);
@@ -64,7 +71,7 @@ final class PublicBookingServiceTest extends TestCase
         $this->sut = $this->buildSut($this->subscriptionService);
     }
 
-    private function buildSut(?SubscriptionService $subscriptionService = null): PublicBookingService
+    private function buildSut(?SubscriptionService $subscriptionService = null, ?MessageBusInterface $messageBus = null): PublicBookingService
     {
         return new PublicBookingService(
             $this->shopRepository,
@@ -77,6 +84,7 @@ final class PublicBookingServiceTest extends TestCase
             $this->clock,
             $subscriptionService ?? $this->subscriptionService,
             $this->appointmentLimitChecker,
+            $messageBus ?? $this->messageBus,
         );
     }
 
@@ -583,6 +591,160 @@ final class PublicBookingServiceTest extends TestCase
     }
 
     #[Test]
+    public function bookDispatchesConfirmationEmailWhenClientHasEmail(): void
+    {
+        $shop = $this->createShop();
+        $service = $this->createService($shop);
+        $client = $this->createClient($shop);
+        $client->setEmail('client@example.com');
+
+        $this->setupForBook($shop, $service, $client);
+
+        $messageBus = $this->createMock(MessageBusInterface::class);
+        $dispatched = [];
+        $messageBus->method('dispatch')
+            ->willReturnCallback(function (object $message) use (&$dispatched): Envelope {
+                $dispatched[] = $message;
+
+                return new Envelope($message);
+            });
+
+        $sut = $this->buildSut(messageBus: $messageBus);
+        $dto = $this->createBookingDto($service);
+        $sut->book('test-shop', $dto);
+
+        $confirmations = array_filter($dispatched, fn ($m) => $m instanceof SendBookingConfirmationEmailMessage);
+        self::assertCount(1, $confirmations);
+        $msg = array_values($confirmations)[0];
+        self::assertSame('client@example.com', $msg->clientEmail);
+        self::assertSame('Nguyen', $msg->clientFirstName);
+        self::assertSame('Haircut', $msg->serviceName);
+        self::assertSame(30, $msg->durationMinutes);
+        self::assertSame('Test Shop', $msg->shopName);
+        self::assertSame('123 Test St', $msg->shopAddress);
+        self::assertSame('0901234567', $msg->shopPhone);
+        self::assertSame('vi', $msg->locale);
+    }
+
+    #[Test]
+    public function bookDoesNotDispatchConfirmationWhenClientHasNoEmail(): void
+    {
+        $shop = $this->createShop();
+        $service = $this->createService($shop);
+        $client = $this->createClient($shop);
+        // no email set on client
+
+        $this->setupForBook($shop, $service, $client);
+
+        $messageBus = $this->createMock(MessageBusInterface::class);
+        $dispatched = [];
+        $messageBus->method('dispatch')
+            ->willReturnCallback(function (object $message) use (&$dispatched): Envelope {
+                $dispatched[] = $message;
+
+                return new Envelope($message);
+            });
+
+        $sut = $this->buildSut(messageBus: $messageBus);
+        $dto = $this->createBookingDto($service);
+        $sut->book('test-shop', $dto);
+
+        $confirmations = array_filter($dispatched, fn ($m) => $m instanceof SendBookingConfirmationEmailMessage);
+        self::assertCount(0, $confirmations);
+    }
+
+    #[Test]
+    public function bookAlwaysDispatchesOwnerNotification(): void
+    {
+        $shop = $this->createShop();
+        $service = $this->createService($shop);
+        $client = $this->createClient($shop);
+        // no client email — owner notification should still be sent
+
+        $this->setupForBook($shop, $service, $client);
+
+        $messageBus = $this->createMock(MessageBusInterface::class);
+        $dispatched = [];
+        $messageBus->method('dispatch')
+            ->willReturnCallback(function (object $message) use (&$dispatched): Envelope {
+                $dispatched[] = $message;
+
+                return new Envelope($message);
+            });
+
+        $sut = $this->buildSut(messageBus: $messageBus);
+        $dto = $this->createBookingDto($service);
+        $sut->book('test-shop', $dto);
+
+        $ownerNotifs = array_filter($dispatched, fn ($m) => $m instanceof SendNewBookingNotificationEmailMessage);
+        self::assertCount(1, $ownerNotifs);
+        $msg = array_values($ownerNotifs)[0];
+        self::assertSame('test@example.com', $msg->ownerEmail);
+        self::assertSame('Nguyen Van A', $msg->clientFullName);
+        self::assertSame('0901234567', $msg->clientPhone);
+        self::assertSame('Haircut', $msg->serviceName);
+        self::assertSame(30, $msg->durationMinutes);
+        self::assertSame(100000, $msg->price);
+        self::assertSame('vi', $msg->locale);
+    }
+
+    #[Test]
+    public function bookOwnerNotificationUsesOwnerLocale(): void
+    {
+        $shop = $this->createShop();
+        $shop->getOwner()->setLocale(\App\Auth\Enum\UserLocale::EN);
+        $service = $this->createService($shop);
+        $client = $this->createClient($shop);
+
+        $this->setupForBook($shop, $service, $client);
+
+        $messageBus = $this->createMock(MessageBusInterface::class);
+        $dispatched = [];
+        $messageBus->method('dispatch')
+            ->willReturnCallback(function (object $message) use (&$dispatched): Envelope {
+                $dispatched[] = $message;
+
+                return new Envelope($message);
+            });
+
+        $sut = $this->buildSut(messageBus: $messageBus);
+        $dto = $this->createBookingDto($service);
+        $sut->book('test-shop', $dto);
+
+        $ownerNotifs = array_filter($dispatched, fn ($m) => $m instanceof SendNewBookingNotificationEmailMessage);
+        $msg = array_values($ownerNotifs)[0];
+        self::assertSame('en', $msg->locale);
+    }
+
+    #[Test]
+    public function bookDoesNotDispatchWhenFlushFails(): void
+    {
+        $shop = $this->createShop();
+        $service = $this->createService($shop);
+        $client = $this->createClient($shop);
+        $client->setEmail('client@example.com');
+
+        $this->setupForBook($shop, $service, $client);
+
+        $driverException = $this->createMock(\Doctrine\DBAL\Exception\DriverException::class);
+        $driverException->method('getSQLState')->willReturn('23P01');
+        $this->em->method('flush')->willThrowException($driverException);
+
+        $messageBus = $this->createMock(MessageBusInterface::class);
+        $messageBus->expects(self::never())->method('dispatch');
+
+        $sut = $this->buildSut(messageBus: $messageBus);
+        $dto = $this->createBookingDto($service);
+
+        try {
+            $sut->book('test-shop', $dto);
+            self::fail('Expected ApiException');
+        } catch (ApiException) {
+            // expected
+        }
+    }
+
+    #[Test]
     public function bookIncrementsAppointmentCountOnSuccess(): void
     {
         $shop = $this->createShop();
@@ -657,6 +819,41 @@ final class PublicBookingServiceTest extends TestCase
         $client->setPhone('0901234567');
 
         return $client;
+    }
+
+    private function setupForBook(Shop $shop, ShopService $service, Client $client): void
+    {
+        $this->shopRepository->method('findBySlug')->willReturn($shop);
+
+        $tz = new \DateTimeZone('Asia/Ho_Chi_Minh');
+        $this->clock->method('now')
+            ->willReturn(new \DateTimeImmutable('2026-03-16 07:00:00', $tz));
+
+        $this->shopServiceRepository->method('findOneBy')->willReturn($service);
+
+        $schedule = new WorkSchedule();
+        $schedule->setShop($shop);
+        $schedule->setDayOfWeek(DayOfWeek::MONDAY);
+        $schedule->setOpenTime(new \DateTimeImmutable('09:00'));
+        $schedule->setCloseTime(new \DateTimeImmutable('18:00'));
+        $schedule->setIsOpen(true);
+        $this->workScheduleRepository->method('findByShopAndDay')->willReturn($schedule);
+
+        $this->appointmentRepository->method('findNonCancelledInRange')->willReturn([]);
+        $this->appointmentRepository->method('countByShopPhoneAndDateRange')->willReturn(0);
+
+        $this->clientResolverService->method('resolveClient')->willReturn($client);
+    }
+
+    private function createBookingDto(ShopService $service): BookingRequest
+    {
+        return new BookingRequest(
+            clientName: 'Nguyen Van A',
+            clientPhone: '0901234567',
+            serviceId: (string) $service->getId(),
+            date: '2026-03-16',
+            time: '10:00',
+        );
     }
 
     private function createSchedule(Shop $shop, DayOfWeek $day, string $open, string $close): WorkSchedule
