@@ -17,6 +17,7 @@
         "lexik/jwt-authentication-bundle": "^3.0",
         "nelmio/cors-bundle": "^2.4",
         "phpdocumentor/reflection-docblock": "^6.0",
+        "sentry/sentry-symfony": "^5.9",
         "symfony/console": "7.2.*",
         "symfony/doctrine-messenger": "7.2.*",
         "symfony/dotenv": "7.2.*",

@@ -2,6 +2,7 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-03-12',
 
   modules: [
+    '@sentry/nuxt/module',
     '@pinia/nuxt',
     '@nuxtjs/tailwindcss',
     '@nuxtjs/i18n',
@@ -10,6 +11,14 @@ export default defineNuxtConfig({
     '@vite-pwa/nuxt',
     'nuxt-schema-org',
   ],
+
+  sentry: {
+    sourceMapsUploadOptions: {
+      org: process.env.SENTRY_ORG,
+      project: process.env.SENTRY_PROJECT,
+      authToken: process.env.SENTRY_AUTH_TOKEN,
+    },
+  },
 
   app: {
     head: {
@@ -34,6 +43,7 @@ export default defineNuxtConfig({
       apiBase: process.env.NUXT_PUBLIC_API_BASE || '/api/v1',
       facebookAppId: process.env.NUXT_PUBLIC_FACEBOOK_APP_ID || '',
       turnstileSiteKey: process.env.NUXT_PUBLIC_TURNSTILE_SITE_KEY || '',
+      sentryDsn: process.env.NUXT_PUBLIC_SENTRY_DSN || '',
     },
   },
 

@@ -1,3 +1,5 @@
 when@test:
     framework:
         test: true
+    sentry:
+        dsn: ~
