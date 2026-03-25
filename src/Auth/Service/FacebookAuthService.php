@@ -29,25 +29,26 @@ final class FacebookAuthService
 
         // 1. Existing user by Facebook ID
         $user = $this->userRepository->findByFacebookId($profile['id']);
-        if ($user !== null) {
+        if (null !== $user) {
             return ['isNewUser' => false] + $this->authService->buildAuthResponse($user);
         }
 
         // 2. Existing user by email — link Facebook account
         if (isset($profile['email'])) {
             $user = $this->userRepository->findByEmail($profile['email']);
-            if ($user !== null) {
+            if (null !== $user) {
                 $user->setFacebookId($profile['id']);
-                if ($user->getAvatarUrl() === null && isset($profile['picture']['data']['url'])) {
+                if (null === $user->getAvatarUrl() && isset($profile['picture']['data']['url'])) {
                     $user->setAvatarUrl($profile['picture']['data']['url']);
                 }
+
                 return ['isNewUser' => false] + $this->authService->buildAuthResponse($user);
             }
         }
 
         // 3. New user
         $user = new User();
-        $user->setEmail($profile['email'] ?? $profile['id'] . '@facebook.placeholder');
+        $user->setEmail($profile['email'] ?? $profile['id'].'@facebook.placeholder');
         $user->setFirstName($profile['first_name'] ?? '');
         $user->setLastName($profile['last_name'] ?? '');
         $user->setFacebookId($profile['id']);
@@ -66,7 +67,7 @@ final class FacebookAuthService
             $existing = $this->userRepository->findByEmail($profile['email'] ?? '')
                 ?? $this->userRepository->findByFacebookId($profile['id']);
 
-            if ($existing === null) {
+            if (null === $existing) {
                 throw new ApiException('FACEBOOK_AUTH_FAILED', 'Facebook authentication failed. Please try again.', 500);
             }
 
@@ -76,14 +77,14 @@ final class FacebookAuthService
 
     private function fetchFacebookProfile(string $accessToken): array
     {
-        $response = $this->httpClient->request('GET', $this->facebookGraphUrl . '/me', [
+        $response = $this->httpClient->request('GET', $this->facebookGraphUrl.'/me', [
             'query' => [
                 'fields' => 'id,email,first_name,last_name,picture.type(large)',
                 'access_token' => $accessToken,
             ],
         ]);
 
-        if ($response->getStatusCode() !== 200) {
+        if (200 !== $response->getStatusCode()) {
             throw new ApiException('INVALID_FACEBOOK_TOKEN', 'Invalid or expired Facebook access token.', 401);
         }
 

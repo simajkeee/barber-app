@@ -36,19 +36,19 @@ final class ShopServiceManager
 
     public function updateService(ShopService $service, UpdateServiceRequest $dto): ShopService
     {
-        if ($dto->name !== null) {
+        if (null !== $dto->name) {
             $service->setName($dto->name);
         }
-        if ($dto->durationMinutes !== null) {
+        if (null !== $dto->durationMinutes) {
             $service->setDurationMinutes($dto->durationMinutes);
         }
-        if ($dto->price !== null) {
+        if (null !== $dto->price) {
             $service->setPrice($dto->price);
         }
-        if ($dto->isActive !== null) {
+        if (null !== $dto->isActive) {
             $service->setIsActive($dto->isActive);
         }
-        if ($dto->sortOrder !== null) {
+        if (null !== $dto->sortOrder) {
             $service->setSortOrder($dto->sortOrder);
         }
 

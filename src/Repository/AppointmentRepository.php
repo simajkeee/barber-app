@@ -42,7 +42,7 @@ final class AppointmentRepository extends ServiceEntityRepository
             ->setParameter('end', $end)
             ->setParameter('excludedStatuses', [AppointmentStatus::CANCELLED->value, AppointmentStatus::NO_SHOW->value]);
 
-        if ($excludeId !== null) {
+        if (null !== $excludeId) {
             $qb->andWhere('a.id != :excludeId')
                 ->setParameter('excludeId', $excludeId);
         }
@@ -72,6 +72,7 @@ final class AppointmentRepository extends ServiceEntityRepository
 
     /**
      * @param string[] $statuses
+     *
      * @return array{appointments: Appointment[], nextCursor: ?string}
      */
     public function findByShopWithFilter(
@@ -90,28 +91,28 @@ final class AppointmentRepository extends ServiceEntityRepository
             ->where('a.shop = :shop')
             ->setParameter('shop', $shop);
 
-        if ($dateFrom !== null) {
+        if (null !== $dateFrom) {
             $qb->andWhere('a.startTime >= :dateFrom')
                 ->setParameter('dateFrom', $dateFrom);
         }
 
-        if ($dateTo !== null) {
+        if (null !== $dateTo) {
             $dayEnd = $dateTo->modify('+1 day');
             $qb->andWhere('a.startTime < :dateTo')
                 ->setParameter('dateTo', $dayEnd);
         }
 
-        if ($statuses !== []) {
+        if ([] !== $statuses) {
             $qb->andWhere('a.status IN (:statuses)')
                 ->setParameter('statuses', $statuses);
         }
 
-        if ($clientId !== null) {
+        if (null !== $clientId) {
             $qb->andWhere('a.client = :clientId')
                 ->setParameter('clientId', $clientId);
         }
 
-        if ($cursor !== null) {
+        if (null !== $cursor) {
             $cursorData = $this->decodeCursor($cursor);
             $qb->andWhere('(a.startTime < :cursorStart OR (a.startTime = :cursorStart AND a.id < :cursorId))')
                 ->setParameter('cursorStart', new \DateTimeImmutable($cursorData['start_time']))
@@ -123,14 +124,14 @@ final class AppointmentRepository extends ServiceEntityRepository
             ->setMaxResults($limit + 1);
 
         $results = $qb->getQuery()->getResult();
-        $hasMore = count($results) > $limit;
+        $hasMore = \count($results) > $limit;
 
         if ($hasMore) {
             array_pop($results);
         }
 
         $nextCursor = null;
-        if ($hasMore && count($results) > 0) {
+        if ($hasMore && \count($results) > 0) {
             $last = $results[array_key_last($results)];
             $nextCursor = $this->encodeCursor($last);
         }
@@ -215,7 +216,7 @@ final class AppointmentRepository extends ServiceEntityRepository
     private function decodeCursor(string $cursor): array
     {
         $decoded = base64_decode($cursor, true);
-        if ($decoded === false) {
+        if (false === $decoded) {
             throw new ApiException('INVALID_CURSOR', 'Invalid cursor value.', 400);
         }
 
@@ -225,7 +226,7 @@ final class AppointmentRepository extends ServiceEntityRepository
             throw new ApiException('INVALID_CURSOR', 'Invalid cursor value.', 400);
         }
 
-        if (!is_array($data) || !isset($data['id'], $data['start_time'])) {
+        if (!\is_array($data) || !isset($data['id'], $data['start_time'])) {
             throw new ApiException('INVALID_CURSOR', 'Invalid cursor value.', 400);
         }
 

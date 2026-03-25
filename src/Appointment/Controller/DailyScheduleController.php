@@ -30,13 +30,13 @@ final readonly class DailyScheduleController
         #[MapQueryString] DailyScheduleQuery $query,
     ): JsonResponse {
         $shop = $this->shopManager->getShopForUser($user);
-        if ($shop === null) {
+        if (null === $shop) {
             throw new ApiException('SHOP_NOT_FOUND', 'Shop not found. Create one first.', 404);
         }
 
         $tz = new \DateTimeZone('Asia/Ho_Chi_Minh');
         $date = \DateTimeImmutable::createFromFormat('Y-m-d', $query->date, $tz);
-        if ($date === false) {
+        if (false === $date) {
             throw new ApiException('VALIDATION_ERROR', 'Invalid date format.', 400);
         }
 

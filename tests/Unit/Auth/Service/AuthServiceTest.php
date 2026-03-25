@@ -60,9 +60,11 @@ final class AuthServiceTest extends TestCase
             firstName: 'John',
             lastName: 'Doe',
             locale: UserLocale::EN,
+            phoneNumber: '0901234567',
         );
 
         $this->userRepository->method('findByEmail')->willReturn(null);
+        $this->userRepository->method('findByPhoneNumber')->willReturn(null);
         $this->passwordHasher->method('hashPassword')->willReturn('hashed_password');
         $this->jwtManager->method('create')->willReturn('jwt_token');
 
@@ -70,8 +72,8 @@ final class AuthServiceTest extends TestCase
             ->method('persist')
             ->willReturnCallback(function (object $entity): void {
                 static $call = 0;
-                $call++;
-                if ($call === 1) {
+                ++$call;
+                if (1 === $call) {
                     self::assertInstanceOf(User::class, $entity);
                 } else {
                     self::assertInstanceOf(RefreshToken::class, $entity);
@@ -91,7 +93,7 @@ final class AuthServiceTest extends TestCase
         self::assertSame('Doe', $result['user']['lastName']);
         self::assertSame('en', $result['user']['locale']);
         self::assertIsString($result['refreshToken']);
-        self::assertSame(128, strlen($result['refreshToken']));
+        self::assertSame(128, \strlen($result['refreshToken']));
     }
 
     #[Test]
@@ -127,9 +129,10 @@ final class AuthServiceTest extends TestCase
     #[Test]
     public function testRegisterCatchesUniqueConstraintViolation(): void
     {
-        $dto = new RegisterRequest(email: 'race@example.com', password: 'password123', firstName: 'A', lastName: 'B');
+        $dto = new RegisterRequest(email: 'race@example.com', password: 'password123', firstName: 'A', lastName: 'B', phoneNumber: '0901234567');
 
         $this->userRepository->method('findByEmail')->willReturn(null);
+        $this->userRepository->method('findByPhoneNumber')->willReturn(null);
         $this->passwordHasher->method('hashPassword')->willReturn('hashed');
 
         $this->em->method('flush')->willThrowException(
@@ -148,15 +151,65 @@ final class AuthServiceTest extends TestCase
     #[Test]
     public function testRegisterDefaultLocaleIsVietnamese(): void
     {
-        $dto = new RegisterRequest(email: 'vi@example.com', password: 'password123', firstName: 'A', lastName: 'B');
+        $dto = new RegisterRequest(email: 'vi@example.com', password: 'password123', firstName: 'A', lastName: 'B', phoneNumber: '0901234567');
 
         $this->userRepository->method('findByEmail')->willReturn(null);
+        $this->userRepository->method('findByPhoneNumber')->willReturn(null);
         $this->passwordHasher->method('hashPassword')->willReturn('hashed');
         $this->jwtManager->method('create')->willReturn('jwt');
 
         $result = $this->sut->register($dto);
 
         self::assertSame('vi', $result['user']['locale']);
+    }
+
+    #[Test]
+    public function testRegisterNormalizesVietnameseMobileToE164(): void
+    {
+        $dto = new RegisterRequest(email: 'phone@example.com', password: 'password123', firstName: 'A', lastName: 'B', phoneNumber: '0901234567');
+
+        $this->userRepository->method('findByEmail')->willReturn(null);
+        $this->passwordHasher->method('hashPassword')->willReturn('hashed');
+        $this->jwtManager->method('create')->willReturn('jwt');
+        $this->userRepository->expects(self::once())
+            ->method('findByPhoneNumber')
+            ->with('+84901234567')
+            ->willReturn(null);
+
+        $this->sut->register($dto);
+    }
+
+    #[Test]
+    public function testRegisterAcceptsAlreadyNormalizedE164Phone(): void
+    {
+        $dto = new RegisterRequest(email: 'e164@example.com', password: 'password123', firstName: 'A', lastName: 'B', phoneNumber: '+84901234567');
+
+        $this->userRepository->method('findByEmail')->willReturn(null);
+        $this->passwordHasher->method('hashPassword')->willReturn('hashed');
+        $this->jwtManager->method('create')->willReturn('jwt');
+        $this->userRepository->expects(self::once())
+            ->method('findByPhoneNumber')
+            ->with('+84901234567')
+            ->willReturn(null);
+
+        $this->sut->register($dto);
+    }
+
+    #[Test]
+    public function testRegisterWithDuplicatePhoneThrowsPhoneAlreadyInUse(): void
+    {
+        $dto = new RegisterRequest(email: 'new@example.com', password: 'password123', firstName: 'A', lastName: 'B', phoneNumber: '0901234567');
+
+        $this->userRepository->method('findByEmail')->willReturn(null);
+        $this->userRepository->method('findByPhoneNumber')->willReturn(new User());
+
+        try {
+            $this->sut->register($dto);
+            self::fail('Expected ApiException');
+        } catch (ApiException $e) {
+            self::assertSame(422, $e->statusCode);
+            self::assertSame('PHONE_ALREADY_IN_USE', $e->errorCode);
+        }
     }
 
     // --- login ---
@@ -267,7 +320,7 @@ final class AuthServiceTest extends TestCase
         self::assertArrayHasKey('refreshToken', $result);
         self::assertSame('new_jwt', $result['token']);
         self::assertIsString($result['refreshToken']);
-        self::assertSame(128, strlen($result['refreshToken']));
+        self::assertSame(128, \strlen($result['refreshToken']));
     }
 
     #[Test]
@@ -304,7 +357,9 @@ final class AuthServiceTest extends TestCase
         self::assertSame('en', $result['locale']);
         self::assertSame('https://example.com/avatar.jpg', $result['avatarUrl']);
         self::assertIsString($result['id']);
-        self::assertCount(6, $result);
+        self::assertArrayHasKey('phoneNumber', $result);
+        self::assertNull($result['phoneNumber']);
+        self::assertCount(7, $result);
     }
 
     #[Test]

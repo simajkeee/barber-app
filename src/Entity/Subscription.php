@@ -16,6 +16,7 @@ use Symfony\Component\Uid\Uuid;
 #[ORM\UniqueConstraint(name: 'uniq_subscriptions_shop', columns: ['shop_id'])]
 #[ORM\Index(name: 'idx_subscriptions_status_end', columns: ['status', 'end_date'])]
 #[ORM\Index(name: 'idx_subscriptions_plan_reset', columns: ['plan', 'count_reset_at'])]
+#[ORM\Index(name: 'idx_subscriptions_trial_ends_at', columns: ['trial_ends_at'], options: ['where' => 'trial_ends_at IS NOT NULL'])]
 #[ORM\HasLifecycleCallbacks]
 class Subscription
 {
@@ -38,6 +39,9 @@ class Subscription
 
     #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $endDate = null;
+
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $trialEndsAt = null;
 
     #[ORM\Column(type: Types::INTEGER)]
     private int $monthlyAppointmentCount = 0;
@@ -117,6 +121,25 @@ class Subscription
     public function setEndDate(?\DateTimeImmutable $endDate): void
     {
         $this->endDate = $endDate;
+    }
+
+    public function getTrialEndsAt(): ?\DateTimeImmutable
+    {
+        return $this->trialEndsAt;
+    }
+
+    public function setTrialEndsAt(?\DateTimeImmutable $trialEndsAt): void
+    {
+        $this->trialEndsAt = $trialEndsAt;
+    }
+
+    public function isInTrial(): bool
+    {
+        if (null === $this->trialEndsAt) {
+            return false;
+        }
+
+        return $this->trialEndsAt > new \DateTimeImmutable('now', new \DateTimeZone('Asia/Ho_Chi_Minh'));
     }
 
     public function getMonthlyAppointmentCount(): int

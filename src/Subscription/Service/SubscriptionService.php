@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Subscription\Service;
 
-use App\Common\Exception\ApiException;
 use App\Entity\Shop;
 use App\Entity\Subscription;
 use App\Repository\SubscriptionRepository;
@@ -16,6 +15,7 @@ final class SubscriptionService
 {
     public const int FREE_APPOINTMENT_LIMIT = 50;
     public const int DEFAULT_PRO_DURATION_DAYS = 30;
+    public const int TRIAL_DURATION_DAYS = 30;
     private const string TZ_NAME = 'Asia/Ho_Chi_Minh';
 
     public function __construct(
@@ -24,7 +24,29 @@ final class SubscriptionService
     ) {
     }
 
-    public function createFreeForShop(Shop $shop): Subscription
+    public function createTrialForShop(Shop $shop): Subscription
+    {
+        $tz = new \DateTimeZone(self::TZ_NAME);
+        $now = new \DateTimeImmutable('now', $tz);
+        $trialEndsAt = $now->modify('+'.self::TRIAL_DURATION_DAYS.' days');
+
+        $subscription = new Subscription();
+        $subscription->setShop($shop);
+        $subscription->setPlan(SubscriptionPlan::PRO);
+        $subscription->setStatus(SubscriptionStatus::ACTIVE);
+        $subscription->setStartDate($now);
+        $subscription->setEndDate(null);
+        $subscription->setTrialEndsAt($trialEndsAt);
+        $subscription->setMonthlyAppointmentCount(0);
+        $subscription->setCountResetAt($now->modify('first day of this month')->setTime(0, 0));
+
+        $this->em->persist($subscription);
+        $this->em->flush();
+
+        return $subscription;
+    }
+
+    private function createFreeForShop(Shop $shop): Subscription
     {
         $tz = new \DateTimeZone(self::TZ_NAME);
         $now = new \DateTimeImmutable('now', $tz);
@@ -54,7 +76,7 @@ final class SubscriptionService
         $subscription->setStatus(SubscriptionStatus::ACTIVE);
         $subscription->setStartDate($now);
 
-        if ($subscription->getEndDate() !== null && $subscription->getEndDate() > $now) {
+        if (null !== $subscription->getEndDate() && $subscription->getEndDate() > $now) {
             $subscription->setEndDate($subscription->getEndDate()->modify("+{$durationDays} days"));
         } else {
             $subscription->setEndDate($now->modify("+{$durationDays} days"));
@@ -90,7 +112,7 @@ final class SubscriptionService
     public function getByShop(Shop $shop): Subscription
     {
         $subscription = $this->subscriptionRepository->findByShop($shop);
-        if ($subscription === null) {
+        if (null === $subscription) {
             return $this->createFreeForShop($shop);
         }
 
@@ -101,18 +123,18 @@ final class SubscriptionService
     {
         $subscription = $this->getByShop($shop);
 
-        return $subscription->getStatus() !== SubscriptionStatus::CANCELLED;
+        return SubscriptionStatus::CANCELLED !== $subscription->getStatus();
     }
 
     public function canCreateAppointment(Shop $shop): bool
     {
         $subscription = $this->getByShop($shop);
 
-        if ($subscription->getStatus() === SubscriptionStatus::CANCELLED) {
+        if (SubscriptionStatus::CANCELLED === $subscription->getStatus()) {
             return false;
         }
 
-        if ($subscription->getPlan() === SubscriptionPlan::PRO) {
+        if (SubscriptionPlan::PRO === $subscription->getPlan()) {
             return true;
         }
 
@@ -143,7 +165,27 @@ final class SubscriptionService
 
         $this->em->flush();
 
-        return count($overdue);
+        return \count($overdue);
+    }
+
+    public function expireOverdueTrials(): int
+    {
+        $tz = new \DateTimeZone(self::TZ_NAME);
+        $now = new \DateTimeImmutable('now', $tz);
+
+        $overdue = $this->subscriptionRepository->findOverdueTrials($now);
+        foreach ($overdue as $subscription) {
+            $subscription->setPlan(SubscriptionPlan::FREE);
+            $subscription->setStatus(SubscriptionStatus::ACTIVE);
+            $subscription->setEndDate(null);
+            $subscription->setMonthlyAppointmentCount(0);
+            $subscription->setCountResetAt($now->modify('first day of this month')->setTime(0, 0));
+            // trialEndsAt is preserved as a historical marker
+        }
+
+        $this->em->flush();
+
+        return \count($overdue);
     }
 
     public function resetMonthlyCounters(): int

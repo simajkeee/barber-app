@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Subscription\EventListener;
 
 use App\Entity\Shop;
-use App\Entity\Subscription;
 use App\Entity\User;
 use App\Repository\ShopRepository;
 use App\Shop\Event\ShopCreatedEvent;
@@ -53,7 +52,7 @@ final class CreateFreeSubscriptionOnShopCreatedTest extends TestCase
 
         $this->shopRepository->method('find')->with($shop->getId())->willReturn($shop);
         $this->subscriptionService->expects(self::once())
-            ->method('createFreeForShop')
+            ->method('createTrialForShop')
             ->with($shop);
 
         $this->sut->__invoke($event);
@@ -65,7 +64,7 @@ final class CreateFreeSubscriptionOnShopCreatedTest extends TestCase
         $event = new ShopCreatedEvent(\Symfony\Component\Uid\Uuid::v7());
 
         $this->shopRepository->method('find')->willReturn(null);
-        $this->subscriptionService->expects(self::never())->method('createFreeForShop');
+        $this->subscriptionService->expects(self::never())->method('createTrialForShop');
 
         $this->sut->__invoke($event);
     }

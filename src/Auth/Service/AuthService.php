@@ -31,8 +31,19 @@ final class AuthService
 
     public function register(RegisterRequest $dto): array
     {
-        if ($this->userRepository->findByEmail($dto->email) !== null) {
+        if (null !== $this->userRepository->findByEmail($dto->email)) {
             throw new ApiException('EMAIL_ALREADY_EXISTS', 'A user with this email already exists.', 409);
+        }
+
+        $normalizedPhone = $this->normalizePhoneNumber($dto->phoneNumber);
+
+        $digitsOnly = (string) preg_replace('/\D/', '', $normalizedPhone);
+        if (\strlen($digitsOnly) < 9 || \strlen($digitsOnly) > 15) {
+            throw new ApiException('VALIDATION_ERROR', 'Phone number format is invalid.', 400);
+        }
+
+        if (null !== $this->userRepository->findByPhoneNumber($normalizedPhone)) {
+            throw new ApiException('PHONE_ALREADY_IN_USE', 'This phone number is already registered.', 422);
         }
 
         $user = new User();
@@ -41,6 +52,7 @@ final class AuthService
         $user->setFirstName($dto->firstName);
         $user->setLastName($dto->lastName);
         $user->setLocale($dto->locale);
+        $user->setPhoneNumber($normalizedPhone);
 
         $this->em->persist($user);
 
@@ -57,7 +69,7 @@ final class AuthService
     {
         $user = $this->userRepository->findByEmail($dto->email);
 
-        if ($user === null || $user->getPassword() === null) {
+        if (null === $user || null === $user->getPassword()) {
             throw new ApiException('INVALID_CREDENTIALS', 'Invalid email or password.', 401);
         }
 
@@ -72,7 +84,7 @@ final class AuthService
     {
         $token = $this->refreshTokenRepository->findValidByToken($refreshToken);
 
-        if ($token === null) {
+        if (null === $token) {
             throw new ApiException('REFRESH_TOKEN_EXPIRED', 'Invalid or expired refresh token.', 401);
         }
 
@@ -110,13 +122,33 @@ final class AuthService
             'lastName' => $user->getLastName(),
             'locale' => $user->getLocale()->value,
             'avatarUrl' => $user->getAvatarUrl(),
+            'phoneNumber' => $user->getPhoneNumber(),
         ];
+    }
+
+    private function normalizePhoneNumber(string $phone): string
+    {
+        $phone = (string) preg_replace('/[\s\-\(\)]/', '', $phone);
+
+        if (str_starts_with($phone, '+')) {
+            return $phone;
+        }
+
+        if (str_starts_with($phone, '84') && 11 === \strlen($phone)) {
+            return '+'.$phone;
+        }
+
+        if (str_starts_with($phone, '0')) {
+            return '+84'.substr($phone, 1);
+        }
+
+        return $phone;
     }
 
     private function createRefreshToken(User $user): string
     {
         $token = bin2hex(random_bytes(64));
-        $expiresAt = new \DateTimeImmutable('+' . self::REFRESH_TOKEN_TTL_DAYS . ' days');
+        $expiresAt = new \DateTimeImmutable('+'.self::REFRESH_TOKEN_TTL_DAYS.' days');
 
         $refreshToken = new RefreshToken($user, $token, $expiresAt);
         $this->em->persist($refreshToken);

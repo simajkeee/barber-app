@@ -32,7 +32,7 @@ final class PasswordResetService
     {
         $user = $this->userRepository->findByEmail($email);
 
-        if ($user === null || $user->getPassword() === null) {
+        if (null === $user || null === $user->getPassword()) {
             return;
         }
 
@@ -40,7 +40,7 @@ final class PasswordResetService
 
         $rawToken = bin2hex(random_bytes(32));
         $tokenHash = hash('sha256', $rawToken);
-        $expiresAt = new \DateTimeImmutable('+' . self::TOKEN_TTL_HOURS . ' hour');
+        $expiresAt = new \DateTimeImmutable('+'.self::TOKEN_TTL_HOURS.' hour');
 
         $resetToken = new PasswordResetToken($user, $tokenHash, $expiresAt);
         $this->em->persist($resetToken);
@@ -58,7 +58,7 @@ final class PasswordResetService
         $tokenHash = hash('sha256', $rawToken);
         $resetToken = $this->passwordResetTokenRepository->findByTokenHash($tokenHash);
 
-        if ($resetToken === null || $resetToken->isUsed() || $resetToken->isExpired()) {
+        if (null === $resetToken || $resetToken->isUsed() || $resetToken->isExpired()) {
             throw new ApiException('INVALID_RESET_TOKEN', 'This reset link is invalid or has expired.', 400);
         }
 

@@ -31,7 +31,7 @@ final class CaptchaValidatorService implements CaptchaValidatorInterface
 
             $data = $response->toArray(false);
 
-            return isset($data['success']) && $data['success'] === true;
+            return isset($data['success']) && true === $data['success'];
         } catch (TransportExceptionInterface $e) {
             $this->logger->error('Turnstile verification failed: network error', [
                 'exception' => $e->getMessage(),

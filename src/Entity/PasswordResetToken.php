@@ -86,6 +86,6 @@ class PasswordResetToken
 
     public function isUsed(): bool
     {
-        return $this->usedAt !== null;
+        return null !== $this->usedAt;
     }
 }

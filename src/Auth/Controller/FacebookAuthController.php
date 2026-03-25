@@ -7,8 +7,8 @@ namespace App\Auth\Controller;
 use App\Auth\Dto\FacebookAuthRequest;
 use App\Auth\Service\FacebookAuthService;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\HttpKernel\Attribute\AsController;
+use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]

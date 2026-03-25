@@ -30,19 +30,19 @@ final readonly class RevenueController
         #[MapQueryString] RevenueQuery $query,
     ): JsonResponse {
         $shop = $this->shopManager->getShopForUser($user);
-        if ($shop === null) {
+        if (null === $shop) {
             throw new ApiException('SHOP_NOT_FOUND', 'Shop not found. Create one first.', 404);
         }
 
         $tz = new \DateTimeZone('Asia/Ho_Chi_Minh');
 
         $dateFrom = \DateTimeImmutable::createFromFormat('Y-m-d', $query->dateFrom, $tz);
-        if ($dateFrom === false) {
+        if (false === $dateFrom) {
             throw new ApiException('VALIDATION_ERROR', 'Invalid dateFrom format.', 400);
         }
 
         $dateTo = \DateTimeImmutable::createFromFormat('Y-m-d', $query->dateTo, $tz);
-        if ($dateTo === false) {
+        if (false === $dateTo) {
             throw new ApiException('VALIDATION_ERROR', 'Invalid dateTo format.', 400);
         }
 

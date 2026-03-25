@@ -120,7 +120,7 @@ final class ReminderSettingsServiceTest extends TestCase
         // second findByShopAndLocale also returns null (impossible race, but must not return null from the method)
         $this->repository->method('findByShopAndLocale')->willReturn(null);
         $this->em->method('flush')->willThrowException(
-            $this->createMock(\Doctrine\DBAL\Exception\UniqueConstraintViolationException::class)
+            $this->createMock(\Doctrine\DBAL\Exception\UniqueConstraintViolationException::class),
         );
         $this->em->expects(self::once())->method('clear');
 

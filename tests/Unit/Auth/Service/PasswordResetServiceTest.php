@@ -89,7 +89,7 @@ final class PasswordResetServiceTest extends TestCase
             ->method('dispatch')
             ->with(self::callback(function (SendPasswordResetEmailMessage $message): bool {
                 self::assertSame('user@example.com', $message->email);
-                self::assertSame(64, strlen($message->rawToken));
+                self::assertSame(64, \strlen($message->rawToken));
                 self::assertTrue(ctype_xdigit($message->rawToken));
                 self::assertSame('vi', $message->locale);
 

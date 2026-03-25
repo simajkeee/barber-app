@@ -33,7 +33,7 @@ final class ReminderSettingsService
                 $this->em->clear();
                 $settings = $this->reminderSettingsRepository->findByShopAndLocale($shop, $locale);
                 if (null === $settings) {
-                    throw new \RuntimeException(sprintf('Failed to load reminder settings for shop %s locale %s after concurrent insert.', $shop->getId(), $locale));
+                    throw new \RuntimeException(\sprintf('Failed to load reminder settings for shop %s locale %s after concurrent insert.', $shop->getId(), $locale));
                 }
             }
         }

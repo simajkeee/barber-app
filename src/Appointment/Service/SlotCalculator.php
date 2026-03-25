@@ -37,13 +37,13 @@ final class SlotCalculator
         $dayOfWeek = DayOfWeek::from($dayName);
 
         $schedule = $this->getScheduleForDay($shop, $dayOfWeek);
-        if ($schedule === null || !$schedule->isOpen()) {
+        if (null === $schedule || !$schedule->isOpen()) {
             return [];
         }
 
         $openTime = $schedule->getOpenTime();
         $closeTime = $schedule->getCloseTime();
-        if ($openTime === null || $closeTime === null) {
+        if (null === $openTime || null === $closeTime) {
             return [];
         }
 
@@ -83,7 +83,7 @@ final class SlotCalculator
                 );
             }
 
-            $slotStart = $slotStart->modify('+' . self::SLOT_INTERVAL_MINUTES . ' minutes');
+            $slotStart = $slotStart->modify('+'.self::SLOT_INTERVAL_MINUTES.' minutes');
         }
 
         return $slots;

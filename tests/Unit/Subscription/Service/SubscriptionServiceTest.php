@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Subscription\Service;
 
-use App\Common\Exception\ApiException;
 use App\Entity\Shop;
 use App\Entity\Subscription;
 use App\Entity\User;
@@ -72,23 +71,50 @@ final class SubscriptionServiceTest extends TestCase
         return $subscription;
     }
 
-    // --- createFreeForShop ---
+    // --- createTrialForShop ---
 
     #[Test]
-    public function testCreateFreeForShopSetsPlanFreeAndEndDateNull(): void
+    public function testCreateTrialForShopSetsPlanProWithTrialEndDate(): void
     {
         $shop = $this->createShop();
 
         $this->em->expects(self::once())->method('persist');
         $this->em->expects(self::once())->method('flush');
 
-        $subscription = $this->sut->createFreeForShop($shop);
+        $before = new \DateTimeImmutable('now', new \DateTimeZone('Asia/Ho_Chi_Minh'));
+        $subscription = $this->sut->createTrialForShop($shop);
+        $after = new \DateTimeImmutable('now', new \DateTimeZone('Asia/Ho_Chi_Minh'));
 
-        self::assertSame(SubscriptionPlan::FREE, $subscription->getPlan());
+        self::assertSame(SubscriptionPlan::PRO, $subscription->getPlan());
         self::assertSame(SubscriptionStatus::ACTIVE, $subscription->getStatus());
         self::assertNull($subscription->getEndDate());
         self::assertSame(0, $subscription->getMonthlyAppointmentCount());
         self::assertSame($shop, $subscription->getShop());
+        self::assertNotNull($subscription->getTrialEndsAt());
+        self::assertGreaterThanOrEqual(
+            $before->modify('+30 days')->getTimestamp(),
+            $subscription->getTrialEndsAt()->getTimestamp()
+        );
+        self::assertLessThanOrEqual(
+            $after->modify('+30 days')->getTimestamp(),
+            $subscription->getTrialEndsAt()->getTimestamp()
+        );
+    }
+
+    #[Test]
+    public function testGetByShopCreatesFreeSubscriptionAsFallbackForExistingShops(): void
+    {
+        $shop = $this->createShop();
+
+        $this->subscriptionRepository->method('findByShop')->with($shop)->willReturn(null);
+        $this->em->expects(self::once())->method('persist');
+        $this->em->expects(self::once())->method('flush');
+
+        $subscription = $this->sut->getByShop($shop);
+
+        self::assertSame(SubscriptionPlan::FREE, $subscription->getPlan());
+        self::assertSame(SubscriptionStatus::ACTIVE, $subscription->getStatus());
+        self::assertNull($subscription->getTrialEndsAt());
     }
 
     // --- activate ---
@@ -411,6 +437,41 @@ final class SubscriptionServiceTest extends TestCase
         $this->subscriptionRepository->method('findOverdueProSubscriptions')->willReturn([]);
 
         $count = $this->sut->expireOverdueSubscriptions();
+
+        self::assertSame(0, $count);
+    }
+
+    // --- expireOverdueTrials ---
+
+    #[Test]
+    public function testExpireOverdueTrialsDowngradesToFreeAndActive(): void
+    {
+        $shop = $this->createShop();
+        $pastTrialEnd = new \DateTimeImmutable('-1 day', new \DateTimeZone('Asia/Ho_Chi_Minh'));
+        $subscription = $this->createSubscription($shop, SubscriptionPlan::PRO, SubscriptionStatus::ACTIVE, endDate: null);
+        $subscription->setTrialEndsAt($pastTrialEnd);
+
+        $this->subscriptionRepository->method('findOverdueTrials')->willReturn([$subscription]);
+        $this->em->expects(self::once())->method('flush');
+
+        $count = $this->sut->expireOverdueTrials();
+
+        self::assertSame(1, $count);
+        self::assertSame(SubscriptionPlan::FREE, $subscription->getPlan());
+        self::assertSame(SubscriptionStatus::ACTIVE, $subscription->getStatus());
+        self::assertNull($subscription->getEndDate());
+        self::assertSame(0, $subscription->getMonthlyAppointmentCount());
+        // trialEndsAt preserved as historical marker
+        self::assertSame($pastTrialEnd, $subscription->getTrialEndsAt());
+    }
+
+    #[Test]
+    public function testExpireOverdueTrialsReturnsZeroWhenNoneOverdue(): void
+    {
+        $this->subscriptionRepository->method('findOverdueTrials')->willReturn([]);
+        $this->em->expects(self::once())->method('flush');
+
+        $count = $this->sut->expireOverdueTrials();
 
         self::assertSame(0, $count);
     }

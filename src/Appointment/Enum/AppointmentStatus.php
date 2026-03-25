@@ -13,15 +13,15 @@ enum AppointmentStatus: string
 
     public function isTerminal(): bool
     {
-        return $this !== self::SCHEDULED;
+        return self::SCHEDULED !== $this;
     }
 
     public function canTransitionTo(self $target): bool
     {
-        if ($this !== self::SCHEDULED) {
+        if (self::SCHEDULED !== $this) {
             return false;
         }
 
-        return in_array($target, [self::COMPLETED, self::CANCELLED, self::NO_SHOW], true);
+        return \in_array($target, [self::COMPLETED, self::CANCELLED, self::NO_SHOW], true);
     }
 }

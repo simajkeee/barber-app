@@ -25,7 +25,7 @@ final readonly class ClientListFilter
         $this->search = $search;
         $this->cursor = $cursor;
         $this->limit = min(max($limit, 1), 100);
-        $this->sort = in_array($sort, self::ALLOWED_SORTS, true) ? $sort : 'created_at';
-        $this->direction = in_array($direction, self::ALLOWED_DIRECTIONS, true) ? $direction : 'desc';
+        $this->sort = \in_array($sort, self::ALLOWED_SORTS, true) ? $sort : 'created_at';
+        $this->direction = \in_array($direction, self::ALLOWED_DIRECTIONS, true) ? $direction : 'desc';
     }
 }

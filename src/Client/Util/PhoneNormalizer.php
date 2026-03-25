@@ -13,6 +13,6 @@ final class PhoneNormalizer
 
     public static function isValid(string $normalizedPhone): bool
     {
-        return preg_match('/^\+?[0-9]{7,15}$/', $normalizedPhone) === 1;
+        return 1 === preg_match('/^\+?[0-9]{7,15}$/', $normalizedPhone);
     }
 }

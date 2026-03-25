@@ -28,6 +28,6 @@ final class OverlapDetector
             $excludeAppointmentId,
         );
 
-        return $overlapping !== [];
+        return [] !== $overlapping;
     }
 }

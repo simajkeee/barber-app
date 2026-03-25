@@ -30,7 +30,7 @@ final readonly class CreateClientController
         #[MapRequestPayload] CreateClientRequest $dto,
     ): JsonResponse {
         $shop = $this->shopManager->getShopForUser($user);
-        if ($shop === null) {
+        if (null === $shop) {
             throw new ApiException('SHOP_NOT_FOUND', 'Shop not found. Create one first.', 404);
         }
 

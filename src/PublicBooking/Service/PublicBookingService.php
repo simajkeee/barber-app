@@ -196,7 +196,7 @@ final class PublicBookingService
         $owner = $shop->getOwner();
         $this->messageBus->dispatch(new SendNewBookingNotificationEmailMessage(
             ownerEmail: $owner->getEmail(),
-            clientFullName: $client->getFirstName() . ' ' . $client->getLastName(),
+            clientFullName: $client->getFirstName().' '.$client->getLastName(),
             clientPhone: $client->getPhone(),
             serviceName: $service->getName(),
             durationMinutes: $service->getDurationMinutes(),

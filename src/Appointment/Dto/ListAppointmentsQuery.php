@@ -27,7 +27,7 @@ final readonly class ListAppointmentsQuery
     ) {
         $this->dateFrom = $dateFrom;
         $this->dateTo = $dateTo;
-        $this->status = is_string($status) ? [$status] : ($status ?? []);
+        $this->status = \is_string($status) ? [$status] : ($status ?? []);
         $this->clientId = $clientId;
         $this->cursor = $cursor;
         $this->limit = min(max($limit, 1), 100);

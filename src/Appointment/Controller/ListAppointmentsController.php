@@ -32,7 +32,7 @@ final readonly class ListAppointmentsController
         Request $request,
     ): JsonResponse {
         $shop = $this->shopManager->getShopForUser($user);
-        if ($shop === null) {
+        if (null === $shop) {
             throw new ApiException('SHOP_NOT_FOUND', 'Shop not found. Create one first.', 404);
         }
 
@@ -41,8 +41,8 @@ final readonly class ListAppointmentsController
         // so we read from the full parameter bag and normalize manually.
         $statusValue = $request->query->all()['status'] ?? null;
         $rawStatus = match (true) {
-            is_array($statusValue) => $statusValue,
-            is_string($statusValue) => [$statusValue],
+            \is_array($statusValue) => $statusValue,
+            \is_string($statusValue) => [$statusValue],
             default => [],
         };
 
@@ -55,9 +55,9 @@ final readonly class ListAppointmentsController
             limit: (int) $request->query->get('limit', 20),
         );
 
-        $dateFrom = $query->dateFrom !== null ? $this->parseDate($query->dateFrom) : null;
-        $dateTo = $query->dateTo !== null ? $this->parseDate($query->dateTo) : null;
-        $clientId = $query->clientId !== null && Uuid::isValid($query->clientId)
+        $dateFrom = null !== $query->dateFrom ? $this->parseDate($query->dateFrom) : null;
+        $dateTo = null !== $query->dateTo ? $this->parseDate($query->dateTo) : null;
+        $clientId = null !== $query->clientId && Uuid::isValid($query->clientId)
             ? Uuid::fromString($query->clientId) : null;
 
         $result = $this->appointmentRepository->findByShopWithFilter(
@@ -80,7 +80,7 @@ final readonly class ListAppointmentsController
     {
         $tz = new \DateTimeZone('Asia/Ho_Chi_Minh');
         $date = \DateTimeImmutable::createFromFormat('Y-m-d', $value, $tz);
-        if ($date === false) {
+        if (false === $date) {
             throw new ApiException('VALIDATION_ERROR', "Invalid date format: {$value}", 400);
         }
 

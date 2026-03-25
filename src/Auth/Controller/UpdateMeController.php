@@ -9,8 +9,8 @@ use App\Auth\Service\AuthService;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\HttpKernel\Attribute\AsController;
+use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
@@ -26,13 +26,13 @@ final readonly class UpdateMeController
         #[CurrentUser] User $user,
         #[MapRequestPayload] UpdateProfileRequest $dto,
     ): JsonResponse {
-        if ($dto->firstName !== null) {
+        if (null !== $dto->firstName) {
             $user->setFirstName($dto->firstName);
         }
-        if ($dto->lastName !== null) {
+        if (null !== $dto->lastName) {
             $user->setLastName($dto->lastName);
         }
-        if ($dto->locale !== null) {
+        if (null !== $dto->locale) {
             $user->setLocale($dto->locale);
         }
 

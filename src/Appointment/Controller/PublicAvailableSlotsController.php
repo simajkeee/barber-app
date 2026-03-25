@@ -31,13 +31,13 @@ final readonly class PublicAvailableSlotsController
         #[MapQueryString] PublicAvailableSlotsQuery $query,
     ): JsonResponse {
         $shop = $this->shopRepository->findBySlug($slug);
-        if ($shop === null) {
+        if (null === $shop) {
             throw new ApiException('SHOP_NOT_FOUND', 'Shop not found.', 404);
         }
 
         $tz = new \DateTimeZone('Asia/Ho_Chi_Minh');
         $date = \DateTimeImmutable::createFromFormat('Y-m-d', $query->date, $tz);
-        if ($date === false) {
+        if (false === $date) {
             throw new ApiException('VALIDATION_ERROR', 'Invalid date format.', 400);
         }
 
@@ -45,7 +45,7 @@ final readonly class PublicAvailableSlotsController
             'id' => Uuid::fromString($query->serviceId),
             'shop' => $shop,
         ]);
-        if ($service === null) {
+        if (null === $service) {
             throw new ApiException('SERVICE_NOT_FOUND', 'Service not found.', 404);
         }
 

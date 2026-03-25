@@ -35,7 +35,7 @@ final class BackfillMissingSubscriptionsCommand extends Command
             ++$count;
         }
 
-        $io->success(sprintf('Processed %d shop(s) — missing FREE subscriptions created.', $count));
+        $io->success(\sprintf('Processed %d shop(s) — missing FREE subscriptions created.', $count));
 
         return Command::SUCCESS;
     }

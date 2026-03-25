@@ -57,7 +57,7 @@ final class CaptchaValidatorServiceTest extends TestCase
     {
         $httpClient = $this->createMock(HttpClientInterface::class);
         $httpClient->method('request')
-            ->willThrowException(new class ('Network error') extends \RuntimeException implements TransportExceptionInterface {});
+            ->willThrowException(new class('Network error') extends \RuntimeException implements TransportExceptionInterface {});
 
         $sut = new CaptchaValidatorService(
             $httpClient,

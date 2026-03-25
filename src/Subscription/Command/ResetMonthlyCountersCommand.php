@@ -29,7 +29,7 @@ final class ResetMonthlyCountersCommand extends Command
 
         $count = $this->subscriptionService->resetMonthlyCounters();
 
-        $io->success(sprintf('Reset counters for %d subscription(s).', $count));
+        $io->success(\sprintf('Reset counters for %d subscription(s).', $count));
 
         return Command::SUCCESS;
     }

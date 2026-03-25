@@ -32,7 +32,7 @@ final class ShopManager
 
     public function createShop(User $user, CreateShopRequest $dto): Shop
     {
-        if ($this->shopRepository->findByOwner($user) !== null) {
+        if (null !== $this->shopRepository->findByOwner($user)) {
             throw new ApiException('SHOP_ALREADY_EXISTS', 'You already have a shop.', 409);
         }
 
@@ -64,25 +64,25 @@ final class ShopManager
      */
     public function updateShop(Shop $shop, UpdateShopRequest $dto, array $explicitFields): Shop
     {
-        if ($dto->name !== null) {
+        if (null !== $dto->name) {
             $shop->setName($dto->name);
         }
-        if ($dto->address !== null) {
+        if (null !== $dto->address) {
             $shop->setAddress($dto->address);
         }
-        if ($dto->phone !== null) {
+        if (null !== $dto->phone) {
             $shop->setPhone($dto->phone);
         }
-        if (in_array('description', $explicitFields, true)) {
+        if (\in_array('description', $explicitFields, true)) {
             $shop->setDescription($dto->description);
         }
-        if (in_array('coverImageUrl', $explicitFields, true)) {
+        if (\in_array('coverImageUrl', $explicitFields, true)) {
             $shop->setCoverImageUrl($dto->coverImageUrl);
         }
 
-        if ($dto->slug !== null) {
+        if (null !== $dto->slug) {
             $existing = $this->shopRepository->findBySlug($dto->slug);
-            if ($existing !== null && $existing->getId()->toRfc4122() !== $shop->getId()->toRfc4122()) {
+            if (null !== $existing && $existing->getId()->toRfc4122() !== $shop->getId()->toRfc4122()) {
                 throw new ApiException('SLUG_ALREADY_EXISTS', 'This slug is already taken.', 409);
             }
             $shop->setSlug($dto->slug);
@@ -134,13 +134,13 @@ final class ShopManager
         $slugger = new AsciiSlugger('vi');
         $slug = strtolower((string) $slugger->slug($name));
 
-        if ($this->shopRepository->findBySlug($slug) === null) {
+        if (null === $this->shopRepository->findBySlug($slug)) {
             return $slug;
         }
 
         $suffix = bin2hex(random_bytes(2));
 
-        return $slug . '-' . $suffix;
+        return $slug.'-'.$suffix;
     }
 
     public function getShopForUser(User $user): ?Shop
@@ -158,6 +158,7 @@ final class ShopManager
 
     /**
      * @param WorkSchedule[] $schedules
+     *
      * @return array<string, mixed>
      */
     public static function serializeShop(Shop $shop, array $schedules): array
@@ -196,7 +197,7 @@ final class ShopManager
             $schedule->setShop($shop);
             $schedule->setDayOfWeek($day);
 
-            if ($day === DayOfWeek::SUNDAY) {
+            if (DayOfWeek::SUNDAY === $day) {
                 $schedule->setIsOpen(false);
             } else {
                 $schedule->setIsOpen(true);
@@ -219,7 +220,7 @@ final class ShopManager
             $days[$day] = true;
 
             if ($entry->isOpen) {
-                if ($entry->openTime === null || $entry->closeTime === null) {
+                if (null === $entry->openTime || null === $entry->closeTime) {
                     throw new ApiException('VALIDATION_ERROR', 'Opening and closing times are required when the shop is open.', 400);
                 }
                 if ($entry->openTime >= $entry->closeTime) {
@@ -228,7 +229,7 @@ final class ShopManager
             }
         }
 
-        if (count($days) !== 7) {
+        if (7 !== \count($days)) {
             throw new ApiException('VALIDATION_ERROR', 'All 7 days of the week are required.', 400);
         }
     }

@@ -19,23 +19,23 @@ use App\Entity\Shop;
 use App\Entity\ShopService;
 use App\Entity\User;
 use App\Entity\WorkSchedule;
+use App\Notification\Message\SendAppointmentCancelledEmailMessage;
 use App\Repository\AppointmentRepository;
 use App\Repository\ClientRepository;
 use App\Repository\ShopServiceRepository;
 use App\Repository\WorkScheduleRepository;
 use App\Shop\Enum\DayOfWeek;
+use App\Subscription\Service\AppointmentLimitChecker;
+use App\Subscription\Service\SubscriptionService;
 use Doctrine\DBAL\Exception\DriverException;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Uid\Uuid;
-use App\Notification\Message\SendAppointmentCancelledEmailMessage;
-use App\Subscription\Service\AppointmentLimitChecker;
-use App\Subscription\Service\SubscriptionService;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Uid\Uuid;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 #[CoversClass(AppointmentService::class)]

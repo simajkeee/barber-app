@@ -33,7 +33,7 @@ final readonly class AdminActivateSubscriptionController
         }
 
         $shop = $this->shopRepository->find(Uuid::fromString($shopId));
-        if ($shop === null) {
+        if (null === $shop) {
             throw new ApiException('SHOP_NOT_FOUND', 'Shop not found.', 404);
         }
 

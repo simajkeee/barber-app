@@ -35,7 +35,7 @@ final class SubscriptionGuard
         $request = $event->getRequest();
         $method = $request->getMethod();
 
-        if (in_array($method, ['GET', 'HEAD', 'OPTIONS'], true)) {
+        if (\in_array($method, ['GET', 'HEAD', 'OPTIONS'], true)) {
             return;
         }
 
@@ -51,7 +51,7 @@ final class SubscriptionGuard
         }
 
         $token = $this->tokenStorage->getToken();
-        if ($token === null) {
+        if (null === $token) {
             return;
         }
 
@@ -61,7 +61,7 @@ final class SubscriptionGuard
         }
 
         $shop = $user->getShop();
-        if ($shop === null) {
+        if (null === $shop) {
             return;
         }
 
@@ -71,7 +71,7 @@ final class SubscriptionGuard
             return;
         }
 
-        if ($subscription->getStatus() === SubscriptionStatus::CANCELLED) {
+        if (SubscriptionStatus::CANCELLED === $subscription->getStatus()) {
             $event->setResponse(new JsonResponse([
                 'code' => 'SUBSCRIPTION_CANCELLED',
                 'message' => 'Your subscription has been cancelled. Contact support for assistance.',

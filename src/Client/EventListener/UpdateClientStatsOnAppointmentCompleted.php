@@ -21,7 +21,7 @@ final readonly class UpdateClientStatsOnAppointmentCompleted
     public function __invoke(AppointmentCompleted $event): void
     {
         $appointment = $this->appointmentRepository->find($event->appointmentId);
-        if ($appointment === null) {
+        if (null === $appointment) {
             return;
         }
 

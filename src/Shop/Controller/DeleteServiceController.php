@@ -29,12 +29,12 @@ final readonly class DeleteServiceController
     public function __invoke(Uuid $id, #[CurrentUser] User $user): JsonResponse
     {
         $shop = $this->shopManager->getShopForUser($user);
-        if ($shop === null) {
+        if (null === $shop) {
             throw new ApiException('SHOP_NOT_FOUND', 'Shop not found. Create one first.', 404);
         }
 
         $service = $this->shopServiceRepository->find($id);
-        if ($service === null || $service->getShop()->getId()->toRfc4122() !== $shop->getId()->toRfc4122()) {
+        if (null === $service || $service->getShop()->getId()->toRfc4122() !== $shop->getId()->toRfc4122()) {
             throw new ApiException('SERVICE_NOT_FOUND', 'Service not found.', 404);
         }
 

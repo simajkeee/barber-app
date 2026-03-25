@@ -26,10 +26,11 @@ final class ApiExceptionListener
                 'code' => $exception->errorCode,
                 'message' => $exception->getMessage(),
             ];
-            if ($exception->details !== []) {
+            if ([] !== $exception->details) {
                 $payload['details'] = $exception->details;
             }
             $event->setResponse(new JsonResponse($payload, $exception->statusCode));
+
             return;
         }
 
@@ -48,6 +49,7 @@ final class ApiExceptionListener
                 'message' => 'Validation failed.',
                 'details' => $errors,
             ], 400));
+
             return;
         }
 
@@ -59,12 +61,13 @@ final class ApiExceptionListener
             $retryAfterSeconds = max(0, $exception->getRetryAfter()->getTimestamp() - time());
             $response->headers->set('Retry-After', (string) $retryAfterSeconds);
             $event->setResponse($response);
+
             return;
         }
 
         if ($exception instanceof HttpException) {
             $event->setResponse(new JsonResponse([
-                'code' => 'HTTP_' . $exception->getStatusCode(),
+                'code' => 'HTTP_'.$exception->getStatusCode(),
                 'message' => $exception->getMessage(),
             ], $exception->getStatusCode()));
         }

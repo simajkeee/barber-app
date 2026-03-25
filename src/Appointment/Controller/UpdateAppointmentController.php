@@ -36,7 +36,7 @@ final readonly class UpdateAppointmentController
         #[MapRequestPayload] UpdateAppointmentRequest $dto,
     ): JsonResponse {
         $shop = $this->shopManager->getShopForUser($user);
-        if ($shop === null) {
+        if (null === $shop) {
             throw new ApiException('SHOP_NOT_FOUND', 'Shop not found. Create one first.', 404);
         }
 
@@ -45,7 +45,7 @@ final readonly class UpdateAppointmentController
         }
 
         $appointment = $this->appointmentRepository->findByShopAndId($shop, Uuid::fromString($id));
-        if ($appointment === null) {
+        if (null === $appointment) {
             throw new ApiException('APPOINTMENT_NOT_FOUND', 'Appointment not found.', 404);
         }
 

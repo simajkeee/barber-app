@@ -1,0 +1,313 @@
+{
+  "info": {
+    "name": "BarberPro API",
+    "description": "BarberPro — barber shop booking SaaS. PHP/Symfony 7.2 REST API.\n\nAuth: JWT Bearer tokens. Run 'POST Login' first to populate `{{auth_token}}`.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{auth_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8000", "type": "default" },
+    { "key": "auth_token", "value": "", "type": "secret" },
+    { "key": "refresh_token", "value": "", "type": "secret" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "POST Register",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "register"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"barber@example.com\",\n  \"password\": \"securepass123\",\n  \"firstName\": \"Nguyen\",\n  \"lastName\": \"Van A\",\n  \"locale\": \"vi\",\n  \"phoneNumber\": \"0901234567\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "Register a new barber account. Returns JWT access token, refresh token, and user details.\n\n**Auth:** None required\n**Rate limit:** 5 requests/hour per IP\n\n### Request body\n| Field | Type | Required | Notes |\n|-------|------|----------|-------|\n| email | string | ✅ | max 180 chars, unique |\n| password | string | ✅ | 8–255 chars |\n| firstName | string | ✅ | max 100 chars |\n| lastName | string | ✅ | max 100 chars |\n| locale | string | ❌ | `vi` (default) or `en` |\n| phoneNumber | string | ✅ | Vietnamese mobile: `0901234567`, E.164: `+84901234567`. Stored as E.164. |\n\n### Responses\n- **201** — success, returns `{ user, token, refreshToken }`\n- **400** — validation error (missing/invalid fields)\n- **409** — email already registered\n- **422** — phone number already registered\n- **429** — rate limit exceeded"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 201\", function() {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "if (pm.response.code === 201) {",
+                  "    var json = pm.response.json();",
+                  "    pm.collectionVariables.set(\"auth_token\", json.token);",
+                  "    pm.collectionVariables.set(\"refresh_token\", json.refreshToken);",
+                  "}",
+                  "pm.test(\"Response time < 500ms\", function() {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Generate unique email to avoid conflicts on repeated runs",
+                  "var timestamp = Date.now();",
+                  "var body = JSON.parse(pm.request.body.raw);",
+                  "body.email = 'barber_' + timestamp + '@example.com';",
+                  "pm.request.body.raw = JSON.stringify(body, null, 2);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "201 Success",
+              "status": "Created",
+              "code": 201,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"user\": {\n    \"id\": \"019d2600-9a9b-7985-94b5-469c852c3afb\",\n    \"email\": \"barber@example.com\",\n    \"firstName\": \"Nguyen\",\n    \"lastName\": \"Van A\",\n    \"locale\": \"vi\",\n    \"avatarUrl\": null,\n    \"phoneNumber\": \"+84901234567\"\n  },\n  \"token\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9...\",\n  \"refreshToken\": \"abc123...\"\n}"
+            },
+            {
+              "name": "400 Validation Error — missing phoneNumber",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"code\": \"VALIDATION_ERROR\",\n  \"message\": \"Validation failed.\",\n  \"details\": [\n    { \"field\": \"phoneNumber\", \"message\": \"Phone number is required.\" }\n  ]\n}"
+            },
+            {
+              "name": "400 Validation Error — invalid phone format",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"code\": \"VALIDATION_ERROR\",\n  \"message\": \"Validation failed.\",\n  \"details\": [\n    { \"field\": \"phoneNumber\", \"message\": \"Phone number format is invalid.\" }\n  ]\n}"
+            },
+            {
+              "name": "409 Email already exists",
+              "status": "Conflict",
+              "code": 409,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"code\": \"EMAIL_ALREADY_EXISTS\",\n  \"message\": \"A user with this email already exists.\"\n}"
+            },
+            {
+              "name": "422 Phone already in use",
+              "status": "Unprocessable Entity",
+              "code": 422,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"code\": \"PHONE_ALREADY_IN_USE\",\n  \"message\": \"This phone number is already registered.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "POST Login",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "login"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"barber@example.com\",\n  \"password\": \"securepass123\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "Login with email and password. Returns JWT access token, refresh token, and user details.\n\n**Auth:** None required\n**Rate limit:** 10 requests/minute per IP\n\n### Responses\n- **200** — success\n- **401** — invalid credentials"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "if (pm.response.code === 200) {",
+                  "    var json = pm.response.json();",
+                  "    pm.collectionVariables.set(\"auth_token\", json.token);",
+                  "    pm.collectionVariables.set(\"refresh_token\", json.refreshToken);",
+                  "}",
+                  "pm.test(\"Response time < 500ms\", function() {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Success",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"user\": {\n    \"id\": \"019d2600-9a9b-7985-94b5-469c852c3afb\",\n    \"email\": \"barber@example.com\",\n    \"firstName\": \"Nguyen\",\n    \"lastName\": \"Van A\",\n    \"locale\": \"vi\",\n    \"avatarUrl\": null,\n    \"phoneNumber\": \"+84901234567\"\n  },\n  \"token\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9...\",\n  \"refreshToken\": \"abc123...\"\n}"
+            },
+            {
+              "name": "401 Invalid credentials",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"code\": \"INVALID_CREDENTIALS\",\n  \"message\": \"Invalid email or password.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "POST Refresh Token",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/refresh",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "refresh"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refresh_token}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "Rotate refresh token. Returns new JWT access token and new refresh token (old token is invalidated).\n\n**Auth:** None required (uses refresh token in body)\n\n### Responses\n- **200** — success, new token pair\n- **401** — invalid or expired refresh token"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var json = pm.response.json();",
+                  "    pm.collectionVariables.set(\"auth_token\", json.token);",
+                  "    pm.collectionVariables.set(\"refresh_token\", json.refreshToken);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET Me",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/me",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "me"]
+            },
+            "description": "Get the currently authenticated user's profile.\n\n**Auth:** JWT Bearer required\n\n### Response fields\n| Field | Type | Notes |\n|-------|------|-------|\n| id | string (UUID) | |\n| email | string | |\n| firstName | string | |\n| lastName | string | |\n| locale | string | `vi` or `en` |\n| avatarUrl | string\\|null | |\n| phoneNumber | string\\|null | E.164 format, null for pre-migration/Facebook accounts |\n\n### Responses\n- **200** — success\n- **401** — not authenticated"
+          },
+          "response": [
+            {
+              "name": "200 Success",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"id\": \"019d2600-9a9b-7985-94b5-469c852c3afb\",\n  \"email\": \"barber@example.com\",\n  \"firstName\": \"Nguyen\",\n  \"lastName\": \"Van A\",\n  \"locale\": \"vi\",\n  \"avatarUrl\": null,\n  \"phoneNumber\": \"+84901234567\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "PUT Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/me",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "me"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Nguyen\",\n  \"lastName\": \"Van B\",\n  \"locale\": \"en\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "Update the authenticated user's profile. All fields are optional (partial update).\n\n**Auth:** JWT Bearer required\n\n⚠️ `phoneNumber` is intentionally not accepted — it cannot be changed after registration to prevent trial reset abuse.\n\n### Responses\n- **200** — success\n- **401** — not authenticated"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Subscription",
+      "item": [
+        {
+          "name": "GET Subscription",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/subscription/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "subscription", ""]
+            },
+            "description": "Get the authenticated user's shop subscription status, trial info, and usage.\n\n**Auth:** JWT Bearer required\n**Rate limit:** 60 requests/minute\n\n### Response fields\n| Field | Type | Notes |\n|-------|------|-------|\n| id | string | Subscription UUID |\n| plan | string | `free` or `pro` |\n| status | string | `active`, `expired`, or `cancelled` |\n| startDate | string | ISO 8601 with timezone |\n| endDate | string\\|null | null for free plan and trial; set only for paid PRO |\n| trial.isInTrial | bool | true if within 30-day trial window |\n| trial.trialEndsAt | string\\|null | ISO 8601, null if no trial was ever granted |\n| trial.trialDaysRemaining | int\\|null | null when not in trial; 0 on last day |\n| usage.appointmentsThisMonth | int | |\n| usage.appointmentLimit | int\\|null | null for PRO (unlimited) |\n| usage.limitReached | bool | true when free plan hits 50/month cap |\n\n### Responses\n- **200** — success\n- **401** — not authenticated\n- **404** — shop not yet created for this user"
+          },
+          "response": [
+            {
+              "name": "200 Active trial (new account)",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"id\": \"019d2602-b8fa-758b-ad80-4fb931669116\",\n  \"plan\": \"pro\",\n  \"status\": \"active\",\n  \"startDate\": \"2026-03-26T00:20:05+07:00\",\n  \"endDate\": null,\n  \"trial\": {\n    \"isInTrial\": true,\n    \"trialEndsAt\": \"2026-04-25T00:20:05+07:00\",\n    \"trialDaysRemaining\": 29\n  },\n  \"usage\": {\n    \"appointmentsThisMonth\": 0,\n    \"appointmentLimit\": null,\n    \"limitReached\": false\n  }\n}"
+            },
+            {
+              "name": "200 Free plan (trial expired)",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"id\": \"019d2602-b8fa-758b-ad80-4fb931669116\",\n  \"plan\": \"free\",\n  \"status\": \"active\",\n  \"startDate\": \"2026-03-26T00:20:05+07:00\",\n  \"endDate\": null,\n  \"trial\": {\n    \"isInTrial\": false,\n    \"trialEndsAt\": \"2026-03-26T00:20:05+07:00\",\n    \"trialDaysRemaining\": null\n  },\n  \"usage\": {\n    \"appointmentsThisMonth\": 12,\n    \"appointmentLimit\": 50,\n    \"limitReached\": false\n  }\n}"
+            },
+            {
+              "name": "200 Paid PRO (no trial)",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"id\": \"019d2602-b8fa-758b-ad80-4fb931669116\",\n  \"plan\": \"pro\",\n  \"status\": \"active\",\n  \"startDate\": \"2026-03-26T00:20:05+07:00\",\n  \"endDate\": \"2026-04-25T00:20:05+07:00\",\n  \"trial\": {\n    \"isInTrial\": false,\n    \"trialEndsAt\": null,\n    \"trialDaysRemaining\": null\n  },\n  \"usage\": {\n    \"appointmentsThisMonth\": 87,\n    \"appointmentLimit\": null,\n    \"limitReached\": false\n  }\n}"
+            },
+            {
+              "name": "404 Shop not found",
+              "status": "Not Found",
+              "code": 404,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"code\": \"SHOP_NOT_FOUND\",\n  \"message\": \"Shop not found. Create one first.\"\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -27,4 +27,9 @@ final class UserRepository extends ServiceEntityRepository
     {
         return $this->findOneBy(['facebookId' => $facebookId]);
     }
+
+    public function findByPhoneNumber(string $phoneNumber): ?User
+    {
+        return $this->findOneBy(['phoneNumber' => $phoneNumber]);
+    }
 }

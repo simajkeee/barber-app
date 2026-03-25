@@ -21,10 +21,10 @@ final readonly class CreateFreeSubscriptionOnShopCreated
     public function __invoke(ShopCreatedEvent $event): void
     {
         $shop = $this->shopRepository->find($event->shopId);
-        if ($shop === null) {
+        if (null === $shop) {
             return;
         }
 
-        $this->subscriptionService->createFreeForShop($shop);
+        $this->subscriptionService->createTrialForShop($shop);
     }
 }

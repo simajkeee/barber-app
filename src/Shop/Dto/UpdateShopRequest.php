@@ -23,7 +23,7 @@ final readonly class UpdateShopRequest
 
         #[Assert\Regex(
             pattern: '/^[a-z0-9][a-z0-9-]{2,97}[a-z0-9]$/',
-            message: 'Slug must be 4-100 characters, lowercase alphanumeric and hyphens, no leading/trailing hyphens.'
+            message: 'Slug must be 4-100 characters, lowercase alphanumeric and hyphens, no leading/trailing hyphens.',
         )]
         public ?string $slug = null,
 

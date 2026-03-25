@@ -44,9 +44,7 @@ final class ClientService
     {
         $normalizedPhone = PhoneNormalizer::normalize($dto->phone);
         if (!PhoneNormalizer::isValid($normalizedPhone)) {
-            throw new ApiException('VALIDATION_ERROR', 'Validation failed.', 400, [
-                ['field' => 'phone', 'message' => 'Phone number format is invalid.'],
-            ]);
+            throw new ApiException('VALIDATION_ERROR', 'Validation failed.', 400, [['field' => 'phone', 'message' => 'Phone number format is invalid.']]);
         }
 
         $client = new Client();
@@ -71,7 +69,7 @@ final class ClientService
     public function get(Shop $shop, Uuid $id): Client
     {
         $client = $this->clientRepository->findByShopAndId($shop, $id);
-        if ($client === null) {
+        if (null === $client) {
             throw new ApiException('CLIENT_NOT_FOUND', 'Client not found.', 404);
         }
 
@@ -85,31 +83,29 @@ final class ClientService
     {
         $client = $this->get($shop, $id);
 
-        if ($dto->firstName !== null) {
+        if (null !== $dto->firstName) {
             $client->setFirstName(trim($dto->firstName));
         }
-        if ($dto->lastName !== null) {
+        if (null !== $dto->lastName) {
             $client->setLastName(trim($dto->lastName));
         }
-        if ($dto->phone !== null) {
+        if (null !== $dto->phone) {
             $normalizedPhone = PhoneNormalizer::normalize($dto->phone);
             if (!PhoneNormalizer::isValid($normalizedPhone)) {
-                throw new ApiException('VALIDATION_ERROR', 'Validation failed.', 400, [
-                    ['field' => 'phone', 'message' => 'Phone number format is invalid.'],
-                ]);
+                throw new ApiException('VALIDATION_ERROR', 'Validation failed.', 400, [['field' => 'phone', 'message' => 'Phone number format is invalid.']]);
             }
 
             $existing = $this->clientRepository->findByShopAndPhone($shop, $normalizedPhone);
-            if ($existing !== null && $existing->getId()->toRfc4122() !== $client->getId()->toRfc4122()) {
+            if (null !== $existing && $existing->getId()->toRfc4122() !== $client->getId()->toRfc4122()) {
                 throw new ApiException('PHONE_ALREADY_EXISTS', 'A client with this phone number already exists in your shop.', 409);
             }
 
             $client->setPhone($normalizedPhone);
         }
-        if (in_array('email', $providedFields, true)) {
+        if (\in_array('email', $providedFields, true)) {
             $client->setEmail($dto->email);
         }
-        if (in_array('notes', $providedFields, true)) {
+        if (\in_array('notes', $providedFields, true)) {
             $client->setNotes($dto->notes);
         }
 
@@ -133,7 +129,7 @@ final class ClientService
     {
         $client->setVisitCount($client->getVisitCount() + 1);
 
-        if ($client->getLastVisitAt() === null || $visitDate > $client->getLastVisitAt()) {
+        if (null === $client->getLastVisitAt() || $visitDate > $client->getLastVisitAt()) {
             $client->setLastVisitAt($visitDate);
         }
 

@@ -42,6 +42,24 @@ final class SubscriptionRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * @return Subscription[]
+     */
+    public function findOverdueTrials(\DateTimeImmutable $now): array
+    {
+        return $this->createQueryBuilder('s')
+            ->where('s.trialEndsAt IS NOT NULL')
+            ->andWhere('s.trialEndsAt < :now')
+            ->andWhere('s.endDate IS NULL')
+            ->andWhere('s.plan = :plan')
+            ->andWhere('s.status = :status')
+            ->setParameter('plan', SubscriptionPlan::PRO)
+            ->setParameter('status', SubscriptionStatus::ACTIVE)
+            ->setParameter('now', $now)
+            ->getQuery()
+            ->getResult();
+    }
+
     public function resetCountersBefore(\DateTimeImmutable $firstDayOfMonth): int
     {
         return (int) $this->createQueryBuilder('s')

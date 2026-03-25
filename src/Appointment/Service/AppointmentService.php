@@ -51,7 +51,7 @@ final class AppointmentService
         $this->appointmentLimitChecker->check($shop);
 
         $client = $this->clientRepository->findByShopAndId($shop, Uuid::fromString($dto->clientId));
-        if ($client === null) {
+        if (null === $client) {
             throw new ApiException('CLIENT_NOT_FOUND', 'Client not found.', 404);
         }
 
@@ -83,7 +83,7 @@ final class AppointmentService
         try {
             $this->em->flush();
         } catch (DriverException $e) {
-            if ($e->getSQLState() === '23P01') {
+            if ('23P01' === $e->getSQLState()) {
                 throw new ApiException('APPOINTMENT_OVERLAP', 'This time slot conflicts with an existing appointment.', 409);
             }
             throw $e;
@@ -106,29 +106,29 @@ final class AppointmentService
         $startTime = $appointment->getStartTime();
         $serviceChanged = false;
 
-        if ($dto->clientId !== null) {
+        if (null !== $dto->clientId) {
             $client = $this->clientRepository->findByShopAndId($shop, Uuid::fromString($dto->clientId));
-            if ($client === null) {
+            if (null === $client) {
                 throw new ApiException('CLIENT_NOT_FOUND', 'Client not found.', 404);
             }
             $appointment->setClient($client);
         }
 
-        if ($dto->serviceId !== null) {
+        if (null !== $dto->serviceId) {
             $service = $this->resolveActiveService($shop, Uuid::fromString($dto->serviceId));
             $appointment->setService($service);
             $appointment->setPrice($service->getPrice());
             $serviceChanged = true;
         }
 
-        if ($dto->startTime !== null) {
+        if (null !== $dto->startTime) {
             $startTime = $this->parseStartTime($dto->startTime);
             $this->validateSlotAlignment($startTime);
             $this->validateNotInPast($startTime);
             $appointment->setStartTime($startTime);
         }
 
-        if ($dto->startTime !== null || $serviceChanged) {
+        if (null !== $dto->startTime || $serviceChanged) {
             $endTime = $startTime->modify("+{$service->getDurationMinutes()} minutes");
             $appointment->setEndTime($endTime);
         }
@@ -136,7 +136,7 @@ final class AppointmentService
         $effectiveEnd = $appointment->getEndTime();
         $effectiveStart = $appointment->getStartTime();
 
-        if ($dto->startTime !== null || $serviceChanged) {
+        if (null !== $dto->startTime || $serviceChanged) {
             $this->validateWorkingHours($shop, $effectiveStart, $effectiveEnd);
 
             if ($this->overlapDetector->hasOverlap($shop, $effectiveStart, $effectiveEnd, $appointment->getId())) {
@@ -144,14 +144,14 @@ final class AppointmentService
             }
         }
 
-        if (in_array('notes', $providedFields, true)) {
+        if (\in_array('notes', $providedFields, true)) {
             $appointment->setNotes($dto->notes);
         }
 
         try {
             $this->em->flush();
         } catch (DriverException $e) {
-            if ($e->getSQLState() === '23P01') {
+            if ('23P01' === $e->getSQLState()) {
                 throw new ApiException('APPOINTMENT_OVERLAP', 'This time slot conflicts with an existing appointment.', 409);
             }
             throw $e;
@@ -165,21 +165,17 @@ final class AppointmentService
         $currentStatus = $appointment->getStatus();
 
         if (!$currentStatus->canTransitionTo($newStatus)) {
-            throw new ApiException(
-                'INVALID_STATUS_TRANSITION',
-                "Cannot change status from {$currentStatus->value} to {$newStatus->value}.",
-                403,
-            );
+            throw new ApiException('INVALID_STATUS_TRANSITION', "Cannot change status from {$currentStatus->value} to {$newStatus->value}.", 403);
         }
 
         $appointment->setStatus($newStatus);
         $this->em->flush();
 
-        if ($newStatus === AppointmentStatus::COMPLETED) {
+        if (AppointmentStatus::COMPLETED === $newStatus) {
             $this->eventDispatcher->dispatch(new AppointmentCompleted($appointment->getId()));
         }
 
-        if ($newStatus === AppointmentStatus::CANCELLED) {
+        if (AppointmentStatus::CANCELLED === $newStatus) {
             $this->subscriptionService->decrementAppointmentCount($appointment->getShop());
 
             $client = $appointment->getClient();
@@ -226,7 +222,7 @@ final class AppointmentService
         $appointments = $this->appointmentRepository->findByShopAndDate($shop, $dayStartUtc, $dayEndUtc);
 
         $workingHours = null;
-        if ($schedule !== null && $schedule->isOpen()) {
+        if (null !== $schedule && $schedule->isOpen()) {
             $workingHours = [
                 'openTime' => $schedule->getOpenTime()?->format('H:i'),
                 'closeTime' => $schedule->getCloseTime()?->format('H:i'),
@@ -251,7 +247,7 @@ final class AppointmentService
         $dayOfWeek = DayOfWeek::from($dayName);
 
         $schedule = $this->getScheduleForDay($shop, $dayOfWeek);
-        if ($schedule === null || !$schedule->isOpen()) {
+        if (null === $schedule || !$schedule->isOpen()) {
             return [
                 'date' => $dateInTz->format('Y-m-d'),
                 'serviceDurationMinutes' => $service->getDurationMinutes(),
@@ -341,7 +337,7 @@ final class AppointmentService
     private function resolveActiveService(Shop $shop, Uuid $serviceId): ShopService
     {
         $service = $this->shopServiceRepository->findOneBy(['id' => $serviceId, 'shop' => $shop]);
-        if ($service === null) {
+        if (null === $service) {
             throw new ApiException('SERVICE_NOT_FOUND', 'Service not found.', 404);
         }
 
@@ -370,7 +366,7 @@ final class AppointmentService
         $minute = (int) $inTz->format('i');
         $second = (int) $inTz->format('s');
 
-        if ($second !== 0 || ($minute % 30) !== 0) {
+        if (0 !== $second || ($minute % 30) !== 0) {
             throw new ApiException('INVALID_SLOT_ALIGNMENT', 'Start time must be on a 30-minute boundary.', 400);
         }
     }
@@ -392,13 +388,13 @@ final class AppointmentService
         $dayOfWeek = DayOfWeek::from($dayName);
 
         $schedule = $this->getScheduleForDay($shop, $dayOfWeek);
-        if ($schedule === null || !$schedule->isOpen()) {
+        if (null === $schedule || !$schedule->isOpen()) {
             throw new ApiException('SHOP_CLOSED', 'The shop is closed on this day.', 422);
         }
 
         $openTime = $schedule->getOpenTime();
         $closeTime = $schedule->getCloseTime();
-        if ($openTime === null || $closeTime === null) {
+        if (null === $openTime || null === $closeTime) {
             throw new ApiException('SHOP_CLOSED', 'The shop is closed on this day.', 422);
         }
 
@@ -423,11 +419,7 @@ final class AppointmentService
     private function assertNotTerminal(Appointment $appointment): void
     {
         if ($appointment->getStatus()->isTerminal()) {
-            throw new ApiException(
-                'APPOINTMENT_NOT_MODIFIABLE',
-                "Cannot modify a {$appointment->getStatus()->value} appointment.",
-                403,
-            );
+            throw new ApiException('APPOINTMENT_NOT_MODIFIABLE', "Cannot modify a {$appointment->getStatus()->value} appointment.", 403);
         }
     }
 }

@@ -17,11 +17,7 @@ final class AppointmentLimitChecker
     public function check(Shop $shop): void
     {
         if (!$this->subscriptionService->canCreateAppointment($shop)) {
-            throw new ApiException(
-                'APPOINTMENT_LIMIT_REACHED',
-                'Monthly appointment limit reached. Upgrade to PRO for unlimited appointments.',
-                403,
-            );
+            throw new ApiException('APPOINTMENT_LIMIT_REACHED', 'Monthly appointment limit reached. Upgrade to PRO for unlimited appointments.', 403);
         }
     }
 }

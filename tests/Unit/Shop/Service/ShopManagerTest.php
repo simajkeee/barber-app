@@ -19,10 +19,10 @@ use App\Shop\Service\ShopManager;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
-use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 #[CoversClass(ShopManager::class)]
 final class ShopManagerTest extends TestCase
@@ -74,7 +74,7 @@ final class ShopManagerTest extends TestCase
     {
         $entries = [];
         foreach (DayOfWeek::cases() as $day) {
-            $isSunday = $day === DayOfWeek::SUNDAY;
+            $isSunday = DayOfWeek::SUNDAY === $day;
             $entries[] = new ScheduleEntry(
                 dayOfWeek: $day,
                 openTime: $isSunday ? null : '09:00',
@@ -189,7 +189,7 @@ final class ShopManagerTest extends TestCase
         self::assertCount(8, $persisted);
         self::assertInstanceOf(Shop::class, $persisted[0]);
 
-        $scheduleEntities = array_slice($persisted, 1);
+        $scheduleEntities = \array_slice($persisted, 1);
         self::assertCount(7, $scheduleEntities);
 
         $days = [];
@@ -198,7 +198,7 @@ final class ShopManagerTest extends TestCase
             self::assertInstanceOf(WorkSchedule::class, $ws);
             $days[] = $ws->getDayOfWeek();
 
-            if ($ws->getDayOfWeek() === DayOfWeek::SUNDAY) {
+            if (DayOfWeek::SUNDAY === $ws->getDayOfWeek()) {
                 self::assertFalse($ws->isOpen());
                 self::assertNull($ws->getOpenTime());
                 self::assertNull($ws->getCloseTime());
@@ -243,7 +243,7 @@ final class ShopManagerTest extends TestCase
 
         $this->shopRepository->method('findBySlug')
             ->willReturnCallback(function (string $slug) use ($existingShop): ?Shop {
-                return $slug === 'my-shop' ? $existingShop : null;
+                return 'my-shop' === $slug ? $existingShop : null;
             });
 
         $slug = $this->sut->generateSlug('My Shop');
@@ -434,7 +434,7 @@ final class ShopManagerTest extends TestCase
 
         $monday = null;
         foreach ($result as $ws) {
-            if ($ws->getDayOfWeek() === DayOfWeek::MONDAY) {
+            if (DayOfWeek::MONDAY === $ws->getDayOfWeek()) {
                 $monday = $ws;
                 break;
             }
@@ -460,7 +460,7 @@ final class ShopManagerTest extends TestCase
 
         $sunday = null;
         foreach ($result as $ws) {
-            if ($ws->getDayOfWeek() === DayOfWeek::SUNDAY) {
+            if (DayOfWeek::SUNDAY === $ws->getDayOfWeek()) {
                 $sunday = $ws;
                 break;
             }
@@ -522,7 +522,7 @@ final class ShopManagerTest extends TestCase
     {
         $entries = [];
         foreach (DayOfWeek::cases() as $day) {
-            if ($day === DayOfWeek::MONDAY) {
+            if (DayOfWeek::MONDAY === $day) {
                 $entries[] = new ScheduleEntry($day, '19:00', '09:00', true);
             } else {
                 $entries[] = new ScheduleEntry($day, '09:00', '18:00', true);
@@ -546,7 +546,7 @@ final class ShopManagerTest extends TestCase
     {
         $entries = [];
         foreach (DayOfWeek::cases() as $day) {
-            if ($day === DayOfWeek::MONDAY) {
+            if (DayOfWeek::MONDAY === $day) {
                 $entries[] = new ScheduleEntry($day, '09:00', '09:00', true);
             } else {
                 $entries[] = new ScheduleEntry($day, '09:00', '18:00', true);
@@ -569,7 +569,7 @@ final class ShopManagerTest extends TestCase
     {
         $entries = [];
         foreach (DayOfWeek::cases() as $day) {
-            if ($day === DayOfWeek::MONDAY) {
+            if (DayOfWeek::MONDAY === $day) {
                 $entries[] = new ScheduleEntry($day, null, null, true);
             } else {
                 $entries[] = new ScheduleEntry($day, '09:00', '18:00', true);

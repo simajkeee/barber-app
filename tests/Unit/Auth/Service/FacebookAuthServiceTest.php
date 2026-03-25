@@ -55,7 +55,7 @@ final class FacebookAuthServiceTest extends TestCase
             'last_name' => $lastName,
             'picture' => ['data' => ['url' => 'https://fb.com/pic.jpg']],
         ];
-        if ($email !== null) {
+        if (null !== $email) {
             $data['email'] = $email;
         }
 

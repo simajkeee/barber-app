@@ -29,7 +29,7 @@ final class ExpireProSubscriptionsCommand extends Command
 
         $count = $this->subscriptionService->expireOverdueSubscriptions();
 
-        $io->success(sprintf('Expired %d PRO subscription(s).', $count));
+        $io->success(\sprintf('Expired %d PRO subscription(s).', $count));
 
         return Command::SUCCESS;
     }
