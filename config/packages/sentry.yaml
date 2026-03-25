@@ -1,0 +1,15 @@
+sentry:
+    dsn: '%env(SENTRY_DSN)%'
+    register_error_listener: true
+    register_error_handler: true
+    options:
+        environment: '%kernel.environment%'
+        release: '%env(default::APP_VERSION)%'
+        traces_sample_rate: 0.1
+        send_default_pii: false
+        ignore_exceptions:
+            - App\Common\Exception\ApiException
+            - Symfony\Component\HttpKernel\Exception\HttpException
+            - Symfony\Component\RateLimiter\Exception\RateLimitExceededException
+            - Symfony\Component\Security\Core\Exception\AuthenticationException
+            - Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException
