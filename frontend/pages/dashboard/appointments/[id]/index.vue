@@ -13,10 +13,21 @@ const appointmentApi = useAppointmentApi()
 const { parseApiError } = useApiError()
 const toast = useToast()
 
-const appointment = ref<Appointment | null>(null)
-const isLoading = ref(true)
-
 const appointmentId = computed(() => route.params.id as string)
+
+const { data: appointment } = await useAsyncData<Appointment | null>(
+  `appointment-${appointmentId.value}`,
+  async () => {
+    try {
+      return await appointmentApi.getAppointment(appointmentId.value)
+    } catch {
+      toast.error('appointments.error.notFound')
+      await navigateTo(localePath('/dashboard/appointments'))
+      return null
+    }
+  },
+)
+
 const isTerminal = computed(() =>
   appointment.value
     ? ['completed', 'cancelled', 'no_show'].includes(appointment.value.status)
@@ -27,17 +38,6 @@ const pageTitle = computed(() => {
   if (!appointment.value) return ''
   const c = appointment.value.client
   return `${c.firstName} ${c.lastName} – ${appointment.value.service.name}`
-})
-
-onMounted(async () => {
-  try {
-    appointment.value = await appointmentApi.getAppointment(appointmentId.value)
-  } catch {
-    toast.error('appointments.error.notFound')
-    await navigateTo(localePath('/dashboard/appointments'))
-  } finally {
-    isLoading.value = false
-  }
 })
 
 // Status action confirm dialog
@@ -95,11 +95,7 @@ const confirmDescription = computed(() => {
 
 <template>
   <div>
-    <div v-if="isLoading" class="flex justify-center py-12">
-      <div class="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-primary-700" />
-    </div>
-
-    <template v-else-if="appointment">
+    <template v-if="appointment">
       <DashboardPageHeader :title="pageTitle">
         <template #actions>
           <UiButton variant="secondary" @click="navigateTo(localePath('/dashboard/appointments'))">

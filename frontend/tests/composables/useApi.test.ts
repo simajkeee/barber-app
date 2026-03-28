@@ -85,6 +85,7 @@ describe('useApi', () => {
       .mockRejectedValueOnce(error401)
       .mockResolvedValueOnce({ data: 'retried' })
 
+    // @ts-expect-error complex Nitro route types cause excessive stack depth
     vi.mocked($fetch).mockResolvedValueOnce({ token: 'new-token', refreshToken: 'new-refresh' })
 
     const api = useApi()
@@ -113,7 +114,7 @@ describe('useApi', () => {
       .mockRejectedValueOnce(error401)
       .mockResolvedValueOnce({ data: 'retried' })
 
-    vi.mocked($fetch).mockResolvedValueOnce({ token: 'new-token', refreshToken: 'new-refresh' })
+    vi.mocked($fetch).mockResolvedValueOnce({ token: 'new-token', refreshToken: 'new-refresh' } as any)
 
     const api = useApi()
     await api('/test')
@@ -131,9 +132,9 @@ describe('useApi', () => {
 
   it('configures onRequest hook in $fetch.create', () => {
     useApi()
-    const createConfig = mockCreate.mock.calls[0][0]
-    expect(createConfig.onRequest).toBeDefined()
-    expect(typeof createConfig.onRequest).toBe('function')
+    const createConfig = (mockCreate.mock.calls as unknown as [Parameters<typeof $fetch.create>[0]][]).at(0)?.[0]
+    expect(createConfig?.onRequest).toBeDefined()
+    expect(typeof createConfig?.onRequest).toBe('function')
   })
 
   it('deduplicates concurrent refresh calls', async () => {

@@ -22,7 +22,7 @@ final readonly class AdminCancelSubscriptionController
     ) {
     }
 
-    #[Route('/subscriptions/{shopId}/cancel', methods: ['POST'])]
+    #[Route('/admin/subscriptions/{shopId}/cancel', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN')]
     public function __invoke(string $shopId): JsonResponse
     {

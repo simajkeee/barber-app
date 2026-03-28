@@ -16,7 +16,9 @@ export const useOnboardingStore = defineStore('onboarding', () => {
   )
 
   function init() {
-    isDismissed.value = localStorage.getItem('onboarding_dismissed') === '1'
+    if (typeof window !== 'undefined') {
+      isDismissed.value = localStorage.getItem('onboarding_dismissed') === '1'
+    }
   }
 
   async function fetchChecklistData() {
@@ -40,7 +42,9 @@ export const useOnboardingStore = defineStore('onboarding', () => {
 
   function dismiss() {
     isDismissed.value = true
-    localStorage.setItem('onboarding_dismissed', '1')
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('onboarding_dismissed', '1')
+    }
   }
 
   return {

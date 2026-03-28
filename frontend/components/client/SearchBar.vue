@@ -11,11 +11,12 @@ watch(model, (val) => {
   }
 })
 
-function onInput(value: string) {
-  localValue.value = value
+function onInput(value: string | number | undefined) {
+  const strValue = String(value ?? '')
+  localValue.value = strValue
   clearTimeout(debounceTimer)
   debounceTimer = setTimeout(() => {
-    model.value = value
+    model.value = strValue
   }, 300)
 }
 

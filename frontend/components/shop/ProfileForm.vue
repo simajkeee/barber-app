@@ -2,7 +2,7 @@
 import { useForm, useField } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import { createShopSchema, updateShopSchema } from '~/schemas/shop'
-import type { Shop } from '~/types/shop'
+import type { Shop, CreateShopRequest, UpdateShopRequest } from '~/types/shop'
 
 const props = withDefaults(
   defineProps<{
@@ -13,7 +13,7 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{
-  submit: [data: Record<string, unknown>]
+  submit: [data: CreateShopRequest | UpdateShopRequest]
   cancel: []
 }>()
 
@@ -46,14 +46,14 @@ const generalError = ref<string | null>(null)
 
 const onSubmit = handleSubmit((values) => {
   generalError.value = null
-  emit('submit', values)
+  emit('submit', values as CreateShopRequest | UpdateShopRequest)
 })
 
 function setError(field: string, message: string) {
   if (field === '_general') {
     generalError.value = message
   } else {
-    setFieldError(field, message)
+    setFieldError(field as Parameters<typeof setFieldError>[0], message)
   }
 }
 

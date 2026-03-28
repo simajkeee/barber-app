@@ -21,8 +21,13 @@ function todayDate() {
 }
 
 const selectedDate = ref(todayDate())
-const dailySchedule = ref<DailyScheduleResponse | null>(null)
 const isDailyLoading = ref(false)
+
+const { data: initialSchedule } = await useAsyncData(
+  `daily-schedule-${selectedDate.value}`,
+  () => appointmentApi.getDailySchedule(selectedDate.value),
+)
+const dailySchedule = ref<DailyScheduleResponse | null>(initialSchedule.value ?? null)
 
 async function loadDailySchedule() {
   isDailyLoading.value = true
@@ -123,10 +128,6 @@ const confirmDescription = computed(() => {
   if (!pendingAction.value) return ''
   const map = { complete: 'completeDescription', noShow: 'noShowDescription', cancel: 'cancelDescription' }
   return t(`appointments.confirm.${map[pendingAction.value.type]}`)
-})
-
-onMounted(() => {
-  loadDailySchedule()
 })
 
 watch(activeTab, (tab) => {

@@ -12,8 +12,7 @@ const emit = defineEmits<{
   'update:modelValue': [startTime: string | null]
 }>()
 
-const { t } = useI18n()
-const { locale } = useI18n()
+const { t, locale } = useI18n()
 
 const labelId = useId()
 const errorId = `${labelId}-error`

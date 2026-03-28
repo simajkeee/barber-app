@@ -11,13 +11,18 @@ const localePath = useLocalePath()
 const clientApi = useClientApi()
 const toast = useToast()
 
-const clients = ref<Client[]>([])
-const pagination = ref<ClientPagination>({ nextCursor: null, hasMore: false })
-const isLoading = ref(true)
+const isLoading = ref(false)
 const isLoadingMore = ref(false)
 const search = ref('')
-const sort = ref('created_at')
-const direction = ref('desc')
+const sort = ref<'created_at' | 'last_visit_at' | 'last_name'>('created_at')
+const direction = ref<'asc' | 'desc'>('desc')
+
+const { data: initialData } = await useAsyncData('clients-list', () =>
+  clientApi.listClients({ sort: sort.value, direction: direction.value }),
+)
+
+const clients = ref<Client[]>(initialData.value?.data ?? [])
+const pagination = ref<ClientPagination>(initialData.value?.pagination ?? { nextCursor: null, hasMore: false })
 
 async function loadClients(append = false) {
   if (append) {
@@ -30,8 +35,8 @@ async function loadClients(append = false) {
     const response = await clientApi.listClients({
       search: search.value || undefined,
       cursor: append ? (pagination.value.nextCursor ?? undefined) : undefined,
-      sort: sort.value as 'created_at' | 'last_visit_at' | 'last_name',
-      direction: direction.value as 'asc' | 'desc',
+      sort: sort.value,
+      direction: direction.value,
     })
 
     if (append) {
@@ -54,8 +59,6 @@ watch([sort, direction], () => loadClients())
 function onView(clientId: string) {
   navigateTo(localePath(`/dashboard/clients/${clientId}`))
 }
-
-onMounted(() => loadClients())
 </script>
 
 <template>

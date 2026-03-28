@@ -13,23 +13,23 @@ const clientApi = useClientApi()
 const { parseApiError } = useApiError()
 const toast = useToast()
 
-const client = ref<Client | null>(null)
-const isLoading = ref(true)
 const formRef = ref<{ setError: (field: string, message: string) => void } | null>(null)
 const saving = ref(false)
 
 const clientId = computed(() => route.params.id as string)
 
-onMounted(async () => {
-  try {
-    client.value = await clientApi.getClient(clientId.value)
-  } catch {
-    toast.error('clients.error.notFound')
-    await navigateTo(localePath('/dashboard/clients'))
-  } finally {
-    isLoading.value = false
-  }
-})
+const { data: client } = await useAsyncData<Client | null>(
+  `client-edit-${clientId.value}`,
+  async () => {
+    try {
+      return await clientApi.getClient(clientId.value)
+    } catch {
+      toast.error('clients.error.notFound')
+      await navigateTo(localePath('/dashboard/clients'))
+      return null
+    }
+  },
+)
 
 async function onSubmit(data: UpdateClientRequest) {
   saving.value = true
@@ -69,12 +69,8 @@ function onCancel() {
       ]"
     />
 
-    <div v-if="isLoading" class="flex justify-center py-12">
-      <div class="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-primary-700" />
-    </div>
-
     <ClientForm
-      v-else-if="client"
+      v-if="client"
       ref="formRef"
       :client="client"
       :loading="saving"

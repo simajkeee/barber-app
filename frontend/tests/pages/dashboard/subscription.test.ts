@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { defineComponent } from 'vue'
 import { mount, flushPromises } from '@vue/test-utils'
 import { createSubscriptionResponse } from '../../factories'
 import { UiAlertStub } from '../../stubs'
@@ -40,23 +41,14 @@ describe('SubscriptionPage', () => {
   })
 
   function mountPage() {
-    return mount(SubscriptionPage, { global: { stubs: pageStubs } })
+    return mount(
+      defineComponent({
+        components: { SubscriptionPage },
+        template: '<Suspense><SubscriptionPage /></Suspense>',
+      }),
+      { global: { stubs: pageStubs } },
+    )
   }
-
-  describe('loading state', () => {
-    it('shows spinner while fetching', () => {
-      mockGetSubscription.mockReturnValue(new Promise(() => {}))
-      const wrapper = mountPage()
-      expect(wrapper.find('.animate-spin').exists()).toBe(true)
-    })
-
-    it('hides spinner after fetch completes', async () => {
-      mockGetSubscription.mockResolvedValue(createSubscriptionResponse())
-      const wrapper = mountPage()
-      await flushPromises()
-      expect(wrapper.find('.animate-spin').exists()).toBe(false)
-    })
-  })
 
   describe('success state', () => {
     it('renders PlanCard with subscription data', async () => {
@@ -122,13 +114,6 @@ describe('SubscriptionPage', () => {
       await flushPromises()
       expect(wrapper.find('.plan-card').exists()).toBe(false)
       expect(wrapper.find('.usage-card').exists()).toBe(false)
-    })
-
-    it('does not show spinner after fetch fails', async () => {
-      mockGetSubscription.mockRejectedValue(new Error('Network error'))
-      const wrapper = mountPage()
-      await flushPromises()
-      expect(wrapper.find('.animate-spin').exists()).toBe(false)
     })
   })
 

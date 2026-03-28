@@ -1,4 +1,3 @@
-import type { ApiValidationError } from '~/types/auth'
 import { FetchError } from 'ofetch'
 
 export interface ApiError {
@@ -12,12 +11,15 @@ export function useApiError() {
       return { error: 'unexpected' }
     }
 
-    const data = err.data as ApiValidationError
-    const fieldErrors: Record<string, string> | undefined = data.details?.length
-      ? Object.fromEntries(data.details.map((d) => [d.field, d.message]))
+    const data = err.data as Record<string, unknown>
+    const code = typeof data.code === 'string' ? data.code : undefined
+    const message = typeof data.message === 'string' ? data.message : 'unexpected'
+    const details = Array.isArray(data.details) ? data.details as { field: string; message: string }[] : []
+    const fieldErrors: Record<string, string> | undefined = details.length
+      ? Object.fromEntries(details.map((d) => [d.field, d.message]))
       : undefined
 
-    return { error: data.code ?? data.message, fieldErrors }
+    return { error: code ?? message, fieldErrors }
   }
 
   return { parseApiError }

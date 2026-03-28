@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { defineComponent } from 'vue'
 import { mount, flushPromises } from '@vue/test-utils'
 import { createReminderSettings } from '../../factories'
 
@@ -38,7 +39,13 @@ describe('RemindersSettingsPage', () => {
   })
 
   function mountPage() {
-    return mount(SettingsPage, { global: { stubs: pageStubs } })
+    return mount(
+      defineComponent({
+        components: { SettingsPage },
+        template: '<Suspense><SettingsPage /></Suspense>',
+      }),
+      { global: { stubs: pageStubs } },
+    )
   }
 
   it('calls getSettings on mount', async () => {
@@ -46,13 +53,6 @@ describe('RemindersSettingsPage', () => {
     mountPage()
     await flushPromises()
     expect(mockGetSettings).toHaveBeenCalledOnce()
-  })
-
-  it('shows loading skeleton before settings load', () => {
-    mockGetSettings.mockReturnValue(new Promise(() => {}))
-    const wrapper = mountPage()
-    expect(wrapper.find('.animate-pulse').exists()).toBe(true)
-    expect(wrapper.find('.settings-form').exists()).toBe(false)
   })
 
   it('shows form after settings load', async () => {

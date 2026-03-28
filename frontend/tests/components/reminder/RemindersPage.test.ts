@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { defineComponent } from 'vue'
 import { mount, flushPromises } from '@vue/test-utils'
 import RemindersPage from '~/pages/dashboard/reminders/index.vue'
 import { createReminderTodayResponse, createReminderCandidate } from '~/tests/factories'
@@ -29,7 +30,13 @@ describe('RemindersPage', () => {
     )
     vi.stubGlobal('useReminderApi', () => ({ getTodayReminders, markReminded: vi.fn() }))
 
-    return mount(RemindersPage, { global: { stubs } })
+    return mount(
+      defineComponent({
+        components: { RemindersPage },
+        template: '<Suspense><RemindersPage /></Suspense>',
+      }),
+      { global: { stubs } },
+    )
   }
 
   it('calls t with count as a number for singular (1 client)', async () => {

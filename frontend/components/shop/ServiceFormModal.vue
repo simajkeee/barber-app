@@ -2,7 +2,7 @@
 import { useForm, useField } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import { createServiceSchema, updateServiceSchema } from '~/schemas/shop'
-import type { ShopService } from '~/types/shop'
+import type { ShopService, CreateServiceRequest, UpdateServiceRequest } from '~/types/shop'
 
 const props = withDefaults(
   defineProps<{
@@ -15,7 +15,7 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   close: []
-  submit: [data: Record<string, unknown>]
+  submit: [data: CreateServiceRequest | UpdateServiceRequest]
 }>()
 
 const { t } = useI18n()
@@ -55,14 +55,14 @@ watch(() => props.open, (isOpen) => {
 
 const onSubmit = handleSubmit((values) => {
   generalError.value = null
-  emit('submit', values)
+  emit('submit', values as CreateServiceRequest | UpdateServiceRequest)
 })
 
 function setError(field: string, message: string) {
   if (field === '_general') {
     generalError.value = message
   } else {
-    setFieldError(field, message)
+    setFieldError(field as Parameters<typeof setFieldError>[0], message)
   }
 }
 

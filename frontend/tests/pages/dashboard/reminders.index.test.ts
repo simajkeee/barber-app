@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { defineComponent } from 'vue'
 import { mount, flushPromises } from '@vue/test-utils'
 import { createReminderTodayResponse, createReminderCandidate } from '../../factories'
 
@@ -48,7 +49,13 @@ describe('RemindersPage', () => {
   })
 
   function mountPage() {
-    return mount(RemindersPage, { global: { stubs: pageStubs } })
+    return mount(
+      defineComponent({
+        components: { RemindersPage },
+        template: '<Suspense><RemindersPage /></Suspense>',
+      }),
+      { global: { stubs: pageStubs } },
+    )
   }
 
   it('calls getTodayReminders on mount', async () => {

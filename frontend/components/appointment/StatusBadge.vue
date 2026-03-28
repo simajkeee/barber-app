@@ -7,7 +7,7 @@ defineProps<{
 
 const { t } = useI18n()
 
-const variantMap: Record<AppointmentStatus, string> = {
+const variantMap: Record<AppointmentStatus, 'info' | 'success' | 'neutral' | 'warning'> = {
   scheduled: 'info',
   completed: 'success',
   cancelled: 'neutral',
@@ -17,7 +17,7 @@ const variantMap: Record<AppointmentStatus, string> = {
 
 <template>
   <UiStatusBadge
-    :variant="variantMap[status] as any"
+    :variant="variantMap[status]"
     :label="t(`appointments.status.${status}`)"
   />
 </template>

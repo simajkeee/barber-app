@@ -18,14 +18,21 @@ const shopApi = useShopApi()
 
 const NuxtLinkComp = resolveComponent('NuxtLink')
 
+await useAsyncData('dashboard-shop-init', async () => {
+  if (!shopStore.shop && !shopStore.isLoading) {
+    await shopStore.fetchShop()
+  }
+  return null
+})
+
 const todayCount = ref(0)
-const isTodayLoading = ref(false)
+const isTodayLoading = ref(true)
 
 const nextAppointment = ref<Appointment | null>(null)
-const isNextLoading = ref(false)
+const isNextLoading = ref(true)
 
 const subscription = ref<SubscriptionResponse | null>(null)
-const isSubLoading = ref(false)
+const isSubLoading = ref(true)
 
 function todayDate() {
   return new Date().toISOString().slice(0, 10)
@@ -60,12 +67,8 @@ async function loadStats() {
   ])
 }
 
-onMounted(async () => {
+onMounted(() => {
   onboardingStore.init()
-
-  if (!shopStore.shop && !shopStore.isLoading) {
-    await shopStore.fetchShop()
-  }
   if (shopStore.hasShop) {
     loadStats()
     onboardingStore.fetchChecklistData()

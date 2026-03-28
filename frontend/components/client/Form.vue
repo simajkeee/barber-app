@@ -53,7 +53,7 @@ function setError(field: string, message: string) {
   if (field === '_general') {
     generalError.value = message
   } else {
-    setFieldError(field, message)
+    setFieldError(field as Parameters<typeof setFieldError>[0], message)
   }
 }
 

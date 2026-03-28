@@ -12,11 +12,41 @@ const api = usePublicBookingApi()
 
 const slug = computed(() => route.params.slug as string)
 
-// State
-const shop = ref<PublicShopInfo | null>(null)
-const loading = ref(true)
-const notFound = ref(false)
-const shopUnavailable = ref(false)
+const { data: shop, pending: loading, error: shopError, refresh: refreshShop } = useAsyncData<PublicShopInfo>(
+  `shop-${slug.value}`,
+  async () => {
+    try {
+      return await api.getShopInfo(slug.value)
+    } catch (err) {
+      if (err instanceof FetchError && err.response?.status === 404) {
+        throw createError({ statusCode: 404, fatal: false })
+      }
+      throw createError({ statusCode: 503, fatal: false })
+    }
+  },
+  { default: () => null },
+)
+
+const notFound = computed(() => shopError.value?.statusCode === 404)
+const shopUnavailable = computed(() => !!shopError.value && !notFound.value)
+
+useSeoMeta({
+  title: () => shop.value ? `${shop.value.name} — ${t('booking.title')}` : t('booking.title'),
+  description: () => shop.value ? `${t('booking.subtitle')} ${shop.value.name}. ${shop.value.address}` : '',
+})
+useHead({
+  script: () => shop.value ? [{
+    type: 'application/ld+json',
+    innerHTML: JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'LocalBusiness',
+      name: shop.value.name,
+      address: { '@type': 'PostalAddress', streetAddress: shop.value.address },
+      telephone: shop.value.phone,
+    }),
+  }] : [],
+})
+
 const step = ref<'service' | 'datetime' | 'details' | 'confirm' | 'success'>('service')
 const selectedService = ref<PublicService | null>(null)
 const selectedDate = ref<string | null>(null)
@@ -39,26 +69,6 @@ const stepLabels = computed(() => [
   t('booking.steps.details'),
   t('booking.steps.confirm'),
 ])
-
-// Load shop info
-async function loadShop() {
-  loading.value = true
-  try {
-    shop.value = await api.getShopInfo(slug.value)
-  } catch (err) {
-    if (err instanceof FetchError) {
-      if (err.response?.status === 404) {
-        notFound.value = true
-      } else {
-        shopUnavailable.value = true
-      }
-    } else {
-      shopUnavailable.value = true
-    }
-  } finally {
-    loading.value = false
-  }
-}
 
 // Step handlers
 function onSelectService(service: PublicService) {
@@ -145,29 +155,6 @@ function onBookAnother() {
   bookingError.value = ''
 }
 
-// SEO
-watch(shop, (s) => {
-  if (s) {
-    useSeoMeta({
-      title: `${s.name} — ${t('booking.title')}`,
-      description: `${t('booking.subtitle')} ${s.name}. ${s.address}`,
-    })
-    useHead({
-      script: [{
-        type: 'application/ld+json',
-        innerHTML: JSON.stringify({
-          '@context': 'https://schema.org',
-          '@type': 'LocalBusiness',
-          name: s.name,
-          address: { '@type': 'PostalAddress', streetAddress: s.address },
-          telephone: s.phone,
-        }),
-      }],
-    })
-  }
-}, { immediate: true })
-
-onMounted(loadShop)
 </script>
 
 <template>
@@ -189,7 +176,7 @@ onMounted(loadShop)
     <h1 class="text-xl font-bold text-gray-900 mb-2">{{ t('booking.error.shopUnavailable') }}</h1>
     <p class="text-gray-500 mb-6">{{ t('booking.error.shopUnavailableDesc') }}</p>
     <div class="flex items-center justify-center gap-4">
-      <button type="button" class="text-sm text-primary-600 hover:underline" @click="loadShop">
+      <button type="button" class="text-sm text-primary-600 hover:underline" @click="() => refreshShop()">
         {{ t('common.retry') }}
       </button>
       <span class="text-gray-300">|</span>

@@ -24,7 +24,7 @@ final readonly class AdminActivateSubscriptionController
     ) {
     }
 
-    #[Route('/subscriptions/{shopId}/activate', methods: ['POST'])]
+    #[Route('/admin/subscriptions/{shopId}/activate', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN')]
     public function __invoke(string $shopId, #[MapRequestPayload] ActivateSubscriptionRequest $dto): JsonResponse
     {

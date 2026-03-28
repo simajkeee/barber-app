@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const props = withDefaults(
   defineProps<{
-    type?: 'text' | 'email' | 'password'
+    type?: 'text' | 'email' | 'password' | 'tel' | 'number'
     label?: string
     placeholder?: string
     error?: string
@@ -19,7 +19,7 @@ const props = withDefaults(
   },
 )
 
-const model = defineModel<string | number>({ required: true })
+const model = defineModel<string | number | undefined>()
 
 const inputId = useId()
 const errorId = `${inputId}-error`

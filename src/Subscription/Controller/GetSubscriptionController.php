@@ -23,7 +23,7 @@ final readonly class GetSubscriptionController
     ) {
     }
 
-    #[Route('', methods: ['GET'])]
+    #[Route('/subscription', methods: ['GET'])]
     public function __invoke(#[CurrentUser] User $user): JsonResponse
     {
         $shop = $this->shopManager->getShopForUser($user);

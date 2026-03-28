@@ -39,16 +39,18 @@ function clearFilters() {
   <div class="mb-4 space-y-3">
     <div class="flex flex-col gap-3 sm:flex-row sm:items-end">
       <div class="flex flex-col gap-1">
-        <label class="text-xs font-medium text-gray-600">{{ t('appointments.filters.dateFrom') }}</label>
+        <label for="filter-date-from" class="text-xs font-medium text-gray-600">{{ t('appointments.filters.dateFrom') }}</label>
         <input
+          id="filter-date-from"
           v-model="dateFrom"
           type="date"
           class="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:border-primary-700 focus:ring-primary-700/15"
         />
       </div>
       <div class="flex flex-col gap-1">
-        <label class="text-xs font-medium text-gray-600">{{ t('appointments.filters.dateTo') }}</label>
+        <label for="filter-date-to" class="text-xs font-medium text-gray-600">{{ t('appointments.filters.dateTo') }}</label>
         <input
+          id="filter-date-to"
           v-model="dateTo"
           type="date"
           class="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:border-primary-700 focus:ring-primary-700/15"

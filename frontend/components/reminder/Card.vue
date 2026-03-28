@@ -20,15 +20,17 @@ async function copyMessage() {
     toast.success('reminders.toast.copied')
   } catch {
     // Fallback for older browsers
-    const textarea = document.createElement('textarea')
-    textarea.value = props.candidate.message
-    textarea.style.position = 'fixed'
-    textarea.style.opacity = '0'
-    document.body.appendChild(textarea)
-    textarea.select()
-    document.execCommand('copy')
-    document.body.removeChild(textarea)
-    toast.success('reminders.toast.copied')
+    if (typeof document !== 'undefined') {
+      const textarea = document.createElement('textarea')
+      textarea.value = props.candidate.message
+      textarea.style.position = 'fixed'
+      textarea.style.opacity = '0'
+      document.body.appendChild(textarea)
+      textarea.select()
+      document.execCommand('copy')
+      document.body.removeChild(textarea)
+      toast.success('reminders.toast.copied')
+    }
   }
 }
 

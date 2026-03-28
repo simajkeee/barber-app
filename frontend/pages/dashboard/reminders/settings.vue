@@ -15,15 +15,31 @@ type Locale = 'vi' | 'en'
 
 const activeLocale = ref<Locale>(locale.value === 'en' ? 'en' : 'vi')
 const settingsCache = ref<Partial<Record<Locale, ReminderSettings>>>({})
-const isLoading = ref(true)
+const isLoading = ref(false)
 const isSaving = ref(false)
 
 const settings = computed(() => settingsCache.value[activeLocale.value] ?? null)
 
-async function loadSettings(locale: Locale) {
+const { data: initialSettings } = await useAsyncData(
+  `reminder-settings-${activeLocale.value}`,
+  async () => {
+    try {
+      return await reminderApi.getSettings(activeLocale.value)
+    } catch {
+      toast.error('reminders.toast.settingsError')
+      return null
+    }
+  },
+)
+
+if (initialSettings.value) {
+  settingsCache.value[activeLocale.value] = initialSettings.value
+}
+
+async function loadSettings(loc: Locale) {
   isLoading.value = true
   try {
-    settingsCache.value[locale] = await reminderApi.getSettings(locale)
+    settingsCache.value[loc] = await reminderApi.getSettings(loc)
   } catch {
     toast.error('reminders.toast.settingsError')
   } finally {
@@ -31,10 +47,10 @@ async function loadSettings(locale: Locale) {
   }
 }
 
-async function switchLocale(locale: Locale) {
-  activeLocale.value = locale
-  if (!settingsCache.value[locale]) {
-    await loadSettings(locale)
+async function switchLocale(loc: Locale) {
+  activeLocale.value = loc
+  if (!settingsCache.value[loc]) {
+    await loadSettings(loc)
   }
 }
 
@@ -51,8 +67,6 @@ async function onSave(data: UpdateReminderSettingsRequest) {
     isSaving.value = false
   }
 }
-
-onMounted(() => loadSettings(activeLocale.value))
 </script>
 
 <template>

@@ -72,6 +72,7 @@ describe('usePublicBookingApi', () => {
         serviceId: 'svc-1',
         date: '2026-03-16',
         time: '10:00',
+        captchaToken: '',
       })
 
       expect(mockFetch).toHaveBeenCalledWith(
@@ -84,6 +85,7 @@ describe('usePublicBookingApi', () => {
             serviceId: 'svc-1',
             date: '2026-03-16',
             time: '10:00',
+            captchaToken: '',
           },
         },
       )
@@ -101,6 +103,7 @@ describe('usePublicBookingApi', () => {
         serviceId: 'svc-1',
         date: '2026-03-16',
         time: '10:00',
+        captchaToken: '',
       })).rejects.toThrow('Network error')
     })
   })

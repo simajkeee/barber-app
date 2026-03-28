@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { CreateShopRequest, UpdateShopRequest } from '~/types/shop'
+
 definePageMeta({
   layout: 'dashboard',
   middleware: 'auth',
@@ -14,10 +16,10 @@ const toast = useToast()
 const formRef = ref<{ setError: (field: string, message: string) => void } | null>(null)
 const loading = ref(false)
 
-async function onSubmit(data: Record<string, unknown>) {
+async function onSubmit(data: CreateShopRequest | UpdateShopRequest) {
   loading.value = true
   try {
-    const response = await shopApi.createShop(data as any)
+    const response = await shopApi.createShop(data as CreateShopRequest)
     shopStore.setShop(response.shop)
     toast.success('shop.create.success')
     await navigateTo(localePath('/dashboard/shop'))

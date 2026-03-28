@@ -14,19 +14,31 @@ const clientApi = useClientApi()
 const appointmentApi = useAppointmentApi()
 const toast = useToast()
 
-const client = ref<Client | null>(null)
-const isLoading = ref(true)
+const clientId = computed(() => route.params.id as string)
+
+const { data: client } = await useAsyncData<Client | null>(
+  `client-${clientId.value}`,
+  async () => {
+    try {
+      return await clientApi.getClient(clientId.value)
+    } catch {
+      toast.error('clients.error.notFound')
+      await navigateTo(localePath('/dashboard/clients'))
+      return null
+    }
+  },
+)
+
+const pageTitle = computed(() =>
+  client.value ? `${client.value.firstName} ${client.value.lastName}` : '',
+)
+
 const showDeleteDialog = ref(false)
 const isDeleting = ref(false)
 
 const appointments = ref<Appointment[]>([])
 const isLoadingHistory = ref(false)
 const historyError = ref(false)
-
-const clientId = computed(() => route.params.id as string)
-const pageTitle = computed(() =>
-  client.value ? `${client.value.firstName} ${client.value.lastName}` : '',
-)
 
 async function loadHistory() {
   isLoadingHistory.value = true
@@ -43,15 +55,9 @@ async function loadHistory() {
   }
 }
 
-onMounted(async () => {
-  try {
-    client.value = await clientApi.getClient(clientId.value)
-    await loadHistory()
-  } catch {
-    toast.error('clients.error.notFound')
-    await navigateTo(localePath('/dashboard/clients'))
-  } finally {
-    isLoading.value = false
+onMounted(() => {
+  if (client.value) {
+    loadHistory()
   }
 })
 
@@ -72,11 +78,7 @@ async function confirmDelete() {
 
 <template>
   <div>
-    <div v-if="isLoading" class="flex justify-center py-12">
-      <div class="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-primary-700" />
-    </div>
-
-    <template v-else-if="client">
+    <template v-if="client">
       <DashboardPageHeader :title="pageTitle">
         <template #actions>
           <UiButton variant="secondary" @click="navigateTo(localePath('/dashboard/clients'))">

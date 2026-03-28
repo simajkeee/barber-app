@@ -16,13 +16,14 @@ const toast = useToast()
 const formRef = ref<{ setGeneralError: (msg: string) => void } | null>(null)
 const loading = ref(false)
 
-onMounted(async () => {
+await useAsyncData('shop-schedule-init', async () => {
   if (!shopStore.shop) {
     await shopStore.fetchShop()
   }
   if (!shopStore.hasShop) {
     await navigateTo(localePath('/dashboard/shop/create'))
   }
+  return null
 })
 
 async function onSubmit(data: { schedule: ScheduleEntry[] }) {
@@ -65,9 +66,5 @@ async function onSubmit(data: { schedule: ScheduleEntry[] }) {
         @submit="onSubmit"
       />
     </div>
-  </div>
-
-  <div v-else-if="shopStore.isLoading" class="flex justify-center py-12">
-    <div class="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-primary-700" />
   </div>
 </template>

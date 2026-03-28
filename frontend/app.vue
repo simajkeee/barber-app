@@ -3,6 +3,7 @@ import { Toaster } from 'vue-sonner'
 </script>
 
 <template>
+  <NuxtLoadingIndicator color="var(--color-primary-700)" />
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>

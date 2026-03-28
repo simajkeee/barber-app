@@ -13,27 +13,29 @@ const appointmentApi = useAppointmentApi()
 const { parseApiError } = useApiError()
 const toast = useToast()
 
-const appointment = ref<Appointment | null>(null)
-const isLoading = ref(true)
 const formLoading = ref(false)
 const formRef = ref<{ setError: (field: string, message: string) => void } | null>(null)
 
 const appointmentId = computed(() => route.params.id as string)
 
-onMounted(async () => {
-  try {
-    appointment.value = await appointmentApi.getAppointment(appointmentId.value)
-    if (['completed', 'cancelled', 'no_show'].includes(appointment.value.status)) {
-      toast.error('appointments.error.notModifiable')
-      await navigateTo(localePath(`/dashboard/appointments/${appointmentId.value}`))
+const { data: appointment } = await useAsyncData<Appointment | null>(
+  `appointment-edit-${appointmentId.value}`,
+  async () => {
+    try {
+      const appt = await appointmentApi.getAppointment(appointmentId.value)
+      if (['completed', 'cancelled', 'no_show'].includes(appt.status)) {
+        toast.error('appointments.error.notModifiable')
+        await navigateTo(localePath(`/dashboard/appointments/${appointmentId.value}`))
+        return null
+      }
+      return appt
+    } catch {
+      toast.error('appointments.error.notFound')
+      await navigateTo(localePath('/dashboard/appointments'))
+      return null
     }
-  } catch {
-    toast.error('appointments.error.notFound')
-    await navigateTo(localePath('/dashboard/appointments'))
-  } finally {
-    isLoading.value = false
-  }
-})
+  },
+)
 
 async function onSubmit(data: CreateAppointmentRequest) {
   formLoading.value = true
@@ -75,12 +77,8 @@ function onCancel() {
   <div class="mx-auto max-w-lg">
     <DashboardPageHeader :title="t('appointments.edit.title')" />
 
-    <div v-if="isLoading" class="flex justify-center py-12">
-      <div class="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-primary-700" />
-    </div>
-
     <AppointmentForm
-      v-else-if="appointment"
+      v-if="appointment"
       ref="formRef"
       :appointment="appointment"
       :loading="formLoading"

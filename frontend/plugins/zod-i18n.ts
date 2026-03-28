@@ -10,7 +10,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       return { message: t('validation.minLength', { min: issue.minimum }) }
     }
 
-    if (issue.code === 'invalid_format' && issue.format === 'email') {
+    if (issue.code === 'invalid_string' && issue.validation === 'email') {
       return { message: t('validation.emailInvalid') }
     }
 

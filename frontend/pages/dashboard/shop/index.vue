@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { CreateShopRequest, UpdateShopRequest } from '~/types/shop'
+
 definePageMeta({
   layout: 'dashboard',
   middleware: 'auth',
@@ -15,19 +17,20 @@ const isEditing = ref(false)
 const formRef = ref<{ setError: (field: string, message: string) => void } | null>(null)
 const loading = ref(false)
 
-onMounted(async () => {
+await useAsyncData('shop-profile-init', async () => {
   if (!shopStore.shop) {
     await shopStore.fetchShop()
   }
   if (!shopStore.hasShop) {
     await navigateTo(localePath('/dashboard/shop/create'))
   }
+  return null
 })
 
-async function onSubmit(data: Record<string, unknown>) {
+async function onSubmit(data: CreateShopRequest | UpdateShopRequest) {
   loading.value = true
   try {
-    const response = await shopApi.updateShop(data as any)
+    const response = await shopApi.updateShop(data as UpdateShopRequest)
     shopStore.setShop(response.shop)
     isEditing.value = false
     toast.success('shop.profile.updated')
@@ -81,9 +84,5 @@ async function onSubmit(data: Record<string, unknown>) {
         @cancel="isEditing = false"
       />
     </div>
-  </div>
-
-  <div v-else-if="shopStore.isLoading" class="flex justify-center py-12">
-    <div class="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-primary-700" />
   </div>
 </template>

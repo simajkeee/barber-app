@@ -33,7 +33,9 @@ export default defineNuxtConfig({
   routeRules: {
     '/vi': { redirect: { to: '/', statusCode: 301 } },
     '/vi/**': { redirect: { to: '/**', statusCode: 301 } },
+    // @ts-expect-error robots is a valid routeRules option from @nuxtjs/robots
     '/dashboard/**': { ssr: false, robots: false },
+    // @ts-expect-error robots is a valid routeRules option from @nuxtjs/robots
     '/en/dashboard/**': { ssr: false, robots: false },
   },
 

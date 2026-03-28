@@ -3,6 +3,11 @@ let sdkInitialized = false
 
 function loadFacebookSdk(appId: string): Promise<void> {
   return new Promise<void>((resolve, reject) => {
+    if (typeof window === 'undefined') {
+      reject(new Error('Facebook SDK requires browser context'))
+      return
+    }
+
     if (!appId) {
       reject(new Error('Facebook App ID is not configured'))
       return

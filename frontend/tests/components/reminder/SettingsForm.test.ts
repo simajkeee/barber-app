@@ -52,7 +52,7 @@ describe('ReminderSettingsForm', () => {
   })
 
   it('passes all placeholder names to templateHelp translation to prevent empty interpolation', () => {
-    const tSpy = vi.fn((key: string) => key)
+    const tSpy = vi.fn((key: string, _params?: Record<string, unknown>) => key)
     vi.stubGlobal('useI18n', () => ({ t: tSpy, locale: { value: 'en' } }))
 
     mountForm()

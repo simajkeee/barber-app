@@ -41,29 +41,11 @@ reminder:
     prefix: /api/v1/reminders
 
 subscription:
-    resource: App\Subscription\Controller\GetSubscriptionController
+    resource:
+        path: ../src/Subscription/Controller/
+        namespace: App\Subscription\Controller
     type: attribute
-    prefix: /api/v1/subscription
-
-subscription_upgrade_request:
-    resource: App\Subscription\Controller\CreateUpgradeRequestController
-    type: attribute
-    prefix: /api/v1/subscription
-
-admin_activate:
-    resource: App\Subscription\Controller\AdminActivateSubscriptionController
-    type: attribute
-    prefix: /api/v1/admin
-
-admin_cancel:
-    resource: App\Subscription\Controller\AdminCancelSubscriptionController
-    type: attribute
-    prefix: /api/v1/admin
-
-admin_downgrade:
-    resource: App\Subscription\Controller\AdminDowngradeSubscriptionController
-    type: attribute
-    prefix: /api/v1/admin
+    prefix: /api/v1
 
 public_booking:
     resource:

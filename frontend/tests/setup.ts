@@ -40,20 +40,29 @@ vi.stubGlobal('storeToRefs', storeToRefs)
 // Pinia store auto-imports — must be available globally since Nuxt auto-imports them
 // Individual tests that need to mock store behavior should import and override
 vi.stubGlobal('useAuthStore', vi.fn())
-vi.stubGlobal('useShopStore', vi.fn())
+vi.stubGlobal('useShopStore', vi.fn(() => ({
+  clearShop: vi.fn(),
+  shop: null,
+  hasShop: false,
+  schedule: [],
+  isLoading: false,
+  setShop: vi.fn(),
+  fetchShop: vi.fn(),
+})))
 vi.stubGlobal('useOnboardingStore', vi.fn())
 
 // Composable auto-imports
 vi.stubGlobal('useApiError', () => ({
   parseApiError: (err: unknown) => {
-    if (!(err instanceof FetchError) || !(err as any).data) {
+    if (!(err instanceof FetchError) || !err.data) {
       return { error: 'unexpected' }
     }
-    const data = (err as any).data
-    const fieldErrors = data.details?.length
-      ? Object.fromEntries(data.details.map((d: any) => [d.field, d.message]))
+    const data = err.data as Record<string, unknown>
+    const details = Array.isArray(data.details) ? data.details as { field: string; message: string }[] : []
+    const fieldErrors = details.length
+      ? Object.fromEntries(details.map((d) => [d.field, d.message]))
       : undefined
-    return { error: data.code ?? data.message, fieldErrors }
+    return { error: (data.code ?? data.message) as string, fieldErrors }
   },
 }))
 vi.stubGlobal('useShopApi', vi.fn())
@@ -80,7 +89,33 @@ vi.stubGlobal('useRuntimeConfig', () => ({
   },
 }))
 vi.stubGlobal('useCookie', (_name: string) => ref(null))
-vi.stubGlobal('useState', (_key: string, init?: () => any) => ref(init?.() ?? null))
+vi.stubGlobal('useState', (_key: string, init?: () => unknown) => ref(init?.() ?? null))
+vi.stubGlobal('useAsyncData', (_key: string, fetcher: () => Promise<unknown>, options?: { default?: () => unknown }) => {
+  const data = ref<unknown>(options?.default?.() ?? null)
+  const pending = ref(true)
+  const error = ref<{ statusCode?: number } | null>(null)
+  const refresh = async () => {
+    pending.value = true
+    try {
+      data.value = await fetcher()
+      error.value = null
+    } catch (err) {
+      error.value = err as { statusCode?: number }
+      data.value = options?.default?.() ?? null
+    } finally {
+      pending.value = false
+    }
+  }
+  const result = { data, pending, error, refresh }
+  // Return a thenable so `await useAsyncData(...)` resolves after fetch completes,
+  // while also exposing properties directly for non-await usage.
+  return Object.assign(refresh().then(() => result), result)
+})
+vi.stubGlobal('createError', (opts: { statusCode?: number; fatal?: boolean }) => {
+  const err = new Error(String(opts.statusCode))
+  ;(err as Error & { statusCode: number }).statusCode = opts.statusCode ?? 500
+  return err
+})
 vi.stubGlobal('useId', () => 'test-id')
 vi.stubGlobal('useHead', vi.fn())
 vi.stubGlobal('useSeoMeta', vi.fn())
@@ -105,5 +140,5 @@ config.global.stubs = {
 
 // Provide $t globally so components using it directly in templates work
 config.global.mocks = {
-  $t: (key: string, ...args: any[]) => key,
+  $t: (key: string, ...args: unknown[]) => key,
 }

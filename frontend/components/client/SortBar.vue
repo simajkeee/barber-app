@@ -17,7 +17,9 @@ function toggleDirection() {
 
 <template>
   <div class="flex items-center gap-2">
+    <label for="sort-select" class="sr-only">{{ t('clients.sort.label') }}</label>
     <select
+      id="sort-select"
       :value="sort"
       class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
       @change="sort = ($event.target as HTMLSelectElement).value"

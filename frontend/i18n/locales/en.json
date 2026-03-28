@@ -218,6 +218,7 @@
       "createdAt": "Date Added",
       "lastVisitAt": "Last Visit",
       "lastName": "Last Name",
+      "label": "Sort by",
       "descending": "Sort descending",
       "ascending": "Sort ascending"
     },

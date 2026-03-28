@@ -22,7 +22,7 @@ final readonly class AdminDowngradeSubscriptionController
     ) {
     }
 
-    #[Route('/subscriptions/{shopId}/downgrade', methods: ['POST'])]
+    #[Route('/admin/subscriptions/{shopId}/downgrade', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN')]
     public function __invoke(string $shopId): JsonResponse
     {

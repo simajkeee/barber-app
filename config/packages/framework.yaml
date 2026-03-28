@@ -20,7 +20,7 @@ framework:
             interval: '1 minute'
         registration:
             policy: sliding_window
-            limit: 5
+            limit: '%env(int:REGISTRATION_RATE_LIMIT)%'
             interval: '1 hour'
         api:
             policy: sliding_window

@@ -17,7 +17,7 @@ withDefaults(
   },
 )
 
-const model = defineModel<string>({ required: true })
+const model = defineModel<string | undefined>()
 
 const inputId = useId()
 const errorId = `${inputId}-error`

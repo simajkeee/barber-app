@@ -27,7 +27,7 @@ final readonly class CreateUpgradeRequestController
     ) {
     }
 
-    #[Route('/upgrade-request', methods: ['POST'])]
+    #[Route('/subscription/upgrade-request', methods: ['POST'])]
     public function __invoke(
         #[CurrentUser] User $user,
         #[MapRequestPayload] CreateUpgradeRequestDto $dto,

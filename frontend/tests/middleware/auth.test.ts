@@ -28,7 +28,7 @@ describe('auth middleware', () => {
 
   it('redirects to /login when no access token', async () => {
     cookieValue.value = null
-    await authMiddleware()
+    await authMiddleware({} as any, {} as any)
     expect(mockNavigateTo).toHaveBeenCalledWith('/login')
   })
 
@@ -36,7 +36,7 @@ describe('auth middleware', () => {
     cookieValue.value = 'some-token'
     mockApiFetch.mockResolvedValueOnce(createUser())
 
-    await authMiddleware()
+    await authMiddleware({} as any, {} as any)
 
     const store = realUseAuthStore()
     expect(store.isInitialized).toBe(true)
@@ -48,7 +48,7 @@ describe('auth middleware', () => {
     const store = realUseAuthStore()
     store.setUser(createUser())
 
-    await authMiddleware()
+    await authMiddleware({} as any, {} as any)
 
     expect(mockApiFetch).not.toHaveBeenCalled()
     expect(mockNavigateTo).not.toHaveBeenCalled()
@@ -58,7 +58,7 @@ describe('auth middleware', () => {
     cookieValue.value = 'some-token'
     mockApiFetch.mockRejectedValueOnce(new Error('Failed'))
 
-    await authMiddleware()
+    await authMiddleware({} as any, {} as any)
 
     expect(mockNavigateTo).toHaveBeenCalledWith('/login')
   })

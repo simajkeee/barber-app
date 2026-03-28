@@ -3,7 +3,7 @@ const { locale, locales } = useI18n()
 const switchLocalePath = useSwitchLocalePath()
 
 const availableLocales = computed(() =>
-  (locales.value as Array<{ code: string; name: string }>).filter(
+  (locales.value as Array<{ code: 'vi' | 'en'; name: string }>).filter(
     (l) => l.code !== locale.value,
   ),
 )

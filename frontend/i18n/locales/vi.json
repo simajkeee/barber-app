@@ -218,6 +218,7 @@
       "createdAt": "Ngày thêm",
       "lastVisitAt": "Lần ghé cuối",
       "lastName": "Họ tên",
+      "label": "Sắp xếp theo",
       "descending": "Sắp xếp giảm dần",
       "ascending": "Sắp xếp tăng dần"
     },

@@ -19,13 +19,13 @@ describe('guest middleware', () => {
 
   it('redirects to /dashboard when access token exists', () => {
     cookieValue.value = 'some-token'
-    guestMiddleware()
+    guestMiddleware({} as any, {} as any)
     expect(mockNavigateTo).toHaveBeenCalledWith('/dashboard')
   })
 
   it('does nothing when no access token', () => {
     cookieValue.value = null
-    guestMiddleware()
+    guestMiddleware({} as any, {} as any)
     expect(mockNavigateTo).not.toHaveBeenCalled()
   })
 })

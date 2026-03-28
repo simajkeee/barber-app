@@ -35,9 +35,10 @@ export function useApi() {
 
   return async function apiFetch<T>(url: string, opts?: Parameters<typeof baseFetch>[1]): Promise<T> {
     try {
-      return await baseFetch<T>(url, opts)
-    } catch (err: any) {
-      if (err?.response?.status !== 401 || !refreshToken.value) throw err
+      return await baseFetch<T>(url, opts) as T
+    } catch (err: unknown) {
+      const status = (err as { response?: { status?: number } })?.response?.status
+      if (status !== 401 || !refreshToken.value) throw err
 
       // Don't retry auth endpoints
       if (url.includes('/auth/refresh') || url.includes('/auth/login')) throw err
@@ -47,13 +48,9 @@ export function useApi() {
         accessToken.value = tokens.token
         refreshToken.value = tokens.refreshToken
 
-        return await baseFetch<T>(url, {
-          ...opts,
-          headers: {
-            ...((opts?.headers as Record<string, string>) ?? {}),
-            Authorization: `Bearer ${tokens.token}`,
-          },
-        })
+        const retryHeaders = new Headers(opts?.headers)
+        retryHeaders.set('Authorization', `Bearer ${tokens.token}`)
+        return await baseFetch<T>(url, { ...opts, headers: retryHeaders }) as T
       } catch {
         accessToken.value = null
         refreshToken.value = null

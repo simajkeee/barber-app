@@ -9,7 +9,7 @@ const props = defineProps<{
   daysRemaining?: number
 }>()
 
-const { t, d } = useI18n()
+const { t, locale } = useI18n()
 
 const planLabel = computed(() => t(`subscription.plan.${props.plan}`))
 const statusLabel = computed(() => t(`subscription.status.${props.status}`))
@@ -32,7 +32,12 @@ const statusBadgeClass = computed(() => {
 })
 
 function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString()
+  return new Intl.DateTimeFormat(locale.value === 'vi' ? 'vi-VN' : 'en-US', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    timeZone: 'Asia/Ho_Chi_Minh',
+  }).format(new Date(dateStr))
 }
 </script>
 

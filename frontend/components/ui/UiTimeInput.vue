@@ -57,11 +57,15 @@ function onDocumentClick(e: MouseEvent) {
 }
 
 watch(open, (val) => {
+  if (typeof document === 'undefined') return
   if (val) document.addEventListener('click', onDocumentClick, { capture: true })
   else document.removeEventListener('click', onDocumentClick, { capture: true })
 })
 
-onUnmounted(() => document.removeEventListener('click', onDocumentClick, { capture: true }))
+onUnmounted(() => {
+  if (typeof document === 'undefined') return
+  document.removeEventListener('click', onDocumentClick, { capture: true })
+})
 </script>
 
 <template>

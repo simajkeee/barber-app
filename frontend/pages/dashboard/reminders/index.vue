@@ -11,37 +11,32 @@ const localePath = useLocalePath()
 const reminderApi = useReminderApi()
 const toast = useToast()
 
-const candidates = ref<ReminderCandidate[]>([])
-const settings = ref<ReminderSettings | null>(null)
-const total = ref(0)
-const cursor = ref<string | null>(null)
-const isLoading = ref(true)
+const { data: initialData, error: loadError } = await useAsyncData(
+  'reminders-today',
+  () => reminderApi.getTodayReminders({}),
+)
+
+const candidates = ref<ReminderCandidate[]>(initialData.value?.data ?? [])
+const settings = ref<ReminderSettings | null>(initialData.value?.settings ?? null)
+const total = ref(initialData.value?.meta.total ?? 0)
+const cursor = ref<string | null>(initialData.value?.meta.cursor ?? null)
 const isLoadingMore = ref(false)
 
-async function loadReminders(append = false) {
-  if (append) {
-    isLoadingMore.value = true
-  } else {
-    isLoading.value = true
-  }
+if (loadError.value) {
+  toast.error('reminders.toast.loadError')
+}
 
+async function loadMore() {
+  if (!cursor.value) return
+  isLoadingMore.value = true
   try {
-    const response = await reminderApi.getTodayReminders({
-      cursor: append ? (cursor.value ?? undefined) : undefined,
-    })
-
-    if (append) {
-      candidates.value = [...candidates.value, ...response.data]
-    } else {
-      candidates.value = response.data
-      settings.value = response.settings
-    }
+    const response = await reminderApi.getTodayReminders({ cursor: cursor.value })
+    candidates.value = [...candidates.value, ...response.data]
     total.value = response.meta.total
     cursor.value = response.meta.cursor
   } catch {
     toast.error('reminders.toast.loadError')
   } finally {
-    isLoading.value = false
     isLoadingMore.value = false
   }
 }
@@ -56,8 +51,6 @@ async function onMarkReminded(clientId: string) {
     toast.error('reminders.toast.markError')
   }
 }
-
-onMounted(() => loadReminders())
 </script>
 
 <template>
@@ -70,22 +63,22 @@ onMounted(() => loadReminders())
       </template>
     </DashboardPageHeader>
 
-    <ReminderSettingsSummary v-if="settings && !isLoading" :settings="settings" />
+    <ReminderSettingsSummary v-if="settings" :settings="settings" />
 
-    <p v-if="!isLoading && total > 0" class="mb-4 text-sm text-gray-500">
+    <p v-if="total > 0" class="mb-4 text-sm text-gray-500">
       {{ t('reminders.totalCount', total) }}
     </p>
 
     <ReminderList
       :candidates="candidates"
-      :is-loading="isLoading"
+      :is-loading="false"
       @mark-reminded="onMarkReminded"
     />
 
     <ReminderListPagination
       :has-more="cursor !== null"
       :is-loading="isLoadingMore"
-      @load-more="loadReminders(true)"
+      @load-more="loadMore"
     />
   </div>
 </template>

@@ -111,7 +111,7 @@ const steps = computed<Step[]>(() => [
       <button
         type="button"
         class="text-sm text-gray-400 hover:text-gray-600"
-        :aria-label="t('onboarding.dismissLabel')"
+        :aria-label="t('onboarding.dismiss')"
         @click="onboardingStore.dismiss()"
       >
         {{ t('onboarding.dismiss') }}

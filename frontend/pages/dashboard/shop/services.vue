@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ShopService } from '~/types/shop'
+import type { ShopService, CreateServiceRequest, UpdateServiceRequest } from '~/types/shop'
 
 definePageMeta({
   layout: 'dashboard',
@@ -26,15 +26,21 @@ const confirmOpen = ref(false)
 const deletingId = ref<string | null>(null)
 const deleteLoading = ref(false)
 
-onMounted(async () => {
+await useAsyncData('shop-services-init', async () => {
   if (!shopStore.shop) {
     await shopStore.fetchShop()
   }
   if (!shopStore.hasShop) {
     await navigateTo(localePath('/dashboard/shop/create'))
-    return
+    return null
   }
-  await loadServices()
+  try {
+    const response = await shopApi.fetchServices(includeInactive.value)
+    services.value = response.services
+  } catch {
+    toast.error('shop.error.shopNotFound')
+  }
+  return null
 })
 
 async function loadServices() {
@@ -61,14 +67,14 @@ function openEditModal(service: ShopService) {
   modalOpen.value = true
 }
 
-async function onModalSubmit(data: Record<string, unknown>) {
+async function onModalSubmit(data: CreateServiceRequest | UpdateServiceRequest) {
   modalLoading.value = true
   try {
     if (editingService.value) {
-      await shopApi.updateService(editingService.value.id, data as any)
+      await shopApi.updateService(editingService.value.id, data as UpdateServiceRequest)
       toast.success('shop.services.updated')
     } else {
-      await shopApi.createService(data as any)
+      await shopApi.createService(data as CreateServiceRequest)
       toast.success('shop.services.created')
     }
     modalOpen.value = false

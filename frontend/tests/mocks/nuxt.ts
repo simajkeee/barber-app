@@ -1,3 +1,4 @@
+import { vi } from 'vitest'
 import { ref, computed } from 'vue'
 
 export const navigateTo = vi.fn()
@@ -9,7 +10,7 @@ export const useRuntimeConfig = vi.fn(() => ({
   },
 }))
 export const useCookie = vi.fn((name: string) => ref(null))
-export const useState = vi.fn((_key: string, init?: () => any) => ref(init?.() ?? null))
+export const useState = vi.fn((_key: string, init?: () => unknown) => ref(init?.() ?? null))
 export const useId = vi.fn(() => 'test-id')
 export const useHead = vi.fn()
 export const useSeoMeta = vi.fn()

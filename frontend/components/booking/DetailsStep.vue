@@ -63,7 +63,7 @@ onMounted(() => {
   const script = document.createElement('script')
   script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=onTurnstileLoad'
   script.async = true
-  ;(window as any).onTurnstileLoad = () => renderWidget()
+  window.onTurnstileLoad = () => renderWidget()
   try {
     document.head.appendChild(script)
   } catch {
