@@ -46,6 +46,11 @@ subscription:
         namespace: App\Subscription\Controller
     type: attribute
     prefix: /api/v1
+    exclude: ../src/Subscription/Controller/MomoIpnController.php
+
+momo_ipn:
+    resource: App\Subscription\Controller\MomoIpnController
+    type: attribute
 
 reminder_opt_out:
     resource: App\Reminder\Controller\ReminderOptOutController

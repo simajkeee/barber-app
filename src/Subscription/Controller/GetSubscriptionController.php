@@ -44,12 +44,22 @@ final readonly class GetSubscriptionController
             $trialDaysRemaining = 0 === $diff->invert ? (int) $diff->days : 0;
         }
 
+        $endDate = $subscription->getEndDate();
+        $daysRemaining = null;
+        if (null !== $endDate) {
+            $interval = $now->diff($endDate);
+            $daysRemaining = 0 === $interval->invert ? (int) $interval->days : 0;
+        }
+        $isExpiringSoon = null !== $daysRemaining && $daysRemaining <= 7;
+
         $data = [
             'id' => (string) $subscription->getId(),
             'plan' => $subscription->getPlan()->value,
             'status' => $subscription->getStatus()->value,
             'startDate' => $subscription->getStartDate()->setTimezone($tz)->format(\DateTimeInterface::ATOM),
-            'endDate' => $subscription->getEndDate()?->setTimezone($tz)->format(\DateTimeInterface::ATOM),
+            'endDate' => $endDate?->setTimezone($tz)->format(\DateTimeInterface::ATOM),
+            'daysRemaining' => $daysRemaining,
+            'isExpiringSoon' => $isExpiringSoon,
             'trial' => [
                 'isInTrial' => $isInTrial,
                 'trialEndsAt' => $trialEndsAt?->setTimezone($tz)->format(\DateTimeInterface::ATOM),

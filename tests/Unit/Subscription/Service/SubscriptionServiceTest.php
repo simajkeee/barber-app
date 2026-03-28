@@ -93,11 +93,11 @@ final class SubscriptionServiceTest extends TestCase
         self::assertNotNull($subscription->getTrialEndsAt());
         self::assertGreaterThanOrEqual(
             $before->modify('+30 days')->getTimestamp(),
-            $subscription->getTrialEndsAt()->getTimestamp()
+            $subscription->getTrialEndsAt()->getTimestamp(),
         );
         self::assertLessThanOrEqual(
             $after->modify('+30 days')->getTimestamp(),
-            $subscription->getTrialEndsAt()->getTimestamp()
+            $subscription->getTrialEndsAt()->getTimestamp(),
         );
     }
 
@@ -474,6 +474,59 @@ final class SubscriptionServiceTest extends TestCase
         $count = $this->sut->expireOverdueTrials();
 
         self::assertSame(0, $count);
+    }
+
+    // --- activateFromPayment ---
+
+    #[Test]
+    public function testActivateFromPaymentSetsPlanProAndStatusActive(): void
+    {
+        $shop = $this->createShop();
+        $subscription = $this->createSubscription($shop, SubscriptionPlan::FREE);
+
+        $before = new \DateTimeImmutable('now', new \DateTimeZone('Asia/Ho_Chi_Minh'));
+
+        $this->sut->activateFromPayment($subscription, 'momo-trans-123');
+
+        $after = new \DateTimeImmutable('now', new \DateTimeZone('Asia/Ho_Chi_Minh'));
+
+        self::assertSame(SubscriptionPlan::PRO, $subscription->getPlan());
+        self::assertSame(SubscriptionStatus::ACTIVE, $subscription->getStatus());
+        self::assertSame('momo-trans-123', $subscription->getMomoTransId());
+        self::assertNull($subscription->getRenewalReminderSentAt());
+
+        self::assertGreaterThanOrEqual($before->getTimestamp(), $subscription->getStartDate()->getTimestamp());
+        self::assertLessThanOrEqual($after->getTimestamp(), $subscription->getStartDate()->getTimestamp());
+
+        $expectedEndMin = $before->modify('+30 days')->getTimestamp();
+        $expectedEndMax = $after->modify('+30 days')->getTimestamp();
+        self::assertGreaterThanOrEqual($expectedEndMin, $subscription->getEndDate()->getTimestamp());
+        self::assertLessThanOrEqual($expectedEndMax, $subscription->getEndDate()->getTimestamp());
+    }
+
+    #[Test]
+    public function testActivateFromPaymentResetsRenewalReminderSentAt(): void
+    {
+        $shop = $this->createShop();
+        $subscription = $this->createSubscription($shop, SubscriptionPlan::PRO, SubscriptionStatus::ACTIVE, endDate: new \DateTimeImmutable('+5 days'));
+        $subscription->setRenewalReminderSentAt(new \DateTimeImmutable('-2 days'));
+        $subscription->setMomoTransId('old-trans');
+
+        $this->sut->activateFromPayment($subscription, 'new-trans-456');
+
+        self::assertNull($subscription->getRenewalReminderSentAt());
+        self::assertSame('new-trans-456', $subscription->getMomoTransId());
+    }
+
+    #[Test]
+    public function testActivateFromPaymentDoesNotFlush(): void
+    {
+        $shop = $this->createShop();
+        $subscription = $this->createSubscription($shop);
+
+        $this->em->expects(self::never())->method('flush');
+
+        $this->sut->activateFromPayment($subscription, 'tx-1');
     }
 
     // --- resetMonthlyCounters ---

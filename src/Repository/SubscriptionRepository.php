@@ -73,6 +73,29 @@ final class SubscriptionRepository extends ServiceEntityRepository
             ->execute();
     }
 
+    /**
+     * @return Subscription[]
+     */
+    public function findExpiringInSevenDays(\DateTimeImmutable $now): array
+    {
+        $from = $now->modify('+6 days');
+        $to = $now->modify('+8 days');
+
+        return $this->createQueryBuilder('s')
+            ->innerJoin('s.shop', 'shop')
+            ->addSelect('shop')
+            ->where('s.plan = :plan')
+            ->andWhere('s.status = :status')
+            ->andWhere('s.endDate BETWEEN :from AND :to')
+            ->andWhere('s.renewalReminderSentAt IS NULL')
+            ->setParameter('plan', SubscriptionPlan::PRO)
+            ->setParameter('status', SubscriptionStatus::ACTIVE)
+            ->setParameter('from', $from)
+            ->setParameter('to', $to)
+            ->getQuery()
+            ->getResult();
+    }
+
     public function incrementAppointmentCount(Subscription $subscription): void
     {
         $this->getEntityManager()

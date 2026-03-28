@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="vi">
+<body style="font-family: sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <h2>Thanh toán thành công</h2>
+  <p>Xin chào {{ ownerFirstName }},</p>
+  <p>Gói <strong>BarberPro PRO</strong> của bạn đã được kích hoạt thành công!</p>
+  <table style="margin: 16px 0; border-collapse: collapse;">
+    <tr>
+      <td style="padding: 4px 12px 4px 0; color: #666;">Mã giao dịch:</td>
+      <td style="padding: 4px 0;">{{ transId }}</td>
+    </tr>
+    <tr>
+      <td style="padding: 4px 12px 4px 0; color: #666;">Số tiền:</td>
+      <td style="padding: 4px 0;">{{ amountVnd|number_format(0, ',', '.') }} ₫</td>
+    </tr>
+    <tr>
+      <td style="padding: 4px 12px 4px 0; color: #666;">Hết hạn:</td>
+      <td style="padding: 4px 0;">{{ endDate }}</td>
+    </tr>
+  </table>
+  <p>
+    <a href="{{ dashboardUrl }}" style="display: inline-block; padding: 10px 24px; background: #2563eb; color: #fff; text-decoration: none; border-radius: 6px;">
+      Đi tới bảng điều khiển
+    </a>
+  </p>
+  <p style="margin-top: 24px;">{{ shopName }}</p>
+</body>
+</html>
