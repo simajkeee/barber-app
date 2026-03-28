@@ -347,7 +347,7 @@
               "host": ["{{base_url}}"],
               "path": ["api", "v1", "subscription", ""]
             },
-            "description": "Get the authenticated user's shop subscription status, trial info, and usage.\n\n**Auth:** JWT Bearer required\n**Rate limit:** 60 requests/minute\n\n### Response fields\n| Field | Type | Notes |\n|-------|------|-------|\n| id | string | Subscription UUID |\n| plan | string | `free` or `pro` |\n| status | string | `active`, `expired`, or `cancelled` |\n| startDate | string | ISO 8601 with timezone |\n| endDate | string\\|null | null for free plan and trial; set only for paid PRO |\n| trial.isInTrial | bool | true if within 30-day trial window |\n| trial.trialEndsAt | string\\|null | ISO 8601, null if no trial was ever granted |\n| trial.trialDaysRemaining | int\\|null | null when not in trial; 0 on last day |\n| usage.appointmentsThisMonth | int | |\n| usage.appointmentLimit | int\\|null | null for PRO (unlimited) |\n| usage.limitReached | bool | true when free plan hits 50/month cap |\n\n### Responses\n- **200** — success\n- **401** — not authenticated\n- **404** — shop not yet created for this user"
+            "description": "Get the authenticated user's shop subscription status, trial info, and usage.\n\n**Auth:** JWT Bearer required\n**Rate limit:** 60 requests/minute\n\n### Response fields\n| Field | Type | Notes |\n|-------|------|-------|\n| id | string | Subscription UUID |\n| plan | string | `free` or `pro` |\n| status | string | `active`, `expired`, `cancelled`, or `pending_cancellation` |\n| startDate | string | ISO 8601 with timezone |\n| endDate | string\\|null | null for free plan and trial; set only for paid PRO |\n| daysRemaining | int\\|null | Days until endDate. null if no endDate. 0 on expiry day. |\n| isExpiringSoon | bool | true when daysRemaining <= 7 |\n| trial.isInTrial | bool | true if within 30-day trial window |\n| trial.trialEndsAt | string\\|null | ISO 8601, null if no trial was ever granted |\n| trial.trialDaysRemaining | int\\|null | null when not in trial; 0 on last day |\n| usage.appointmentsThisMonth | int | |\n| usage.appointmentLimit | int\\|null | null for PRO (unlimited) |\n| usage.limitReached | bool | true when free plan hits 50/month cap |\n\n### Responses\n- **200** — success\n- **401** — not authenticated\n- **404** — shop not yet created for this user"
           },
           "response": [
             {
@@ -355,21 +355,21 @@
               "status": "OK",
               "code": 200,
               "header": [{ "key": "Content-Type", "value": "application/json" }],
-              "body": "{\n  \"id\": \"019d2602-b8fa-758b-ad80-4fb931669116\",\n  \"plan\": \"pro\",\n  \"status\": \"active\",\n  \"startDate\": \"2026-03-26T00:20:05+07:00\",\n  \"endDate\": null,\n  \"trial\": {\n    \"isInTrial\": true,\n    \"trialEndsAt\": \"2026-04-25T00:20:05+07:00\",\n    \"trialDaysRemaining\": 29\n  },\n  \"usage\": {\n    \"appointmentsThisMonth\": 0,\n    \"appointmentLimit\": null,\n    \"limitReached\": false\n  }\n}"
+              "body": "{\n  \"id\": \"019d2602-b8fa-758b-ad80-4fb931669116\",\n  \"plan\": \"pro\",\n  \"status\": \"active\",\n  \"startDate\": \"2026-03-26T00:20:05+07:00\",\n  \"endDate\": null,\n  \"daysRemaining\": null,\n  \"isExpiringSoon\": false,\n  \"trial\": {\n    \"isInTrial\": true,\n    \"trialEndsAt\": \"2026-04-25T00:20:05+07:00\",\n    \"trialDaysRemaining\": 29\n  },\n  \"usage\": {\n    \"appointmentsThisMonth\": 0,\n    \"appointmentLimit\": null,\n    \"limitReached\": false\n  }\n}"
             },
             {
               "name": "200 Free plan (trial expired)",
               "status": "OK",
               "code": 200,
               "header": [{ "key": "Content-Type", "value": "application/json" }],
-              "body": "{\n  \"id\": \"019d2602-b8fa-758b-ad80-4fb931669116\",\n  \"plan\": \"free\",\n  \"status\": \"active\",\n  \"startDate\": \"2026-03-26T00:20:05+07:00\",\n  \"endDate\": null,\n  \"trial\": {\n    \"isInTrial\": false,\n    \"trialEndsAt\": \"2026-03-26T00:20:05+07:00\",\n    \"trialDaysRemaining\": null\n  },\n  \"usage\": {\n    \"appointmentsThisMonth\": 12,\n    \"appointmentLimit\": 50,\n    \"limitReached\": false\n  }\n}"
+              "body": "{\n  \"id\": \"019d2602-b8fa-758b-ad80-4fb931669116\",\n  \"plan\": \"free\",\n  \"status\": \"active\",\n  \"startDate\": \"2026-03-26T00:20:05+07:00\",\n  \"endDate\": null,\n  \"daysRemaining\": null,\n  \"isExpiringSoon\": false,\n  \"trial\": {\n    \"isInTrial\": false,\n    \"trialEndsAt\": \"2026-03-26T00:20:05+07:00\",\n    \"trialDaysRemaining\": null\n  },\n  \"usage\": {\n    \"appointmentsThisMonth\": 12,\n    \"appointmentLimit\": 50,\n    \"limitReached\": false\n  }\n}"
             },
             {
               "name": "200 Paid PRO (no trial)",
               "status": "OK",
               "code": 200,
               "header": [{ "key": "Content-Type", "value": "application/json" }],
-              "body": "{\n  \"id\": \"019d2602-b8fa-758b-ad80-4fb931669116\",\n  \"plan\": \"pro\",\n  \"status\": \"active\",\n  \"startDate\": \"2026-03-26T00:20:05+07:00\",\n  \"endDate\": \"2026-04-25T00:20:05+07:00\",\n  \"trial\": {\n    \"isInTrial\": false,\n    \"trialEndsAt\": null,\n    \"trialDaysRemaining\": null\n  },\n  \"usage\": {\n    \"appointmentsThisMonth\": 87,\n    \"appointmentLimit\": null,\n    \"limitReached\": false\n  }\n}"
+              "body": "{\n  \"id\": \"019d2602-b8fa-758b-ad80-4fb931669116\",\n  \"plan\": \"pro\",\n  \"status\": \"active\",\n  \"startDate\": \"2026-03-26T00:20:05+07:00\",\n  \"endDate\": \"2026-04-25T00:20:05+07:00\",\n  \"daysRemaining\": 23,\n  \"isExpiringSoon\": false,\n  \"trial\": {\n    \"isInTrial\": false,\n    \"trialEndsAt\": null,\n    \"trialDaysRemaining\": null\n  },\n  \"usage\": {\n    \"appointmentsThisMonth\": 87,\n    \"appointmentLimit\": null,\n    \"limitReached\": false\n  }\n}"
             },
             {
               "name": "404 Shop not found",
@@ -377,6 +377,110 @@
               "code": 404,
               "header": [{ "key": "Content-Type", "value": "application/json" }],
               "body": "{\n  \"code\": \"SHOP_NOT_FOUND\",\n  \"message\": \"Shop not found. Create one first.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "POST Checkout (MoMo)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/subscription/checkout",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "subscription", "checkout"]
+            },
+            "description": "Create a MoMo payment session and return the hosted checkout URL. The barber is redirected to MoMo's page to pay 299,000 ₫. No request body needed.\n\n**Auth:** JWT Bearer required\n\n**Important:** This endpoint does NOT activate PRO. Activation happens server-to-server via the MoMo IPN webhook after successful payment.\n\n### Responses\n- **200** — success, returns `{ payUrl }` — redirect the browser to this URL\n- **401** — not authenticated\n- **404** — shop not found\n- **409** — shop already has an active PRO subscription\n- **502** — MoMo API returned an error"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "if (pm.response.code === 200) {",
+                  "    var json = pm.response.json();",
+                  "    pm.test(\"Has payUrl\", function() {",
+                  "        pm.expect(json).to.have.property(\"payUrl\");",
+                  "    });",
+                  "}",
+                  "pm.test(\"Response time < 5000ms\", function() {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 Success",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"payUrl\": \"https://test-payment.momo.vn/v2/gateway/pay?t=abc123def456\"\n}"
+            },
+            {
+              "name": "409 Already PRO",
+              "status": "Conflict",
+              "code": 409,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"code\": \"ALREADY_PRO\",\n  \"message\": \"Shop already has an active PRO subscription.\"\n}"
+            },
+            {
+              "name": "502 MoMo Init Failed",
+              "status": "Bad Gateway",
+              "code": 502,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"code\": \"MOMO_INIT_FAILED\",\n  \"message\": \"MoMo payment initialization failed.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "POST MoMo IPN Webhook",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/webhooks/momo/ipn",
+              "host": ["{{base_url}}"],
+              "path": ["webhooks", "momo", "ipn"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"partnerCode\": \"MOMO_TEST\",\n  \"orderId\": \"barberpro-abc12345-1711612800\",\n  \"requestId\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"amount\": 299000,\n  \"orderInfo\": \"BarberPro PRO - 1 tháng\",\n  \"orderType\": \"momo_wallet\",\n  \"transId\": 3568107123456,\n  \"resultCode\": 0,\n  \"message\": \"Thành công.\",\n  \"payType\": \"qr\",\n  \"responseTime\": 1624600146612,\n  \"extraData\": \"eyJzaG9wSWQiOiI1NTBlODQwMC1lMjliLTQxZDQtYTcxNi00NDY2NTU0NDAwMDAifQ==\",\n  \"signature\": \"replace-with-valid-hmac-sha256\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "MoMo Instant Payment Notification (IPN) — server-to-server callback. Called by MoMo after payment completion.\n\n**Auth:** None (public webhook) — verified via HMAC-SHA256 signature in payload\n\n**Note:** This endpoint always returns `204 No Content` regardless of outcome. The signature must be valid for activation to occur.\n\n⚠️ For local testing, you need to compute the signature using your `MOMO_SECRET_KEY`. The `extraData` field is `base64(JSON({shopId: \"...\"}))`. The signature is `HMAC-SHA256(rawString, secretKey)` where `rawString` is the sorted, ampersand-joined field values.\n\n### Behavior\n- Valid IPN with `resultCode=0` → activates PRO subscription, dispatches confirmation email\n- Invalid signature → silently rejected (204)\n- `resultCode != 0` → logged as failed payment (204)\n- Duplicate `transId` → idempotent, no re-activation (204)\n\n### Responses\n- **204** — always (MoMo retries on non-204)"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 204\", function() {",
+                  "    pm.response.to.have.status(204);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "204 No Content (always)",
+              "status": "No Content",
+              "code": 204,
+              "header": [],
+              "body": ""
             }
           ]
         }

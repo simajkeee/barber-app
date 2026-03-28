@@ -17,6 +17,8 @@ use Symfony\Component\Uid\Uuid;
 #[ORM\Index(name: 'idx_subscriptions_status_end', columns: ['status', 'end_date'])]
 #[ORM\Index(name: 'idx_subscriptions_plan_reset', columns: ['plan', 'count_reset_at'])]
 #[ORM\Index(name: 'idx_subscriptions_trial_ends_at', columns: ['trial_ends_at'], options: ['where' => 'trial_ends_at IS NOT NULL'])]
+#[ORM\Index(name: 'idx_subscription_end_date', columns: ['end_date'])]
+#[ORM\UniqueConstraint(name: 'uniq_subscription_momo_trans_id', columns: ['momo_trans_id'])]
 #[ORM\HasLifecycleCallbacks]
 class Subscription
 {
@@ -48,6 +50,12 @@ class Subscription
 
     #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE)]
     private \DateTimeImmutable $countResetAt;
+
+    #[ORM\Column(type: Types::STRING, length: 50, nullable: true)]
+    private ?string $momoTransId = null;
+
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $renewalReminderSentAt = null;
 
     #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE)]
     private \DateTimeImmutable $createdAt;
@@ -160,6 +168,26 @@ class Subscription
     public function setCountResetAt(\DateTimeImmutable $countResetAt): void
     {
         $this->countResetAt = $countResetAt;
+    }
+
+    public function getMomoTransId(): ?string
+    {
+        return $this->momoTransId;
+    }
+
+    public function setMomoTransId(?string $momoTransId): void
+    {
+        $this->momoTransId = $momoTransId;
+    }
+
+    public function getRenewalReminderSentAt(): ?\DateTimeImmutable
+    {
+        return $this->renewalReminderSentAt;
+    }
+
+    public function setRenewalReminderSentAt(?\DateTimeImmutable $renewalReminderSentAt): void
+    {
+        $this->renewalReminderSentAt = $renewalReminderSentAt;
     }
 
     public function getCreatedAt(): \DateTimeImmutable

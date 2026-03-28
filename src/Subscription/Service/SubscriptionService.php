@@ -66,6 +66,19 @@ final class SubscriptionService
         return $subscription;
     }
 
+    public function activateFromPayment(Subscription $subscription, string $momoTransId): void
+    {
+        $tz = new \DateTimeZone(self::TZ_NAME);
+        $now = new \DateTimeImmutable('now', $tz);
+
+        $subscription->setPlan(SubscriptionPlan::PRO);
+        $subscription->setStatus(SubscriptionStatus::ACTIVE);
+        $subscription->setStartDate($now);
+        $subscription->setEndDate($now->modify('+'.self::DEFAULT_PRO_DURATION_DAYS.' days'));
+        $subscription->setMomoTransId($momoTransId);
+        $subscription->setRenewalReminderSentAt(null);
+    }
+
     public function activate(Shop $shop, int $durationDays = self::DEFAULT_PRO_DURATION_DAYS): Subscription
     {
         $subscription = $this->getByShop($shop);

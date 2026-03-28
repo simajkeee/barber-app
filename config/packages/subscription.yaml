@@ -1,0 +1,3 @@
+parameters:
+    subscription.pro_monthly_price_vnd: 299000
+    subscription.pro_period_days: 30

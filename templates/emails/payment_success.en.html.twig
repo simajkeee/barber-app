@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<body style="font-family: sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <h2>Payment Successful</h2>
+  <p>Hi {{ ownerFirstName }},</p>
+  <p>Your <strong>BarberPro PRO</strong> plan has been activated successfully!</p>
+  <table style="margin: 16px 0; border-collapse: collapse;">
+    <tr>
+      <td style="padding: 4px 12px 4px 0; color: #666;">Transaction ID:</td>
+      <td style="padding: 4px 0;">{{ transId }}</td>
+    </tr>
+    <tr>
+      <td style="padding: 4px 12px 4px 0; color: #666;">Amount:</td>
+      <td style="padding: 4px 0;">{{ amountVnd|number_format(0, ',', '.') }} ₫</td>
+    </tr>
+    <tr>
+      <td style="padding: 4px 12px 4px 0; color: #666;">Expires:</td>
+      <td style="padding: 4px 0;">{{ endDate }}</td>
+    </tr>
+  </table>
+  <p>
+    <a href="{{ dashboardUrl }}" style="display: inline-block; padding: 10px 24px; background: #2563eb; color: #fff; text-decoration: none; border-radius: 6px;">
+      Go to Dashboard
+    </a>
+  </p>
+  <p style="margin-top: 24px;">{{ shopName }}</p>
+</body>
+</html>
