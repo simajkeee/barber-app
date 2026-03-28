@@ -37,6 +37,9 @@ class ReminderSettings
     #[ORM\Column(length: 5, options: ['default' => 'vi'])]
     private string $locale = 'vi';
 
+    #[ORM\Column(type: Types::BOOLEAN, options: ['default' => false])]
+    private bool $automatedEmailEnabled = false;
+
     #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE)]
     private \DateTimeImmutable $createdAt;
 
@@ -99,6 +102,16 @@ class ReminderSettings
     public function setLocale(string $locale): void
     {
         $this->locale = $locale;
+    }
+
+    public function isAutomatedEmailEnabled(): bool
+    {
+        return $this->automatedEmailEnabled;
+    }
+
+    public function setAutomatedEmailEnabled(bool $automatedEmailEnabled): void
+    {
+        $this->automatedEmailEnabled = $automatedEmailEnabled;
     }
 
     public function getCreatedAt(): \DateTimeImmutable

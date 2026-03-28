@@ -12,6 +12,7 @@ export interface ReminderSettings {
   daysSinceLastVisit: number
   messageTemplate: string
   locale: 'vi' | 'en'
+  automatedEmailEnabled: boolean
 }
 
 export interface ReminderTodayResponse {
@@ -27,6 +28,7 @@ export interface UpdateReminderSettingsRequest {
   daysSinceLastVisit?: number
   messageTemplate?: string
   locale?: 'vi' | 'en'
+  automatedEmailEnabled?: boolean
 }
 
 export interface MarkRemindedResponse {

@@ -260,6 +260,79 @@
       ]
     },
     {
+      "name": "Reminders",
+      "item": [
+        {
+          "name": "PUT Update Reminder Settings",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/reminders/settings",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "reminders", "settings"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"daysSinceLastVisit\": 30,\n  \"messageTemplate\": \"Hi {client_name}! It's been {days_since_visit} days since your last visit at {shop_name}.\",\n  \"automatedEmailEnabled\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "Update reminder settings for the authenticated user's shop. All fields are optional (partial update).\n\n**Auth:** JWT Bearer required\n\n### Request body\n| Field | Type | Required | Notes |\n|-------|------|----------|-------|\n| daysSinceLastVisit | int | ❌ | 1–365 |\n| messageTemplate | string | ❌ | max 1000 chars. Placeholders: `{client_name}`, `{shop_name}`, `{days_since_visit}`, `{client_phone}` |\n| locale | string | ❌ | `vi` (default) or `en` |\n| automatedEmailEnabled | bool | ❌ | Enable/disable automated daily reminder emails |\n\n### Responses\n- **200** — success, returns updated settings\n- **400** — validation error\n- **401** — not authenticated\n- **404** — shop not found"
+          },
+          "response": [
+            {
+              "name": "200 Success",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"daysSinceLastVisit\": 30,\n  \"messageTemplate\": \"Hi {client_name}! It's been {days_since_visit} days since your last visit at {shop_name}.\",\n  \"locale\": \"vi\",\n  \"automatedEmailEnabled\": true\n}"
+            }
+          ]
+        },
+        {
+          "name": "POST Opt-Out from Reminders",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/public/reminders/opt-out",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "public", "reminders", "opt-out"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "Unsubscribe a client from reminder emails using the opt-out token from the email footer. Idempotent — calling with a valid token when already opted out returns 200.\n\n**Auth:** None required (public, token-authenticated)\n**Rate limit:** 5 requests/minute per IP (public_booking limiter)\n\n### Request body\n| Field | Type | Required | Notes |\n|-------|------|----------|-------|\n| token | string | ✅ | 64 hex characters from the unsubscribe link |\n\n### Responses\n- **200** — success, client unsubscribed\n- **400** — invalid token format\n- **404** — unknown token\n- **429** — rate limit exceeded"
+          },
+          "response": [
+            {
+              "name": "200 Success",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"message\": \"You have been unsubscribed from reminders.\"\n}"
+            },
+            {
+              "name": "404 Invalid token",
+              "status": "Not Found",
+              "code": 404,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"code\": \"INVALID_OPT_OUT_TOKEN\",\n  \"message\": \"Invalid or unknown token.\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "Subscription",
       "item": [
         {

@@ -191,6 +191,7 @@ export function createReminderSettings(overrides: Partial<ReminderSettings> = {}
     daysSinceLastVisit: 30,
     messageTemplate: 'Chào {client_name}! Đã {days_since_visit} ngày kể từ lần cắt tóc cuối tại {shop_name}.',
     locale: 'vi',
+    automatedEmailEnabled: false,
     ...overrides,
   }
 }

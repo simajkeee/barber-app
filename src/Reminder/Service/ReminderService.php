@@ -64,6 +64,44 @@ final class ReminderService
         ];
     }
 
+    /**
+     * @return array{candidates: list<array{client: Client, candidate: ReminderCandidate}>, hasMore: bool, cursor: ?string}
+     */
+    public function getEmailReminderCandidates(Shop $shop, string $locale, int $limit, ?string $cursor): array
+    {
+        $settings = $this->reminderSettingsService->getSettings($shop, $locale);
+        $tz = new \DateTimeZone('Asia/Ho_Chi_Minh');
+        $threshold = new \DateTimeImmutable(\sprintf('-%d days', $settings->getDaysSinceLastVisit()), $tz);
+        $cooldown = new \DateTimeImmutable(\sprintf('-%d days', self::COOLDOWN_DAYS), $tz);
+        $now = new \DateTimeImmutable('now', $tz);
+
+        $results = $this->clientRepository->findEmailReminderCandidates($shop, $threshold, $cooldown, $limit, $cursor);
+
+        $hasMore = \count($results) > $limit;
+        if ($hasMore) {
+            array_pop($results);
+        }
+
+        $nextCursor = null;
+        if ($hasMore && \count($results) > 0) {
+            $nextCursor = $this->clientRepository->encodeReminderCursor($results[array_key_last($results)]);
+        }
+
+        $candidates = [];
+        foreach ($results as $client) {
+            $candidates[] = [
+                'client' => $client,
+                'candidate' => $this->buildCandidate($client, $settings->getMessageTemplate(), $shop->getName(), $now),
+            ];
+        }
+
+        return [
+            'candidates' => $candidates,
+            'hasMore' => $hasMore,
+            'cursor' => $nextCursor,
+        ];
+    }
+
     public function markReminded(Shop $shop, Uuid $clientId): Client
     {
         $client = $this->clientRepository->findByShopAndId($shop, $clientId);

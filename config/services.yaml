@@ -25,6 +25,11 @@ services:
         arguments:
             $frontendUrl: '%frontend_url%'
 
+    App\Reminder\MessageHandler\SendReminderEmailHandler:
+        arguments:
+            $frontendUrl: '%frontend_url%'
+            $fromAddress: '%mailer_sender%'
+
     App\Notification\MessageHandler\:
         resource: '../src/Notification/MessageHandler/'
         bind:

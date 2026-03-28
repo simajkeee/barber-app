@@ -374,6 +374,8 @@
       "summary": "Reminding clients who haven't visited in {days} days",
       "templateLocale": "Template language: {locale}",
       "loadError": "Failed to load reminder settings",
+      "automatedEmailLabel": "Automatically send reminder emails",
+      "automatedEmailDescription": "The system will automatically send reminder emails to clients at 8:00 AM every day.",
       "locale": {
         "vi": "Vietnamese",
         "en": "English"
@@ -397,6 +399,13 @@
       "settingsError": "Failed to load settings",
       "settingsSaved": "Reminder settings saved",
       "copied": "Message copied to clipboard"
+    },
+    "optOut": {
+      "title": "Unsubscribe from Reminders",
+      "loading": "Processing your request...",
+      "success": "You have been unsubscribed from reminder emails.",
+      "error": "This link is invalid or has expired.",
+      "backHome": "Back to homepage"
     }
   },
   "booking": {

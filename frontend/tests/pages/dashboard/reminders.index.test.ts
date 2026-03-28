@@ -1,3 +1,4 @@
+import type { ReminderCandidate } from '~/types/reminder'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { defineComponent } from 'vue'
 import { mount, flushPromises } from '@vue/test-utils'
@@ -157,6 +158,6 @@ describe('RemindersPage', () => {
 
     const list = wrapper.findComponent(ReminderListStub)
     expect(list.props('candidates')).toHaveLength(2)
-    expect(list.props('candidates').map((c: any) => c.clientId)).toEqual(['c1', 'c2'])
+    expect(list.props('candidates').map((c: ReminderCandidate) => c.clientId)).toEqual(['c1', 'c2'])
   })
 })

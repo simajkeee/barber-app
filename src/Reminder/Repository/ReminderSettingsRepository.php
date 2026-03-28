@@ -28,4 +28,20 @@ final class ReminderSettingsRepository extends ServiceEntityRepository
     {
         return $this->findOneBy(['shop' => $shop, 'locale' => $locale]);
     }
+
+    /**
+     * @return Shop[]
+     */
+    public function findShopsWithAutomatedEmailEnabled(): array
+    {
+        return $this->getEntityManager()
+            ->createQueryBuilder()
+            ->select('DISTINCT s')
+            ->from(Shop::class, 's')
+            ->innerJoin(ReminderSettings::class, 'rs', 'WITH', 'rs.shop = s')
+            ->where('rs.automatedEmailEnabled = :enabled')
+            ->setParameter('enabled', true)
+            ->getQuery()
+            ->getResult();
+    }
 }

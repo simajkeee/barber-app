@@ -47,6 +47,10 @@ subscription:
     type: attribute
     prefix: /api/v1
 
+reminder_opt_out:
+    resource: App\Reminder\Controller\ReminderOptOutController
+    type: attribute
+
 public_booking:
     resource:
         path: ../src/PublicBooking/Controller/

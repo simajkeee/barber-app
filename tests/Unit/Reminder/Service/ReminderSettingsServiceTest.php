@@ -10,6 +10,7 @@ use App\Reminder\Dto\UpdateReminderSettingsRequest;
 use App\Reminder\Entity\ReminderSettings;
 use App\Reminder\Repository\ReminderSettingsRepository;
 use App\Reminder\Service\ReminderSettingsService;
+use App\Repository\ShopRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
@@ -20,14 +21,16 @@ use PHPUnit\Framework\TestCase;
 final class ReminderSettingsServiceTest extends TestCase
 {
     private ReminderSettingsRepository&MockObject $repository;
+    private ShopRepository&MockObject $shopRepository;
     private EntityManagerInterface&MockObject $em;
     private ReminderSettingsService $sut;
 
     protected function setUp(): void
     {
         $this->repository = $this->createMock(ReminderSettingsRepository::class);
+        $this->shopRepository = $this->createMock(ShopRepository::class);
         $this->em = $this->createMock(EntityManagerInterface::class);
-        $this->sut = new ReminderSettingsService($this->repository, $this->em);
+        $this->sut = new ReminderSettingsService($this->repository, $this->shopRepository, $this->em);
     }
 
     private function createShop(): Shop
@@ -239,6 +242,7 @@ final class ReminderSettingsServiceTest extends TestCase
         self::assertSame(14, $result['daysSinceLastVisit']);
         self::assertSame('Hello', $result['messageTemplate']);
         self::assertSame('en', $result['locale']);
-        self::assertCount(3, $result);
+        self::assertFalse($result['automatedEmailEnabled']);
+        self::assertCount(4, $result);
     }
 }

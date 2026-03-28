@@ -374,6 +374,8 @@
       "summary": "Nhắc nhở khách hàng chưa ghé trong {days} ngày",
       "templateLocale": "Ngôn ngữ mẫu: {locale}",
       "loadError": "Tải cài đặt nhắc nhở thất bại",
+      "automatedEmailLabel": "Tự động gửi email nhắc hẹn",
+      "automatedEmailDescription": "Hệ thống sẽ tự động gửi email nhắc hẹn cho khách hàng vào lúc 8:00 sáng mỗi ngày.",
       "locale": {
         "vi": "Tiếng Việt",
         "en": "Tiếng Anh"
@@ -397,6 +399,13 @@
       "settingsError": "Tải cài đặt thất bại",
       "settingsSaved": "Đã lưu cài đặt nhắc nhở",
       "copied": "Đã sao chép tin nhắn"
+    },
+    "optOut": {
+      "title": "Hủy đăng ký nhắc nhở",
+      "loading": "Đang xử lý yêu cầu...",
+      "success": "Bạn đã hủy đăng ký nhận email nhắc hẹn.",
+      "error": "Link không hợp lệ hoặc đã hết hạn.",
+      "backHome": "Về trang chủ"
     }
   },
   "booking": {
