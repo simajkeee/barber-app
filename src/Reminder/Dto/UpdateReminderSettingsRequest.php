@@ -17,6 +17,8 @@ final readonly class UpdateReminderSettingsRequest
 
         #[Assert\Choice(choices: ['vi', 'en'])]
         public ?string $locale = null,
+
+        public ?bool $automatedEmailEnabled = null,
     ) {
     }
 }

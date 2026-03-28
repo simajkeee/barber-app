@@ -8,13 +8,16 @@ use App\Entity\Shop;
 use App\Reminder\Dto\UpdateReminderSettingsRequest;
 use App\Reminder\Entity\ReminderSettings;
 use App\Reminder\Repository\ReminderSettingsRepository;
+use App\Repository\ShopRepository;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Uid\Uuid;
 
 final class ReminderSettingsService
 {
     public function __construct(
         private readonly ReminderSettingsRepository $reminderSettingsRepository,
+        private readonly ShopRepository $shopRepository,
         private readonly EntityManagerInterface $em,
     ) {
     }
@@ -54,6 +57,10 @@ final class ReminderSettingsService
             $settings->setMessageTemplate($dto->messageTemplate);
         }
 
+        if (null !== $dto->automatedEmailEnabled) {
+            $settings->setAutomatedEmailEnabled($dto->automatedEmailEnabled);
+        }
+
         $this->em->flush();
 
         return $settings;
@@ -68,7 +75,30 @@ final class ReminderSettingsService
             'daysSinceLastVisit' => $settings->getDaysSinceLastVisit(),
             'messageTemplate' => $settings->getMessageTemplate(),
             'locale' => $settings->getLocale(),
+            'automatedEmailEnabled' => $settings->isAutomatedEmailEnabled(),
         ];
+    }
+
+    /**
+     * @return Shop[]
+     */
+    public function findShopsWithAutomatedEmail(?Uuid $shopId = null): array
+    {
+        if (null !== $shopId) {
+            $shop = $this->shopRepository->find($shopId);
+            if (null === $shop) {
+                return [];
+            }
+
+            $settings = $this->reminderSettingsRepository->findByShopAndLocale($shop, $shop->getOwner()->getLocale()->value);
+            if (null === $settings || !$settings->isAutomatedEmailEnabled()) {
+                return [];
+            }
+
+            return [$shop];
+        }
+
+        return $this->reminderSettingsRepository->findShopsWithAutomatedEmailEnabled();
     }
 
     private function createDefaultSettings(Shop $shop, string $locale): ReminderSettings

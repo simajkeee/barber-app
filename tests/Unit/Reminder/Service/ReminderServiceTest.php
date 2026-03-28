@@ -308,6 +308,58 @@ final class ReminderServiceTest extends TestCase
         }
     }
 
+    // --- getEmailReminderCandidates ---
+
+    #[Test]
+    public function testGetEmailReminderCandidatesReturnsCandidatesWithResolvedMessages(): void
+    {
+        $shop = $this->createShop();
+        $settings = $this->createSettings($shop);
+
+        $client = $this->createClient($shop, 'Nguyễn', 'Văn A');
+        $client->setEmail('client@example.com');
+        $client->setLastVisitAt(new \DateTimeImmutable('-45 days', new \DateTimeZone('Asia/Ho_Chi_Minh')));
+
+        $this->settingsService->method('getSettings')->with($shop, 'vi')->willReturn($settings);
+        $this->clientRepository->method('findEmailReminderCandidates')->willReturn([$client]);
+
+        $result = $this->sut->getEmailReminderCandidates($shop, 'vi', 50, null);
+
+        self::assertCount(1, $result['candidates']);
+        self::assertFalse($result['hasMore']);
+        self::assertNull($result['cursor']);
+
+        $entry = $result['candidates'][0];
+        self::assertSame($client, $entry['client']);
+        self::assertSame('Nguyễn Văn A', $entry['candidate']->clientName);
+        self::assertStringContainsString('Nguyễn Văn A', $entry['candidate']->message);
+    }
+
+    #[Test]
+    public function testGetEmailReminderCandidatesPaginates(): void
+    {
+        $shop = $this->createShop();
+        $settings = $this->createSettings($shop);
+
+        $clients = [];
+        for ($i = 0; $i < 3; ++$i) {
+            $client = $this->createClient($shop);
+            $client->setEmail('c'.$i.'@example.com');
+            $client->setLastVisitAt(new \DateTimeImmutable('-'.($i + 31).' days'));
+            $clients[] = $client;
+        }
+
+        $this->settingsService->method('getSettings')->willReturn($settings);
+        $this->clientRepository->method('findEmailReminderCandidates')->willReturn($clients);
+        $this->clientRepository->method('encodeReminderCursor')->willReturn('next-cursor');
+
+        $result = $this->sut->getEmailReminderCandidates($shop, 'vi', 2, null);
+
+        self::assertCount(2, $result['candidates']);
+        self::assertTrue($result['hasMore']);
+        self::assertSame('next-cursor', $result['cursor']);
+    }
+
     // --- serializeCandidate ---
 
     #[Test]

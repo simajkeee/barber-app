@@ -26,8 +26,10 @@ const { handleSubmit, defineField, errors } = useForm({
 const [daysSinceLastVisit, daysSinceLastVisitAttrs] = defineField('daysSinceLastVisit')
 const [messageTemplate, messageTemplateAttrs] = defineField('messageTemplate')
 
+const automatedEmailEnabled = ref(props.settings.automatedEmailEnabled)
+
 const onSubmit = handleSubmit((values) => {
-  emit('save', values)
+  emit('save', { ...values, automatedEmailEnabled: automatedEmailEnabled.value })
 })
 </script>
 
@@ -62,6 +64,27 @@ const onSubmit = handleSubmit((values) => {
           client_phone: '{client_phone}',
         }) }}
       </p>
+    </div>
+
+    <div class="flex items-start gap-3 rounded-lg border border-gray-200 bg-gray-50 p-4">
+      <button
+        type="button"
+        role="switch"
+        :aria-checked="automatedEmailEnabled"
+        :aria-label="t('reminders.settings.automatedEmailLabel')"
+        class="relative mt-0.5 inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+        :class="automatedEmailEnabled ? 'bg-primary-600' : 'bg-gray-200'"
+        @click="automatedEmailEnabled = !automatedEmailEnabled"
+      >
+        <span
+          class="pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow ring-0 transition-transform"
+          :class="automatedEmailEnabled ? 'translate-x-5' : 'translate-x-0'"
+        />
+      </button>
+      <div class="min-w-0">
+        <p class="text-sm font-medium text-gray-900">{{ t('reminders.settings.automatedEmailLabel') }}</p>
+        <p class="mt-0.5 text-xs text-gray-500">{{ t('reminders.settings.automatedEmailDescription') }}</p>
+      </div>
     </div>
 
     <UiButton type="submit" :disabled="isLoading">

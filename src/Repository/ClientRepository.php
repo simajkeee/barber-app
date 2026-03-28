@@ -43,20 +43,9 @@ final class ClientRepository extends ServiceEntityRepository
         int $limit,
         ?string $cursor,
     ): array {
-        $qb = $this->buildReminderBaseQuery($shop, $threshold, $cooldown)
-            ->orderBy('c.lastVisitAt', 'ASC')
-            ->addOrderBy('c.id', 'ASC');
+        $qb = $this->buildReminderBaseQuery($shop, $threshold, $cooldown);
 
-        if (null !== $cursor) {
-            $cursorData = $this->decodeReminderCursor($cursor);
-            $qb->andWhere('(c.lastVisitAt > :cursorVisit OR (c.lastVisitAt = :cursorVisit AND c.id > :cursorId))')
-                ->setParameter('cursorVisit', $cursorData['lastVisitAt'])
-                ->setParameter('cursorId', Uuid::fromString($cursorData['id']));
-        }
-
-        $qb->setMaxResults($limit + 1);
-
-        return $qb->getQuery()->getResult();
+        return $this->applyReminderCursorAndFetch($qb, $limit, $cursor);
     }
 
     public function countReminderCandidates(
@@ -99,6 +88,47 @@ final class ClientRepository extends ServiceEntityRepository
         }
 
         return $data;
+    }
+
+    /**
+     * @return Client[]
+     */
+    public function findEmailReminderCandidates(
+        Shop $shop,
+        \DateTimeImmutable $threshold,
+        \DateTimeImmutable $cooldown,
+        int $limit,
+        ?string $cursor,
+    ): array {
+        $qb = $this->buildReminderBaseQuery($shop, $threshold, $cooldown)
+            ->andWhere('c.email IS NOT NULL')
+            ->andWhere('c.reminderOptOut = :optOut')
+            ->setParameter('optOut', false);
+
+        return $this->applyReminderCursorAndFetch($qb, $limit, $cursor);
+    }
+
+    /**
+     * @return Client[]
+     */
+    private function applyReminderCursorAndFetch(
+        \Doctrine\ORM\QueryBuilder $qb,
+        int $limit,
+        ?string $cursor,
+    ): array {
+        $qb->orderBy('c.lastVisitAt', 'ASC')
+            ->addOrderBy('c.id', 'ASC');
+
+        if (null !== $cursor) {
+            $cursorData = $this->decodeReminderCursor($cursor);
+            $qb->andWhere('(c.lastVisitAt > :cursorVisit OR (c.lastVisitAt = :cursorVisit AND c.id > :cursorId))')
+                ->setParameter('cursorVisit', $cursorData['lastVisitAt'])
+                ->setParameter('cursorId', Uuid::fromString($cursorData['id']));
+        }
+
+        $qb->setMaxResults($limit + 1);
+
+        return $qb->getQuery()->getResult();
     }
 
     private function buildReminderBaseQuery(

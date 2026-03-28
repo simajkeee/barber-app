@@ -48,6 +48,9 @@ class Client
     #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $lastRemindedAt = null;
 
+    #[ORM\Column(type: Types::BOOLEAN, options: ['default' => false])]
+    private bool $reminderOptOut = false;
+
     #[ORM\Column(type: Types::INTEGER, options: ['default' => 0])]
     private int $visitCount = 0;
 
@@ -153,6 +156,16 @@ class Client
     public function setLastRemindedAt(?\DateTimeImmutable $lastRemindedAt): void
     {
         $this->lastRemindedAt = $lastRemindedAt;
+    }
+
+    public function isReminderOptOut(): bool
+    {
+        return $this->reminderOptOut;
+    }
+
+    public function setReminderOptOut(bool $reminderOptOut): void
+    {
+        $this->reminderOptOut = $reminderOptOut;
     }
 
     public function getVisitCount(): int

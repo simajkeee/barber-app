@@ -1,10 +1,11 @@
+import type { ReminderSettings } from '~/types/reminder'
 import { describe, it, expect, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import ReminderSettingsForm from '~/components/reminder/SettingsForm.vue'
 import { createReminderSettings } from '~/tests/factories'
 
 describe('ReminderSettingsForm', () => {
-  function mountForm(props: { settings?: any; isLoading?: boolean } = {}) {
+  function mountForm(props: { settings?: ReminderSettings; isLoading?: boolean } = {}) {
     return mount(ReminderSettingsForm, {
       props: {
         settings: props.settings ?? createReminderSettings(),
