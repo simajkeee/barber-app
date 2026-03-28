@@ -18,6 +18,9 @@ export default defineNuxtConfig({
       project: process.env.SENTRY_PROJECT,
       authToken: process.env.SENTRY_AUTH_TOKEN,
     },
+
+    org: 'test-095',
+    project: 'barber-app-frontend',
   },
 
   app: {
@@ -127,4 +130,8 @@ export default defineNuxtConfig({
   },
 
   devtools: { enabled: true },
+
+  sourcemap: {
+    client: 'hidden',
+  },
 })

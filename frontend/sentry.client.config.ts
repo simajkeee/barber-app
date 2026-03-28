@@ -1,14 +1,14 @@
-import * as Sentry from '@sentry/nuxt'
-
-const runtimeConfig = useRuntimeConfig()
+import * as Sentry from "@sentry/nuxt";
 
 Sentry.init({
-  dsn: runtimeConfig.public.sentryDsn || undefined,
-  environment: process.env.NODE_ENV,
+  dsn: "https://REDACTED_SENTRY_FRONTEND_DSN",
   tracesSampleRate: 0.1,
-  integrations: [
-    Sentry.browserTracingIntegration(),
-  ],
+  replaysSessionSampleRate: 0.1,
+  replaysOnErrorSampleRate: 1.0,
+  integrations: [Sentry.replayIntegration()],
+  sendDefaultPii: false,
+  enableLogs: true,
+  debug: false,
   ignoreErrors: [
     // Handled fetch/API errors — not bugs
     'FetchError',
@@ -19,4 +19,4 @@ Sentry.init({
     'Load failed',
     'NetworkError',
   ],
-})
+});

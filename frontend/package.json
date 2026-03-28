@@ -7,7 +7,7 @@
     "dev": "nuxt dev",
     "build": "nuxt build",
     "generate": "nuxt generate",
-    "preview": "nuxt preview",
+    "preview": "node --import ./.output/server/sentry.server.config.mjs ./.output/server/index.mjs",
     "postinstall": "nuxt prepare",
     "lint": "eslint . --fix",
     "format": "prettier --write .",
@@ -48,5 +48,8 @@
     "typescript": "^5.6.0",
     "vitest": "^4.0.18",
     "vue-tsc": "^3.2.6"
+  },
+  "overrides": {
+    "@vercel/nft": "^0.27.4"
   }
 }

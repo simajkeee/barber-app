@@ -9,6 +9,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 final readonly class OptOutRequest
 {
     public function __construct(
+        #[Assert\NotBlank]
         #[Assert\Regex(pattern: '/^[0-9a-f]{64}$/', message: 'Invalid token format.')]
         public string $token = '',
     ) {
