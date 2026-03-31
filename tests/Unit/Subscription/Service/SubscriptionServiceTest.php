@@ -454,9 +454,10 @@ final class SubscriptionServiceTest extends TestCase
         $this->subscriptionRepository->method('findOverdueTrials')->willReturn([$subscription]);
         $this->em->expects(self::once())->method('flush');
 
-        $count = $this->sut->expireOverdueTrials();
+        $result = $this->sut->expireOverdueTrials();
 
-        self::assertSame(1, $count);
+        self::assertCount(1, $result);
+        self::assertSame($subscription, $result[0]);
         self::assertSame(SubscriptionPlan::FREE, $subscription->getPlan());
         self::assertSame(SubscriptionStatus::ACTIVE, $subscription->getStatus());
         self::assertNull($subscription->getEndDate());
@@ -466,14 +467,44 @@ final class SubscriptionServiceTest extends TestCase
     }
 
     #[Test]
-    public function testExpireOverdueTrialsReturnsZeroWhenNoneOverdue(): void
+    public function testExpireOverdueTrialsReturnsEmptyArrayWhenNoneOverdue(): void
     {
         $this->subscriptionRepository->method('findOverdueTrials')->willReturn([]);
         $this->em->expects(self::once())->method('flush');
 
-        $count = $this->sut->expireOverdueTrials();
+        $result = $this->sut->expireOverdueTrials();
 
-        self::assertSame(0, $count);
+        self::assertSame([], $result);
+    }
+
+    // --- sendTrialExpiryReminders ---
+
+    #[Test]
+    public function testSendTrialExpiryRemindersMarksSentAtAndReturnsSubscriptions(): void
+    {
+        $shop = $this->createShop();
+        $subscription = $this->createSubscription($shop, SubscriptionPlan::PRO, SubscriptionStatus::ACTIVE);
+        $subscription->setTrialEndsAt(new \DateTimeImmutable('+3 days', new \DateTimeZone('Asia/Ho_Chi_Minh')));
+
+        $this->subscriptionRepository->method('findExpiringTrialsSoon')->willReturn([$subscription]);
+        $this->em->expects(self::once())->method('flush');
+
+        $result = $this->sut->sendTrialExpiryReminders();
+
+        self::assertCount(1, $result);
+        self::assertSame($subscription, $result[0]);
+        self::assertNotNull($subscription->getTrialReminderSentAt());
+    }
+
+    #[Test]
+    public function testSendTrialExpiryRemindersReturnsEmptyWhenNoneExpiring(): void
+    {
+        $this->subscriptionRepository->method('findExpiringTrialsSoon')->willReturn([]);
+        $this->em->expects(self::once())->method('flush');
+
+        $result = $this->sut->sendTrialExpiryReminders();
+
+        self::assertSame([], $result);
     }
 
     // --- activateFromPayment ---
