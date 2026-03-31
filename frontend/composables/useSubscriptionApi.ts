@@ -19,5 +19,9 @@ export function useSubscriptionApi() {
     })
   }
 
-  return { getSubscription, upgradeRequest }
+  async function checkout(): Promise<{ payUrl: string }> {
+    return api<{ payUrl: string }>('/subscription/checkout', { method: 'POST' })
+  }
+
+  return { getSubscription, upgradeRequest, checkout }
 }

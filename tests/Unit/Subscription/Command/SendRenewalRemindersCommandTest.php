@@ -172,4 +172,18 @@ final class SendRenewalRemindersCommandTest extends TestCase
         self::assertSame(Command::SUCCESS, $this->tester->getStatusCode());
         self::assertStringContainsString('Sent 0 renewal reminder(s)', $this->tester->getDisplay());
     }
+
+    #[Test]
+    public function testAlreadyRemindedSubscriptionsAreNotDispatched(): void
+    {
+        // The repository query already filters renewalReminderSentAt IS NULL,
+        // so already-reminded subscriptions never appear in the result set.
+        $this->subscriptionRepository->method('findExpiringInSevenDays')->willReturn([]);
+        $this->messageBus->expects(self::never())->method('dispatch');
+        $this->em->expects(self::never())->method('flush');
+
+        $this->tester->execute([]);
+
+        self::assertSame(Command::SUCCESS, $this->tester->getStatusCode());
+    }
 }

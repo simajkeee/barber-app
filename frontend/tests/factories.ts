@@ -281,6 +281,13 @@ export function createSubscriptionResponse(
     status: 'active',
     startDate: '2026-03-01T00:00:00+07:00',
     endDate: null,
+    daysRemaining: null,
+    isExpiringSoon: false,
+    trial: {
+      isInTrial: false,
+      trialEndsAt: null,
+      trialDaysRemaining: null,
+    },
     usage: {
       appointmentsThisMonth: 18,
       appointmentLimit: 50,

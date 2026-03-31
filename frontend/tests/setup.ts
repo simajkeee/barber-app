@@ -127,6 +127,7 @@ vi.stubGlobal('useI18n', () => ({
 vi.stubGlobal('useSwitchLocalePath', () => (code: string) => `/${code}`)
 vi.stubGlobal('useLocalePath', () => (path: string) => path)
 vi.stubGlobal('useRoute', () => ({ params: {}, query: {} }))
+vi.stubGlobal('useRouter', () => ({ replace: vi.fn(), push: vi.fn() }))
 vi.stubGlobal('defineNuxtRouteMiddleware', (fn: Function) => fn)
 vi.stubGlobal('$fetch', vi.fn())
 

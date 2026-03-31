@@ -502,13 +502,19 @@
       "messagePlaceholder": "Tell us about your shop and how you currently manage appointments...",
       "submitButton": "Submit Request",
       "successMessage": "Thanks! We'll be in touch within 24 hours.",
-      "alreadySubmitted": "You already have a pending request. We'll contact you soon."
+      "alreadySubmitted": "You already have a pending request. We'll contact you soon.",
+      "cta": "Upgrade to PRO – 299,000 ₫/month",
+      "renewCta": "Renew PRO",
+      "success": "Payment successful! Welcome to BarberPro PRO.",
+      "processing": "Processing payment... Page will update shortly.",
+      "expiringSoon": "Your PRO plan expires on {date}. Renew to avoid interruption."
     },
     "error": {
       "loadFailed": "Failed to load subscription information",
       "retry": "Try Again",
       "contactSupport": "Contact Support",
-      "setupInProgress": "Your subscription is being set up. Please refresh the page in a moment."
+      "setupInProgress": "Your subscription is being set up. Please refresh the page in a moment.",
+      "checkoutFailed": "Could not initiate payment. Please try again."
     }
   },
   "common": {

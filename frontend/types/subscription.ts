@@ -7,12 +7,20 @@ export interface SubscriptionUsage {
   limitReached: boolean
 }
 
+export interface SubscriptionTrial {
+  isInTrial: boolean
+  trialEndsAt: string | null
+  trialDaysRemaining: number | null
+}
+
 export interface SubscriptionResponse {
   id: string
   plan: SubscriptionPlan
   status: SubscriptionStatus
   startDate: string
   endDate: string | null
-  daysRemaining?: number
+  daysRemaining: number | null
+  isExpiringSoon: boolean
+  trial: SubscriptionTrial
   usage: SubscriptionUsage
 }

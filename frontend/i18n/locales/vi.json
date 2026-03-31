@@ -502,13 +502,19 @@
       "messagePlaceholder": "Giới thiệu về tiệm của bạn và cách bạn đang quản lý lịch hẹn...",
       "submitButton": "Gửi yêu cầu",
       "successMessage": "Cảm ơn! Chúng tôi sẽ liên hệ với bạn trong vòng 24 giờ.",
-      "alreadySubmitted": "Bạn đã có yêu cầu đang chờ xử lý. Chúng tôi sẽ sớm liên hệ với bạn."
+      "alreadySubmitted": "Bạn đã có yêu cầu đang chờ xử lý. Chúng tôi sẽ sớm liên hệ với bạn.",
+      "cta": "Nâng cấp lên PRO – 299.000 ₫/tháng",
+      "renewCta": "Gia hạn PRO",
+      "success": "Thanh toán thành công! Chào mừng bạn đến với BarberPro PRO.",
+      "processing": "Đang xử lý thanh toán... Trang sẽ tự động cập nhật.",
+      "expiringSoon": "Gói PRO của bạn hết hạn vào {date}. Gia hạn để không bị gián đoạn."
     },
     "error": {
       "loadFailed": "Tải thông tin gói dịch vụ thất bại",
       "retry": "Thử lại",
       "contactSupport": "Liên hệ hỗ trợ",
-      "setupInProgress": "Gói dịch vụ của bạn đang được thiết lập. Vui lòng tải lại trang sau giây lát."
+      "setupInProgress": "Gói dịch vụ của bạn đang được thiết lập. Vui lòng tải lại trang sau giây lát.",
+      "checkoutFailed": "Không thể khởi tạo thanh toán. Vui lòng thử lại."
     }
   },
   "common": {

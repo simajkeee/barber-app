@@ -47,8 +47,8 @@ final readonly class GetSubscriptionController
         $endDate = $subscription->getEndDate();
         $daysRemaining = null;
         if (null !== $endDate) {
-            $interval = $now->diff($endDate);
-            $daysRemaining = 0 === $interval->invert ? (int) $interval->days : 0;
+            $secondsRemaining = $endDate->getTimestamp() - $now->getTimestamp();
+            $daysRemaining = $secondsRemaining > 0 ? (int) ceil($secondsRemaining / 86400) : 0;
         }
         $isExpiringSoon = null !== $daysRemaining && $daysRemaining <= 7;
 

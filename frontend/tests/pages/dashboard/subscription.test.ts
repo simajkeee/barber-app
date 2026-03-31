@@ -8,6 +8,8 @@ const mockGetSubscription = vi.fn()
 
 vi.stubGlobal('useSubscriptionApi', () => ({
   getSubscription: mockGetSubscription,
+  checkout: vi.fn(),
+  upgradeRequest: vi.fn(),
 }))
 
 const { default: SubscriptionPage } = await import('~/pages/dashboard/subscription/index.vue')
@@ -24,7 +26,7 @@ const UsageCardStub = {
 
 const UpgradePromptStub = {
   template: '<div class="upgrade-prompt" />',
-  props: ['plan'],
+  props: ['plan', 'status', 'isExpiringSoon'],
 }
 
 const pageStubs = {
@@ -79,14 +81,16 @@ describe('SubscriptionPage', () => {
       expect(usageCard.props('limitReached')).toBe(false)
     })
 
-    it('renders UpgradePrompt with plan', async () => {
-      const sub = createSubscriptionResponse({ plan: 'free' })
+    it('renders UpgradePrompt with plan, status, and isExpiringSoon', async () => {
+      const sub = createSubscriptionResponse({ plan: 'free', status: 'active', isExpiringSoon: false })
       mockGetSubscription.mockResolvedValue(sub)
       const wrapper = mountPage()
       await flushPromises()
       const prompt = wrapper.findComponent(UpgradePromptStub)
       expect(prompt.exists()).toBe(true)
       expect(prompt.props('plan')).toBe('free')
+      expect(prompt.props('status')).toBe('active')
+      expect(prompt.props('isExpiringSoon')).toBe(false)
     })
 
     it('does not show error alert on success', async () => {
