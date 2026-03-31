@@ -1,16 +1,17 @@
-<!DOCTYPE html>
-<html lang="vi">
-<body style="font-family: sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-  <h2>Xác nhận lịch hẹn</h2>
-  <p>Xin chào {{ clientFirstName }},</p>
+{% extends 'emails/layout.html.twig' %}
+
+{% block title %}Xác nhận lịch hẹn{% endblock %}
+
+{% block content %}
+  <h2 style="margin:0 0 16px;font-size:20px;color:#1e3a5f;">Xác nhận lịch hẹn</h2>
+  <p>Xin chào <strong>{{ clientFirstName }}</strong>,</p>
   <p>Lịch hẹn của bạn đã được xác nhận. Chi tiết như sau:</p>
-  <table style="width: 100%; border-collapse: collapse;">
-    <tr><td style="padding: 6px 0; color: #666;">Dịch vụ</td><td>{{ serviceName }} ({{ durationMinutes }} phút)</td></tr>
-    <tr><td style="padding: 6px 0; color: #666;">Thời gian</td><td>{{ startTime|date('H:i, D, d/m/Y', false) }}</td></tr>
-    <tr><td style="padding: 6px 0; color: #666;">Tiệm</td><td>{{ shopName }}</td></tr>
-    <tr><td style="padding: 6px 0; color: #666;">Địa chỉ</td><td>{{ shopAddress }}</td></tr>
-    <tr><td style="padding: 6px 0; color: #666;">Điện thoại</td><td>{{ shopPhone }}</td></tr>
+  <table style="width:100%;border-collapse:collapse;">
+    <tr><td style="padding:6px 0;color:#6b7280;">Dịch vụ</td><td>{{ serviceName }} ({{ durationMinutes }} phút)</td></tr>
+    <tr><td style="padding:6px 0;color:#6b7280;">Thời gian</td><td>{{ startTime|date('H:i, D, d/m/Y') }}</td></tr>
+    <tr><td style="padding:6px 0;color:#6b7280;">Tiệm</td><td>{{ shopName }}</td></tr>
+    {% if shopAddress %}<tr><td style="padding:6px 0;color:#6b7280;">Địa chỉ</td><td>{{ shopAddress }}</td></tr>{% endif %}
+    {% if shopPhone %}<tr><td style="padding:6px 0;color:#6b7280;">Điện thoại</td><td>{{ shopPhone }}</td></tr>{% endif %}
   </table>
-  <p style="margin-top: 24px;">Cảm ơn bạn đã đặt lịch tại {{ shopName }}!</p>
-</body>
-</html>
+  <p style="margin-top:24px;">Cảm ơn bạn đã đặt lịch tại {{ shopName }}!</p>
+{% endblock %}

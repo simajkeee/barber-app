@@ -92,6 +92,7 @@ final class PasswordResetServiceTest extends TestCase
                 self::assertSame(64, \strlen($message->rawToken));
                 self::assertTrue(ctype_xdigit($message->rawToken));
                 self::assertSame('vi', $message->locale);
+                self::assertSame('John', $message->firstName);
 
                 return true;
             }))

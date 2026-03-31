@@ -12,6 +12,7 @@ final readonly class SendPasswordResetEmailMessage implements AsyncMessageInterf
         public string $email,
         public string $rawToken,
         public string $locale,
+        public string $firstName = '',
     ) {
     }
 }

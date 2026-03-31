@@ -50,6 +50,7 @@ final class PasswordResetService
             $user->getEmail(),
             $rawToken,
             $user->getLocale()->value,
+            $user->getFirstName(),
         ));
     }
 

@@ -1,14 +1,15 @@
-<!DOCTYPE html>
-<html lang="vi">
-<body style="font-family: sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-  <h2>Bạn có một lịch hẹn mới!</h2>
-  <table style="width: 100%; border-collapse: collapse;">
-    <tr><td style="padding: 6px 0; color: #666;">Khách hàng</td><td>{{ clientFullName }}</td></tr>
-    <tr><td style="padding: 6px 0; color: #666;">Điện thoại</td><td>{{ clientPhone }}</td></tr>
-    <tr><td style="padding: 6px 0; color: #666;">Dịch vụ</td><td>{{ serviceName }} ({{ durationMinutes }} phút)</td></tr>
-    <tr><td style="padding: 6px 0; color: #666;">Thời gian</td><td>{{ startTime|date('H:i, D, d/m/Y', false) }}</td></tr>
-    <tr><td style="padding: 6px 0; color: #666;">Giá</td><td>{{ price|number_format(0, ',', '.') }}đ</td></tr>
-    {% if notes %}<tr><td style="padding: 6px 0; color: #666;">Ghi chú</td><td>{{ notes }}</td></tr>{% endif %}
+{% extends 'emails/layout.html.twig' %}
+
+{% block title %}Lịch hẹn mới{% endblock %}
+
+{% block content %}
+  <h2 style="margin:0 0 16px;font-size:20px;color:#1e3a5f;">Bạn có một lịch hẹn mới!</h2>
+  <table style="width:100%;border-collapse:collapse;">
+    <tr><td style="padding:6px 0;color:#6b7280;">Khách hàng</td><td>{{ clientFullName }}</td></tr>
+    <tr><td style="padding:6px 0;color:#6b7280;">Điện thoại</td><td>{{ clientPhone }}</td></tr>
+    <tr><td style="padding:6px 0;color:#6b7280;">Dịch vụ</td><td>{{ serviceName }} ({{ durationMinutes }} phút)</td></tr>
+    <tr><td style="padding:6px 0;color:#6b7280;">Thời gian</td><td>{{ startTime|date('H:i, D, d/m/Y') }}</td></tr>
+    <tr><td style="padding:6px 0;color:#6b7280;">Giá</td><td>{{ price|number_format(0, ',', '.') }}đ</td></tr>
+    {% if notes %}<tr><td style="padding:6px 0;color:#6b7280;">Ghi chú</td><td>{{ notes }}</td></tr>{% endif %}
   </table>
-</body>
-</html>
+{% endblock %}
