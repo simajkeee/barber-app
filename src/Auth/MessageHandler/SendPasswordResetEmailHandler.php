@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Auth\MessageHandler;
 
 use App\Auth\Message\SendPasswordResetEmailMessage;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
-use Symfony\Component\Mime\Email;
 
 #[AsMessageHandler]
 final readonly class SendPasswordResetEmailHandler
@@ -27,13 +27,22 @@ final readonly class SendPasswordResetEmailHandler
             $message->rawToken,
         );
 
-        $email = (new Email())
+        $locale = in_array($message->locale, ['vi', 'en'], true) ? $message->locale : 'vi';
+
+        $subject = $locale === 'vi'
+            ? 'Đặt lại mật khẩu BarberPro'
+            : 'Reset your BarberPro password';
+
+        $email = (new TemplatedEmail())
             ->to($message->email)
-            ->subject('Password Reset Request')
-            ->text(sprintf(
-                "You requested a password reset.\n\nClick the link below to set a new password:\n%s\n\nThis link expires in 1 hour.\n\nIf you did not request this, please ignore this email.",
-                $resetLink,
-            ));
+            ->subject($subject)
+            ->htmlTemplate("emails/password_reset.{$locale}.html.twig")
+            ->context([
+                'firstName'        => $message->firstName,
+                'resetUrl'         => $resetLink,
+                'expiresInMinutes' => 60,
+                'locale'           => $locale,
+            ]);
 
         $this->mailer->send($email);
     }

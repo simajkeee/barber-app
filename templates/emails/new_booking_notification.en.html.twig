@@ -1,14 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<body style="font-family: sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-  <h2>You have a new appointment!</h2>
-  <table style="width: 100%; border-collapse: collapse;">
-    <tr><td style="padding: 6px 0; color: #666;">Client</td><td>{{ clientFullName }}</td></tr>
-    <tr><td style="padding: 6px 0; color: #666;">Phone</td><td>{{ clientPhone }}</td></tr>
-    <tr><td style="padding: 6px 0; color: #666;">Service</td><td>{{ serviceName }} ({{ durationMinutes }} minutes)</td></tr>
-    <tr><td style="padding: 6px 0; color: #666;">Time</td><td>{{ startTime|date('H:i, l, d/m/Y') }}</td></tr>
-    <tr><td style="padding: 6px 0; color: #666;">Price</td><td>{{ price|number_format(0, ',', '.') }}đ</td></tr>
-    {% if notes %}<tr><td style="padding: 6px 0; color: #666;">Notes</td><td>{{ notes }}</td></tr>{% endif %}
+{% extends 'emails/layout.html.twig' %}
+
+{% block title %}New Appointment{% endblock %}
+
+{% block content %}
+  <h2 style="margin:0 0 16px;font-size:20px;color:#1e3a5f;">You have a new appointment!</h2>
+  <table style="width:100%;border-collapse:collapse;">
+    <tr><td style="padding:6px 0;color:#6b7280;">Client</td><td>{{ clientFullName }}</td></tr>
+    <tr><td style="padding:6px 0;color:#6b7280;">Phone</td><td>{{ clientPhone }}</td></tr>
+    <tr><td style="padding:6px 0;color:#6b7280;">Service</td><td>{{ serviceName }} ({{ durationMinutes }} minutes)</td></tr>
+    <tr><td style="padding:6px 0;color:#6b7280;">Time</td><td>{{ startTime|date('H:i, l, d/m/Y') }}</td></tr>
+    <tr><td style="padding:6px 0;color:#6b7280;">Price</td><td>{{ price|number_format(0, ',', '.') }}đ</td></tr>
+    {% if notes %}<tr><td style="padding:6px 0;color:#6b7280;">Notes</td><td>{{ notes }}</td></tr>{% endif %}
   </table>
-</body>
-</html>
+{% endblock %}

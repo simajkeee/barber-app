@@ -1,16 +1,19 @@
-<!DOCTYPE html>
-<html lang="vi">
-<body style="font-family: sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-  <h2>Lịch hẹn của bạn đã bị hủy</h2>
-  <p>Xin chào {{ clientFirstName }},</p>
+{% extends 'emails/layout.html.twig' %}
+
+{% block title %}Lịch hẹn đã bị hủy{% endblock %}
+
+{% block content %}
+  <h2 style="margin:0 0 16px;font-size:20px;color:#1e3a5f;">Lịch hẹn của bạn đã bị hủy</h2>
+  <p>Xin chào <strong>{{ clientFirstName }}</strong>,</p>
   <p>Rất tiếc, lịch hẹn sau đây đã bị hủy:</p>
-  <table style="width: 100%; border-collapse: collapse;">
-    <tr><td style="padding: 6px 0; color: #666;">Dịch vụ</td><td>{{ serviceName }}</td></tr>
-    <tr><td style="padding: 6px 0; color: #666;">Thời gian</td><td>{{ startTime|date('H:i, D, d/m/Y') }}</td></tr>
-    <tr><td style="padding: 6px 0; color: #666;">Tiệm</td><td>{{ shopName }}</td></tr>
+  <table style="width:100%;border-collapse:collapse;">
+    <tr><td style="padding:6px 0;color:#6b7280;">Dịch vụ</td><td>{{ serviceName }}</td></tr>
+    <tr><td style="padding:6px 0;color:#6b7280;">Thời gian</td><td>{{ startTime|date('H:i, D, d/m/Y') }}</td></tr>
+    <tr><td style="padding:6px 0;color:#6b7280;">Tiệm</td><td>{{ shopName }}</td></tr>
   </table>
-  <p style="margin-top: 24px;">
-    Vui lòng liên hệ chúng tôi để đặt lịch lại: <strong>{{ shopPhone }}</strong>
-  </p>
-</body>
-</html>
+  {% if shopPhone %}
+    <p style="margin-top:24px;">
+      Vui lòng liên hệ chúng tôi để đặt lịch lại: <strong>{{ shopPhone }}</strong>
+    </p>
+  {% endif %}
+{% endblock %}

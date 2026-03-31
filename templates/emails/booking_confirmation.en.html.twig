@@ -1,16 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<body style="font-family: sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-  <h2>Booking Confirmation</h2>
-  <p>Hello {{ clientFirstName }},</p>
+{% extends 'emails/layout.html.twig' %}
+
+{% block title %}Booking Confirmation{% endblock %}
+
+{% block content %}
+  <h2 style="margin:0 0 16px;font-size:20px;color:#1e3a5f;">Booking Confirmation</h2>
+  <p>Hello <strong>{{ clientFirstName }}</strong>,</p>
   <p>Your appointment has been confirmed. Here are the details:</p>
-  <table style="width: 100%; border-collapse: collapse;">
-    <tr><td style="padding: 6px 0; color: #666;">Service</td><td>{{ serviceName }} ({{ durationMinutes }} minutes)</td></tr>
-    <tr><td style="padding: 6px 0; color: #666;">Time</td><td>{{ startTime|date('H:i, l, d/m/Y') }}</td></tr>
-    <tr><td style="padding: 6px 0; color: #666;">Shop</td><td>{{ shopName }}</td></tr>
-    <tr><td style="padding: 6px 0; color: #666;">Address</td><td>{{ shopAddress }}</td></tr>
-    <tr><td style="padding: 6px 0; color: #666;">Phone</td><td>{{ shopPhone }}</td></tr>
+  <table style="width:100%;border-collapse:collapse;">
+    <tr><td style="padding:6px 0;color:#6b7280;">Service</td><td>{{ serviceName }} ({{ durationMinutes }} minutes)</td></tr>
+    <tr><td style="padding:6px 0;color:#6b7280;">Time</td><td>{{ startTime|date('H:i, l, d/m/Y') }}</td></tr>
+    <tr><td style="padding:6px 0;color:#6b7280;">Shop</td><td>{{ shopName }}</td></tr>
+    {% if shopAddress %}<tr><td style="padding:6px 0;color:#6b7280;">Address</td><td>{{ shopAddress }}</td></tr>{% endif %}
+    {% if shopPhone %}<tr><td style="padding:6px 0;color:#6b7280;">Phone</td><td>{{ shopPhone }}</td></tr>{% endif %}
   </table>
-  <p style="margin-top: 24px;">Thank you for booking at {{ shopName }}!</p>
-</body>
-</html>
+  <p style="margin-top:24px;">Thank you for booking at {{ shopName }}!</p>
+{% endblock %}
