@@ -17,6 +17,7 @@ use Symfony\Component\Uid\Uuid;
 #[ORM\Index(name: 'idx_subscriptions_status_end', columns: ['status', 'end_date'])]
 #[ORM\Index(name: 'idx_subscriptions_plan_reset', columns: ['plan', 'count_reset_at'])]
 #[ORM\Index(name: 'idx_subscriptions_trial_ends_at', columns: ['trial_ends_at'], options: ['where' => 'trial_ends_at IS NOT NULL'])]
+#[ORM\Index(name: 'idx_subscriptions_trial_reminder', columns: ['trial_ends_at'], options: ['where' => 'trial_ends_at IS NOT NULL AND trial_reminder_sent_at IS NULL'])]
 #[ORM\HasLifecycleCallbacks]
 class Subscription
 {
@@ -48,6 +49,9 @@ class Subscription
 
     #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE)]
     private \DateTimeImmutable $countResetAt;
+
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $trialReminderSentAt = null;
 
     #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE)]
     private \DateTimeImmutable $createdAt;
@@ -170,5 +174,15 @@ class Subscription
     public function getUpdatedAt(): \DateTimeImmutable
     {
         return $this->updatedAt;
+    }
+
+    public function getTrialReminderSentAt(): ?\DateTimeImmutable
+    {
+        return $this->trialReminderSentAt;
+    }
+
+    public function setTrialReminderSentAt(?\DateTimeImmutable $trialReminderSentAt): void
+    {
+        $this->trialReminderSentAt = $trialReminderSentAt;
     }
 }

@@ -8,8 +8,8 @@ use App\Auth\Enum\UserLocale;
 use App\Entity\Shop;
 use App\Entity\Subscription;
 use App\Entity\User;
-use App\Subscription\Command\ExpireTrialsCommand;
-use App\Subscription\Message\SendTrialEndedEmailMessage;
+use App\Subscription\Command\SendTrialRemindersCommand;
+use App\Subscription\Message\SendTrialEndingEmailMessage;
 use App\Subscription\Service\SubscriptionService;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
@@ -20,8 +20,8 @@ use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-#[CoversClass(ExpireTrialsCommand::class)]
-final class ExpireTrialsCommandTest extends TestCase
+#[CoversClass(SendTrialRemindersCommand::class)]
+final class SendTrialRemindersCommandTest extends TestCase
 {
     private SubscriptionService&MockObject $subscriptionService;
     private MessageBusInterface&MockObject $bus;
@@ -31,19 +31,19 @@ final class ExpireTrialsCommandTest extends TestCase
     {
         $this->subscriptionService = $this->createMock(SubscriptionService::class);
         $this->bus = $this->createMock(MessageBusInterface::class);
-        $command = new ExpireTrialsCommand($this->subscriptionService, $this->bus, 'https://example.com');
+        $command = new SendTrialRemindersCommand($this->subscriptionService, $this->bus, 'https://example.com');
         $this->commandTester = new CommandTester($command);
     }
 
     #[Test]
-    public function testCommandDispatchesEmailForEachExpiredTrial(): void
+    public function testCommandDispatchesReminderForEachExpiring(): void
     {
-        $sub1 = $this->createSubscriptionWithOwner('john@test.com', 'John', 'Shop A', UserLocale::EN);
-        $sub2 = $this->createSubscriptionWithOwner('linh@test.com', 'Linh', 'Shop B', UserLocale::VI);
+        $trialEndsAt = new \DateTimeImmutable('+3 days');
+        $sub = $this->createSubscriptionWithOwner('john@test.com', 'John', 'Shop A', UserLocale::EN, $trialEndsAt);
 
         $this->subscriptionService->expects(self::once())
-            ->method('expireOverdueTrials')
-            ->willReturn([$sub1, $sub2]);
+            ->method('sendTrialExpiryReminders')
+            ->willReturn([$sub]);
 
         $dispatched = [];
         $this->bus->method('dispatch')
@@ -56,19 +56,21 @@ final class ExpireTrialsCommandTest extends TestCase
         $exitCode = $this->commandTester->execute([]);
 
         self::assertSame(Command::SUCCESS, $exitCode);
-        self::assertCount(2, $dispatched);
-        self::assertInstanceOf(SendTrialEndedEmailMessage::class, $dispatched[0]);
+        self::assertCount(1, $dispatched);
+        self::assertInstanceOf(SendTrialEndingEmailMessage::class, $dispatched[0]);
         self::assertSame('john@test.com', $dispatched[0]->ownerEmail);
+        self::assertSame('John', $dispatched[0]->ownerFirstName);
+        self::assertSame('Shop A', $dispatched[0]->shopName);
+        self::assertSame($trialEndsAt, $dispatched[0]->trialEndsAtUtc);
+        self::assertSame('en', $dispatched[0]->locale);
         self::assertSame('https://example.com/dashboard/subscription', $dispatched[0]->upgradeUrl);
-        self::assertInstanceOf(SendTrialEndedEmailMessage::class, $dispatched[1]);
-        self::assertSame('linh@test.com', $dispatched[1]->ownerEmail);
     }
 
     #[Test]
-    public function testCommandOutputsCorrectCount(): void
+    public function testCommandOutputsZeroWhenNoExpiring(): void
     {
         $this->subscriptionService->expects(self::once())
-            ->method('expireOverdueTrials')
+            ->method('sendTrialExpiryReminders')
             ->willReturn([]);
 
         $exitCode = $this->commandTester->execute([]);
@@ -77,8 +79,13 @@ final class ExpireTrialsCommandTest extends TestCase
         self::assertStringContainsString('0', $this->commandTester->getDisplay());
     }
 
-    private function createSubscriptionWithOwner(string $email, string $firstName, string $shopName, UserLocale $locale): Subscription&MockObject
-    {
+    private function createSubscriptionWithOwner(
+        string $email,
+        string $firstName,
+        string $shopName,
+        UserLocale $locale,
+        \DateTimeImmutable $trialEndsAt,
+    ): Subscription&MockObject {
         $user = $this->createMock(User::class);
         $user->method('getEmail')->willReturn($email);
         $user->method('getFirstName')->willReturn($firstName);
@@ -90,6 +97,7 @@ final class ExpireTrialsCommandTest extends TestCase
 
         $subscription = $this->createMock(Subscription::class);
         $subscription->method('getShop')->willReturn($shop);
+        $subscription->method('getTrialEndsAt')->willReturn($trialEndsAt);
 
         return $subscription;
     }

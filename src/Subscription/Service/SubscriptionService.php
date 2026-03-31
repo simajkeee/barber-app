@@ -168,7 +168,10 @@ final class SubscriptionService
         return \count($overdue);
     }
 
-    public function expireOverdueTrials(): int
+    /**
+     * @return Subscription[]
+     */
+    public function expireOverdueTrials(): array
     {
         $tz = new \DateTimeZone(self::TZ_NAME);
         $now = new \DateTimeImmutable('now', $tz);
@@ -185,7 +188,28 @@ final class SubscriptionService
 
         $this->em->flush();
 
-        return \count($overdue);
+        return $overdue;
+    }
+
+    /**
+     * Finds subscriptions expiring ~3 days from now, marks them as reminded,
+     * and returns them for email dispatch.
+     *
+     * @return Subscription[]
+     */
+    public function sendTrialExpiryReminders(): array
+    {
+        $tz = new \DateTimeZone(self::TZ_NAME);
+        $now = new \DateTimeImmutable('now', $tz);
+
+        $expiring = $this->subscriptionRepository->findExpiringTrialsSoon($now);
+        foreach ($expiring as $subscription) {
+            $subscription->setTrialReminderSentAt($now);
+        }
+
+        $this->em->flush();
+
+        return $expiring;
     }
 
     public function resetMonthlyCounters(): int

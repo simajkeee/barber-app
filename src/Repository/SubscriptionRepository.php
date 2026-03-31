@@ -48,6 +48,9 @@ final class SubscriptionRepository extends ServiceEntityRepository
     public function findOverdueTrials(\DateTimeImmutable $now): array
     {
         return $this->createQueryBuilder('s')
+            ->select('s', 'shop', 'u')
+            ->join('s.shop', 'shop')
+            ->join('shop.owner', 'u')
             ->where('s.trialEndsAt IS NOT NULL')
             ->andWhere('s.trialEndsAt < :now')
             ->andWhere('s.endDate IS NULL')
@@ -56,6 +59,34 @@ final class SubscriptionRepository extends ServiceEntityRepository
             ->setParameter('plan', SubscriptionPlan::PRO)
             ->setParameter('status', SubscriptionStatus::ACTIVE)
             ->setParameter('now', $now)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Returns PRO trial subscriptions expiring in ~3 days (window: +2d to +4d)
+     * that have not yet received a reminder email.
+     *
+     * @return Subscription[]
+     */
+    public function findExpiringTrialsSoon(\DateTimeImmutable $now): array
+    {
+        $windowStart = $now->modify('+2 days');
+        $windowEnd = $now->modify('+4 days');
+
+        return $this->createQueryBuilder('s')
+            ->select('s', 'shop', 'u')
+            ->join('s.shop', 'shop')
+            ->join('shop.owner', 'u')
+            ->where('s.trialEndsAt IS NOT NULL')
+            ->andWhere('s.trialEndsAt >= :windowStart')
+            ->andWhere('s.trialEndsAt <= :windowEnd')
+            ->andWhere('s.plan = :pro')
+            ->andWhere('s.endDate IS NULL')
+            ->andWhere('s.trialReminderSentAt IS NULL')
+            ->setParameter('windowStart', $windowStart)
+            ->setParameter('windowEnd', $windowEnd)
+            ->setParameter('pro', SubscriptionPlan::PRO)
             ->getQuery()
             ->getResult();
     }

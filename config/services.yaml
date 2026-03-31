@@ -35,6 +35,19 @@ services:
         bind:
             $fromAddress: '%mailer_sender%'
 
+    App\Subscription\Command\ExpireTrialsCommand:
+        arguments:
+            $frontendUrl: '%frontend_url%'
+
+    App\Subscription\Command\SendTrialRemindersCommand:
+        arguments:
+            $frontendUrl: '%frontend_url%'
+
+    App\Subscription\MessageHandler\:
+        resource: '../src/Subscription/MessageHandler/'
+        bind:
+            $fromAddress: '%mailer_sender%'
+
     App\Common\Service\CaptchaValidatorInterface:
         alias: App\Common\Service\CaptchaValidatorService
 
