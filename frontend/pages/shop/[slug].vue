@@ -13,7 +13,7 @@ const api = usePublicBookingApi()
 const slug = computed(() => route.params.slug as string)
 
 const { data: shop, pending: loading, error: shopError, refresh: refreshShop } = useAsyncData<PublicShopInfo>(
-  `shop-${slug.value}`,
+  () => `shop-${slug.value}`,
   async () => {
     try {
       return await api.getShopInfo(slug.value)
@@ -26,6 +26,8 @@ const { data: shop, pending: loading, error: shopError, refresh: refreshShop } =
   },
   { default: () => null },
 )
+
+onMounted(() => refreshShop())
 
 const notFound = computed(() => shopError.value?.statusCode === 404)
 const shopUnavailable = computed(() => !!shopError.value && !notFound.value)

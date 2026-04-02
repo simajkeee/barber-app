@@ -420,7 +420,8 @@
       "datetime": "Date & Time",
       "details": "Your Info",
       "confirm": "Confirm",
-      "duration": "Duration"
+      "duration": "Duration",
+      "noServices": "This shop has no services yet. Please contact them directly to book an appointment."
     },
     "date": {
       "select": "Select a date",

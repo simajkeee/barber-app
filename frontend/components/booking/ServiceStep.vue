@@ -16,7 +16,12 @@ const { formatPrice, formatDuration } = useFormatters()
 <template>
   <div>
     <h2 class="text-lg font-semibold text-gray-900 mb-4">{{ $t('booking.steps.service') }}</h2>
-    <div class="grid gap-3">
+
+    <p v-if="services.length === 0" class="text-sm text-gray-500 text-center py-6">
+      {{ $t('booking.steps.noServices') }}
+    </p>
+
+    <div v-else class="grid gap-3">
       <button
         v-for="service in services"
         :key="service.id"

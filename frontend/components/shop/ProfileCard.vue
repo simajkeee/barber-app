@@ -6,11 +6,17 @@ defineProps<{
 }>()
 
 const { t } = useI18n()
+const config = useRuntimeConfig()
+const localePath = useLocalePath()
 
 const copied = ref(false)
 
-async function copySlug(slug: string) {
-  await navigator.clipboard.writeText(slug)
+function bookingUrl(slug: string) {
+  return `${config.public.siteUrl}${localePath(`/shop/${slug}`)}`
+}
+
+async function copyBookingLink(slug: string) {
+  await navigator.clipboard.writeText(bookingUrl(slug))
   copied.value = true
   setTimeout(() => { copied.value = false }, 2000)
 }
@@ -49,11 +55,11 @@ async function copySlug(slug: string) {
       <div>
         <dt class="text-xs font-medium uppercase text-gray-500">{{ t('shop.profile.slug') }}</dt>
         <dd class="mt-0.5 flex items-center gap-2 text-sm text-gray-900">
-          <code class="rounded bg-gray-100 px-2 py-0.5 text-xs">{{ shop.slug }}</code>
+          <code class="rounded bg-gray-100 px-2 py-0.5 text-xs">{{ bookingUrl(shop.slug) }}</code>
           <button
             type="button"
             class="text-xs text-primary-600 hover:text-primary-700"
-            @click="copySlug(shop.slug)"
+            @click="copyBookingLink(shop.slug)"
           >
             {{ copied ? t('common.copied') : t('common.copy') }}
           </button>

@@ -45,6 +45,7 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
+    apiBase: process.env.NUXT_API_BASE || 'http://localhost:80/api/v1',
     public: {
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000',
       apiBase: process.env.NUXT_PUBLIC_API_BASE || '/api/v1',
@@ -138,6 +139,6 @@ export default defineNuxtConfig({
   devtools: { enabled: false },
 
   sourcemap: {
-    client: isDev ? false : 'hidden',
+    client: isDev ? true : 'hidden',
   },
 })

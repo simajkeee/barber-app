@@ -7,9 +7,10 @@ import type {
 
 export function usePublicBookingApi() {
   const config = useRuntimeConfig()
+  const apiBase = import.meta.server ? config.apiBase : config.public.apiBase
 
   async function getShopInfo(slug: string): Promise<PublicShopInfo> {
-    return $fetch<PublicShopInfo>(`${config.public.apiBase}/public/shops/${slug}`)
+    return $fetch<PublicShopInfo>(`${apiBase}/public/shops/${slug}`)
   }
 
   async function getAvailableSlots(
@@ -18,14 +19,14 @@ export function usePublicBookingApi() {
     serviceId: string,
   ): Promise<PublicAvailableSlotsResponse> {
     return $fetch<PublicAvailableSlotsResponse>(
-      `${config.public.apiBase}/public/shops/${slug}/available-slots`,
+      `${apiBase}/public/shops/${slug}/available-slots`,
       { query: { date, serviceId } },
     )
   }
 
   async function createBooking(slug: string, data: BookingRequest): Promise<BookingResponse> {
     return $fetch<BookingResponse>(
-      `${config.public.apiBase}/public/shops/${slug}/book`,
+      `${apiBase}/public/shops/${slug}/book`,
       { method: 'POST', body: data },
     )
   }

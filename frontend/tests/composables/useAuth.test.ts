@@ -106,12 +106,13 @@ describe('useAuth', () => {
         password: 'password123',
         firstName: 'John',
         lastName: 'Doe',
+        phoneNumber: '0901234567',
       })
 
       expect(result).toEqual({ success: true })
       expect(mockApiFetch).toHaveBeenCalledWith('/auth/register', {
         method: 'POST',
-        body: { email: 'test@example.com', password: 'password123', firstName: 'John', lastName: 'Doe' },
+        body: { email: 'test@example.com', password: 'password123', firstName: 'John', lastName: 'Doe', phoneNumber: '0901234567' },
       })
       const store = realUseAuthStore()
       expect(store.user).toEqual(authResponse.user)
@@ -127,6 +128,7 @@ describe('useAuth', () => {
         password: 'password123',
         firstName: 'John',
         lastName: 'Doe',
+        phoneNumber: '0901234567',
       })
 
       expect(result).toEqual({ success: false, error: 'EMAIL_ALREADY_EXISTS', fieldErrors: undefined })

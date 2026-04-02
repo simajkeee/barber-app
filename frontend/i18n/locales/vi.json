@@ -420,7 +420,8 @@
       "datetime": "Ngày & Giờ",
       "details": "Thông tin",
       "confirm": "Xác nhận",
-      "duration": "Thời lượng"
+      "duration": "Thời lượng",
+      "noServices": "Tiệm chưa có dịch vụ nào. Vui lòng liên hệ trực tiếp để đặt lịch."
     },
     "date": {
       "select": "Chọn ngày",
