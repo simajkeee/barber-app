@@ -39,7 +39,10 @@
       "lastName": "Last Name",
       "email": "Email",
       "password": "Password",
+      "confirmPassword": "Confirm Password",
       "submit": "Create Account",
+      "phone": "Phone Number",
+      "phonePlaceholder": "0901234567",
       "hasAccount": "Already have an account?",
       "loginLink": "Log In",
       "termsPrefix": "By creating an account you agree to our",
@@ -81,7 +84,8 @@
     "emailInvalid": "Please enter a valid email",
     "minLength": "Must be at least {min} characters",
     "invalid": "Invalid value",
-    "phoneInvalid": "Invalid phone number"
+    "phoneInvalid": "Invalid phone number",
+    "passwordMismatch": "Passwords do not match"
   },
   "nav": {
     "dashboard": "Dashboard",

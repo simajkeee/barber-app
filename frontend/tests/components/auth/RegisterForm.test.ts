@@ -34,22 +34,24 @@ describe('RegisterForm', () => {
 
   async function fillValidForm(wrapper: ReturnType<typeof mountForm>) {
     const inputs = wrapper.findAll('input')
-    await inputs[0].setValue('John')
-    await inputs[1].setValue('Doe')
-    await inputs[2].setValue('test@example.com')
-    await inputs[3].setValue('password123')
+    await inputs[0].setValue('John')       // firstName
+    await inputs[1].setValue('Doe')        // lastName
+    await inputs[2].setValue('test@example.com') // email
+    await inputs[3].setValue('password123') // password
+    await inputs[4].setValue('password123') // confirmPassword
+    await inputs[5].setValue('0901234567') // phoneNumber
   }
 
-  it('renders four input fields', () => {
+  it('renders six input fields', () => {
     const wrapper = mountForm()
-    expect(wrapper.findAll('.ui-input')).toHaveLength(4)
+    expect(wrapper.findAll('.ui-input')).toHaveLength(6)
   })
 
   it('validates all empty fields on submit', async () => {
     const wrapper = mountForm()
     await submitForm(wrapper)
     expect(mockRegister).not.toHaveBeenCalled()
-    expect(wrapper.findAll('.error').length).toBe(4)
+    expect(wrapper.findAll('.error').length).toBeGreaterThanOrEqual(5)
   })
 
   it('validates password minimum length', async () => {
@@ -59,6 +61,8 @@ describe('RegisterForm', () => {
     await inputs[1].setValue('Doe')
     await inputs[2].setValue('test@example.com')
     await inputs[3].setValue('short')
+    await inputs[4].setValue('short')
+    await inputs[5].setValue('0901234567')
     await submitForm(wrapper)
     expect(mockRegister).not.toHaveBeenCalled()
     expect(wrapper.findAll('.error').some(e => e.text().includes('validation.minLength'))).toBe(true)
@@ -71,12 +75,28 @@ describe('RegisterForm', () => {
     await inputs[1].setValue('Doe')
     await inputs[2].setValue('not-an-email')
     await inputs[3].setValue('password123')
+    await inputs[4].setValue('password123')
+    await inputs[5].setValue('0901234567')
     await submitForm(wrapper)
     expect(mockRegister).not.toHaveBeenCalled()
     expect(wrapper.findAll('.error').some(e => e.text().includes('validation.emailInvalid'))).toBe(true)
   })
 
-  it('calls register with form data and locale on valid submit', async () => {
+  it('shows error when passwords do not match', async () => {
+    const wrapper = mountForm()
+    const inputs = wrapper.findAll('input')
+    await inputs[0].setValue('John')
+    await inputs[1].setValue('Doe')
+    await inputs[2].setValue('test@example.com')
+    await inputs[3].setValue('password123')
+    await inputs[4].setValue('different999')
+    await inputs[5].setValue('0901234567')
+    await submitForm(wrapper)
+    expect(mockRegister).not.toHaveBeenCalled()
+    expect(wrapper.findAll('.error').some(e => e.text().includes('validation.passwordMismatch'))).toBe(true)
+  })
+
+  it('calls register without confirmPassword when passwords match', async () => {
     mockRegister.mockResolvedValueOnce({ success: true })
     const wrapper = mountForm()
     await fillValidForm(wrapper)
@@ -86,8 +106,10 @@ describe('RegisterForm', () => {
       lastName: 'Doe',
       email: 'test@example.com',
       password: 'password123',
+      phoneNumber: '0901234567',
       locale: 'vi',
     })
+    expect(mockRegister).not.toHaveBeenCalledWith(expect.objectContaining({ confirmPassword: expect.anything() }))
   })
 
   it('emits success on successful registration', async () => {

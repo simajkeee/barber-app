@@ -7,9 +7,7 @@ definePageMeta({
 })
 
 const { t, locale } = useI18n()
-const localePath = useLocalePath()
 const route = useRoute()
-const router = useRouter()
 const toast = useToast()
 const { getSubscription } = useSubscriptionApi()
 
@@ -44,7 +42,7 @@ onMounted(async () => {
         processingPayment.value = false
       }, 3000)
     }
-    router.replace(localePath('/dashboard/subscription'))
+    window.history.replaceState(window.history.state, '', route.path)
   }
 })
 
@@ -100,7 +98,7 @@ const formattedEndDate = computed(() => {
           :status="subscription.status"
           :start-date="subscription.startDate"
           :end-date="subscription.endDate"
-          :days-remaining="subscription.daysRemaining"
+          :days-remaining="subscription.daysRemaining ?? undefined"
         />
         <SubscriptionUsageCard
           :appointments-this-month="subscription.usage.appointmentsThisMonth"

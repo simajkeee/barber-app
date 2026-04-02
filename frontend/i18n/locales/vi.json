@@ -39,7 +39,10 @@
       "lastName": "Họ",
       "email": "Email",
       "password": "Mật khẩu",
+      "confirmPassword": "Xác nhận mật khẩu",
       "submit": "Tạo tài khoản",
+      "phone": "Số điện thoại",
+      "phonePlaceholder": "0901234567",
       "hasAccount": "Đã có tài khoản?",
       "loginLink": "Đăng nhập",
       "termsPrefix": "Khi tạo tài khoản, bạn đồng ý với",
@@ -81,7 +84,8 @@
     "emailInvalid": "Email không hợp lệ",
     "minLength": "Phải có ít nhất {min} ký tự",
     "invalid": "Giá trị không hợp lệ",
-    "phoneInvalid": "Số điện thoại không hợp lệ"
+    "phoneInvalid": "Số điện thoại không hợp lệ",
+    "passwordMismatch": "Mật khẩu không khớp"
   },
   "nav": {
     "dashboard": "Trang chủ",

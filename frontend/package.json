@@ -4,15 +4,15 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "nuxt dev",
-    "build": "nuxt build",
-    "generate": "nuxt generate",
+    "dev": "npx nuxi cleanup && NODE_OPTIONS=--max-old-space-size=4096 node node_modules/nuxt/bin/nuxt.mjs dev",
+    "build": "NODE_OPTIONS=--max-old-space-size=4096 node node_modules/nuxt/bin/nuxt.mjs build",
+    "generate": "NODE_OPTIONS=--max-old-space-size=4096 node node_modules/nuxt/bin/nuxt.mjs generate",
     "preview": "node --import ./.output/server/sentry.server.config.mjs ./.output/server/index.mjs",
     "postinstall": "nuxt prepare",
     "lint": "eslint . --fix",
     "format": "prettier --write .",
-    "test": "vitest run",
-    "test:watch": "vitest",
+    "test": "node --max-old-space-size=4096 node_modules/.bin/vitest run",
+    "test:watch": "node --max-old-space-size=4096 node_modules/.bin/vitest",
     "typecheck": "vue-tsc --noEmit"
   },
   "dependencies": {

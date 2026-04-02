@@ -1,8 +1,10 @@
+const isDev = process.env.NODE_ENV === 'development'
+
 export default defineNuxtConfig({
   compatibilityDate: '2025-03-12',
 
   modules: [
-    '@sentry/nuxt/module',
+    !isDev && '@sentry/nuxt/module',
     '@pinia/nuxt',
     '@nuxtjs/tailwindcss',
     '@nuxtjs/i18n',
@@ -122,6 +124,10 @@ export default defineNuxtConfig({
         target: 'http://localhost:80/api',
         changeOrigin: true,
       },
+      '/webhooks': {
+        target: 'http://localhost:80/webhooks',
+        changeOrigin: true,
+      },
     },
   },
 
@@ -129,9 +135,9 @@ export default defineNuxtConfig({
     https: false,
   },
 
-  devtools: { enabled: true },
+  devtools: { enabled: false },
 
   sourcemap: {
-    client: 'hidden',
+    client: isDev ? false : 'hidden',
   },
 })

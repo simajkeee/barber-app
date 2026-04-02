@@ -24,7 +24,7 @@ definePageMeta({ layout: false })
         />
       </div>
       <div class="mt-4">
-        <SubscriptionUpgradePrompt plan="free" />
+        <SubscriptionUpgradePrompt plan="free" status="active" :is-expiring-soon="false" />
       </div>
     </section>
 
@@ -45,7 +45,7 @@ definePageMeta({ layout: false })
         />
       </div>
       <div class="mt-4">
-        <SubscriptionUpgradePrompt plan="free" />
+        <SubscriptionUpgradePrompt plan="free" status="active" :is-expiring-soon="false" />
       </div>
     </section>
 
@@ -67,7 +67,7 @@ definePageMeta({ layout: false })
         />
       </div>
       <div class="mt-4">
-        <SubscriptionUpgradePrompt plan="pro" />
+        <SubscriptionUpgradePrompt plan="pro" status="active" :is-expiring-soon="false" />
       </div>
     </section>
 

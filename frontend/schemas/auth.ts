@@ -10,7 +10,16 @@ export const registerSchema = z.object({
   lastName: z.string().min(1),
   email: z.string().min(1).email(),
   password: z.string().min(8),
+  confirmPassword: z.string().min(1),
+  phoneNumber: z.string().min(1).regex(/^\+?[\d\s\-]{9,20}$/),
 })
+
+export function createRegisterSchema(passwordMismatchMessage: string) {
+  return registerSchema.refine(
+    (data) => data.password === data.confirmPassword,
+    { message: passwordMismatchMessage, path: ['confirmPassword'] },
+  )
+}
 
 export const forgotPasswordSchema = z.object({
   email: z.string().min(1).email(),

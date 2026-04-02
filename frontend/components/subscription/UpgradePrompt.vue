@@ -23,6 +23,7 @@ const showUpgrade = computed(() => props.plan === 'free')
 const showRenew = computed(() => props.plan === 'pro' && (props.isExpiringSoon || props.status === 'expired'))
 
 async function startCheckout() {
+  if (isLoading.value) return
   isLoading.value = true
   try {
     const { payUrl } = await checkout()

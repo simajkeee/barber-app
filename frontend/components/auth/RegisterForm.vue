@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useForm, useField } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
-import { registerSchema, type RegisterFormValues } from '~/schemas/auth'
+import { createRegisterSchema, type RegisterFormValues } from '~/schemas/auth'
 
 const emit = defineEmits<{
   success: []
@@ -11,14 +11,16 @@ const { t, locale } = useI18n()
 const { register } = useAuth()
 
 const { handleSubmit, setFieldError, isSubmitting } = useForm<RegisterFormValues>({
-  validationSchema: toTypedSchema(registerSchema),
-  initialValues: { firstName: '', lastName: '', email: '', password: '' },
+  validationSchema: toTypedSchema(createRegisterSchema(t('validation.passwordMismatch'))),
+  initialValues: { firstName: '', lastName: '', email: '', password: '', confirmPassword: '', phoneNumber: '' },
 })
 
 const { value: firstName, errorMessage: firstNameError } = useField<string>('firstName')
 const { value: lastName, errorMessage: lastNameError } = useField<string>('lastName')
 const { value: email, errorMessage: emailError } = useField<string>('email')
 const { value: password, errorMessage: passwordError } = useField<string>('password')
+const { value: confirmPassword, errorMessage: confirmPasswordError } = useField<string>('confirmPassword')
+const { value: phoneNumber, errorMessage: phoneNumberError } = useField<string>('phoneNumber')
 
 const generalError = ref<string | null>(null)
 
@@ -86,6 +88,25 @@ const onSubmit = handleSubmit(async (values) => {
         autocomplete="new-password"
         required
         :error="passwordError"
+      />
+
+      <UiInput
+        v-model="confirmPassword"
+        type="password"
+        :label="t('auth.register.confirmPassword')"
+        autocomplete="new-password"
+        required
+        :error="confirmPasswordError"
+      />
+
+      <UiInput
+        v-model="phoneNumber"
+        type="tel"
+        :label="t('auth.register.phone')"
+        autocomplete="tel"
+        :placeholder="t('auth.register.phonePlaceholder')"
+        required
+        :error="phoneNumberError"
       />
     </div>
 

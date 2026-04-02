@@ -19,6 +19,7 @@ security:
             jwt: ~
 
     access_control:
+        - { path: ^/api, roles: PUBLIC_ACCESS, methods: [OPTIONS] }
         - { path: ^/webhooks/, roles: PUBLIC_ACCESS }
         - { path: ^/health$, roles: PUBLIC_ACCESS }
         - { path: ^/api/v1/auth/register$, roles: PUBLIC_ACCESS }

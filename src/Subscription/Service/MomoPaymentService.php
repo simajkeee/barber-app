@@ -13,7 +13,7 @@ final class MomoPaymentService
     private const string SANDBOX_URL = 'https://test-payment.momo.vn/v2/gateway/api/create';
     private const string PRODUCTION_URL = 'https://payment.momo.vn/v2/gateway/api/create';
     private const string ORDER_INFO = 'BarberPro PRO - 1 tháng';
-    private const string REQUEST_TYPE = 'paymentCode';
+    private const string REQUEST_TYPE = 'captureWallet';
 
     public function __construct(
         private readonly HttpClientInterface $httpClient,
@@ -48,6 +48,7 @@ final class MomoPaymentService
 
         $body = [
             'partnerCode' => $this->partnerCode,
+            'accessKey' => $this->accessKey,
             'requestType' => self::REQUEST_TYPE,
             'ipnUrl' => $this->ipnUrl,
             'redirectUrl' => $this->redirectUrl,

@@ -20,6 +20,10 @@ final readonly class RegisterRequest
         public string $password = '',
 
         #[Assert\NotBlank]
+        #[Assert\EqualTo(propertyPath: 'password', message: 'Passwords do not match.')]
+        public string $confirmPassword = '',
+
+        #[Assert\NotBlank]
         #[Assert\Length(max: 100)]
         public string $firstName = '',
 

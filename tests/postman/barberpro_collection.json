@@ -39,10 +39,10 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"barber@example.com\",\n  \"password\": \"securepass123\",\n  \"firstName\": \"Nguyen\",\n  \"lastName\": \"Van A\",\n  \"locale\": \"vi\",\n  \"phoneNumber\": \"0901234567\"\n}",
+              "raw": "{\n  \"email\": \"barber@example.com\",\n  \"password\": \"securepass123\",\n  \"confirmPassword\": \"securepass123\",\n  \"firstName\": \"Nguyen\",\n  \"lastName\": \"Van A\",\n  \"locale\": \"vi\",\n  \"phoneNumber\": \"0901234567\"\n}",
               "options": { "raw": { "language": "json" } }
             },
-            "description": "Register a new barber account. Returns JWT access token, refresh token, and user details.\n\n**Auth:** None required\n**Rate limit:** 5 requests/hour per IP\n\n### Request body\n| Field | Type | Required | Notes |\n|-------|------|----------|-------|\n| email | string | ✅ | max 180 chars, unique |\n| password | string | ✅ | 8–255 chars |\n| firstName | string | ✅ | max 100 chars |\n| lastName | string | ✅ | max 100 chars |\n| locale | string | ❌ | `vi` (default) or `en` |\n| phoneNumber | string | ✅ | Vietnamese mobile: `0901234567`, E.164: `+84901234567`. Stored as E.164. |\n\n### Responses\n- **201** — success, returns `{ user, token, refreshToken }`\n- **400** — validation error (missing/invalid fields)\n- **409** — email already registered\n- **422** — phone number already registered\n- **429** — rate limit exceeded"
+            "description": "Register a new barber account. Returns JWT access token, refresh token, and user details.\n\n**Auth:** None required\n**Rate limit:** 5 requests/hour per IP\n\n### Request body\n| Field | Type | Required | Notes |\n|-------|------|----------|-------|\n| email | string | ✅ | max 180 chars, unique |\n| password | string | ✅ | 8–255 chars |\n| confirmPassword | string | ✅ | must match `password` |\n| firstName | string | ✅ | max 100 chars |\n| lastName | string | ✅ | max 100 chars |\n| locale | string | ❌ | `vi` (default) or `en` |\n| phoneNumber | string | ✅ | Vietnamese mobile: `0901234567`, E.164: `+84901234567`. Stored as E.164. |\n\n### Responses\n- **201** — success, returns `{ user, token, refreshToken }`\n- **400** — validation error (missing/invalid fields, passwords do not match)\n- **409** — email already registered\n- **422** — phone number already registered\n- **429** — rate limit exceeded"
           },
           "event": [
             {
