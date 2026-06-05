@@ -38,6 +38,7 @@ Thumbs.db
 ###< Git Worktrees ###
 
 ###> Internal tooling ###
+/Makefile
 ###< Internal tooling ###
 
 ###> Project docs / internal ###
