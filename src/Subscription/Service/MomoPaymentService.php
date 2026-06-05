@@ -67,7 +67,6 @@ final class MomoPaymentService
 
         /** @var array{resultCode: int, payUrl?: string, message?: string} $data */
         $data = $response->toArray(false);
-
         if (0 !== $data['resultCode']) {
             throw new ApiException('MOMO_INIT_FAILED', $data['message'] ?? 'MoMo payment initialization failed.', 502);
         }
