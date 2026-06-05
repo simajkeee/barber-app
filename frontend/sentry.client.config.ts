@@ -1,7 +1,9 @@
 import * as Sentry from "@sentry/nuxt";
 
+const { public: { sentryDsn } } = useRuntimeConfig();
+
 Sentry.init({
-  dsn: "https://REDACTED_SENTRY_FRONTEND_DSN",
+  dsn: sentryDsn,
   tracesSampleRate: 0.1,
   replaysSessionSampleRate: 0.1,
   replaysOnErrorSampleRate: 1.0,
